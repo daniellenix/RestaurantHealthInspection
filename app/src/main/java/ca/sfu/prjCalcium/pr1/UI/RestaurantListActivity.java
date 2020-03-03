@@ -58,7 +58,7 @@ public class RestaurantListActivity extends AppCompatActivity {
             }
 
             // find the lens to work with
-            Restaurant currentRestaurant = manager.getLenses().get(position);
+            Restaurant currentRestaurant = manager.getRestaurants().get(position);
 
             // fill the restaurant icon
             ImageView imageView = itemView.findViewById(R.id.icon);
