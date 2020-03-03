@@ -33,7 +33,6 @@ public class RestaurantListActivity extends AppCompatActivity {
         clickRestaurant();
     }
 
-
     private void populateListView() {
         ArrayAdapter<Restaurant> adapter = new MyListAdapter();
         ListView list = findViewById(R.id.listView);
@@ -57,7 +56,7 @@ public class RestaurantListActivity extends AppCompatActivity {
                 itemView = getLayoutInflater().inflate(R.layout.restaurant_list, parent, false);
             }
 
-            // find the lens to work with
+            // find the restaurant to work with
             Restaurant currentRestaurant = manager.getRestaurants().get(position);
 
             // fill the restaurant icon
@@ -72,9 +71,14 @@ public class RestaurantListActivity extends AppCompatActivity {
             TextView textViewIssues = itemView.findViewById(R.id.numOfIssues);
             textViewIssues.setText(currentRestaurant.getIssue());
 
-            // fill the hazard icon
+            // fill the time
             TextView textViewTime = itemView.findViewById(R.id.time);
-            textViewTime.setText(currentRestaurant.getTime());
+            textViewIssues.setText(currentRestaurant.getTime());
+
+            // fill the hazard icon
+            ImageView imageViewHazard = itemView.findViewById(R.id.hazard);
+            imageViewHazard.setImageResource(currentRestaurant.getHazard());
+
 
 
             return itemView;
