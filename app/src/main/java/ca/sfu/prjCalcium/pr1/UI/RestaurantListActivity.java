@@ -36,15 +36,15 @@ public class RestaurantListActivity extends AppCompatActivity {
     }
 
     private void populateRestaurantList() {
-//         TODO: This is a placeholder function for now, since right now we don't have the names of the views
-//         this block of the code is pretty much just gonna be the logic, names can be easily changed
-//         after the fact
+//        TODO: This is a placeholder function for now, since right now we don't have the names of the views
+//        this block of the code is pretty much just gonna be the logic, names can be easily changed
+//        after the fact
 //
-//         Might need a custom ListAdapter to show all information required.
+//        Might need a custom ListAdapter to show all information required.
 //        ArrayAdapter<Restaurant> restaurantArrayAdapter = new MyRestaurantAdapter();
 //
 //        ListView listRestaurant = findViewById(R.id.restaurantListActivityMainList);
-//        // listRestaurant.setAdapter();
+//        listRestaurant.setAdapter(restaurantArrayAdapter);
 //        listRestaurant.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 //            @Override
 //            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -71,7 +71,7 @@ public class RestaurantListActivity extends AppCompatActivity {
 //            }
 //
 //            // Find the Restaurant to work with
-//            Restaurant r = rManager.getRestaurantByPosition(position);
+//            Restaurant r = rManager.getRestaurantByIndex(position);
 //
 //            // TODO: Fill the View
 //
