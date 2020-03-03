@@ -3,6 +3,7 @@ package ca.sfu.prjCalcium.pr1.Model;
 public class Inspection {
     private String tracking_number;
     private String inspection_Date;
+    private String inspeType;
     private int numCritical;
     private int numNonCritical;
     private String hazardRating;
@@ -22,6 +23,14 @@ public class Inspection {
 
     public void setInspection_Date(String inspection_Date) {
         this.inspection_Date = inspection_Date;
+    }
+
+    public String getInspeType() {
+        return inspeType;
+    }
+
+    public void setInspeType(String inspeType) {
+        this.inspeType = inspeType;
     }
 
     public int getNumCritical() {
