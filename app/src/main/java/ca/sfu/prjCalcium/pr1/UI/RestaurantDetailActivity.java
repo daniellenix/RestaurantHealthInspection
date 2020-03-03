@@ -21,15 +21,15 @@ import ca.sfu.prjCalcium.pr1.R;
 
 public class RestaurantDetailActivity extends AppCompatActivity {
 
-    public static final String RESTAURANT_POSITION_PASSED_IN = "restaurant_position_passed_in";
+    public static final String R_DETAIL_RESTAURANT_POSITION_PASSED_IN = "r_detail_restaurant_position_passed_in";
 
 //    RestaurantManager rManager = RestaurantManager.getInstance();
-    Restaurant currentR;
+    Restaurant r;
 
     public static Intent makeIntent(Context c, int restaurantPosition) {
         Intent intent = new Intent(c, RestaurantDetailActivity.class);
 
-        intent.putExtra(RESTAURANT_POSITION_PASSED_IN, restaurantPosition);
+        intent.putExtra(R_DETAIL_RESTAURANT_POSITION_PASSED_IN, restaurantPosition);
         
         return intent;
     }
@@ -56,7 +56,8 @@ public class RestaurantDetailActivity extends AppCompatActivity {
 //        inspectionList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 //            @Override
 //            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                Intent inspectionIntent = InspectionActivity.makeIntent(RestaurantDetailActivity.this, position);
+//                int restaurantIndex = rManager.getItemIndex(r);
+//                Intent inspectionIntent = InspectionActivity.makeIntent(RestaurantDetailActivity.this, restaurantIndex, position);
 //
 //                startActivity(inspectionIntent);
 //            }
@@ -71,7 +72,7 @@ public class RestaurantDetailActivity extends AppCompatActivity {
 //        TODO:
 //        Intent intent = getIntent();
 //
-//        currentR = RestaurantManager.getRestaurantByPosition(intent.getIntExtra(RESTAURANT_POSITION_PASSED_IN, 0));
+//        r = RestaurantManager.getRestaurantByIndex(intent.getIntExtra(RESTAURANT_POSITION_PASSED_IN, 0));
     }
 
 //    private class MyInspectionAdapter extends ArrayAdapter<Inspection> {
