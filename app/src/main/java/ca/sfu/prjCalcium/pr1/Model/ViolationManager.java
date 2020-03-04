@@ -46,6 +46,10 @@ public class ViolationManager implements Iterable<Violation>{
         }
     }
 
+    public Violation getViolation(int position) {
+        return violations.get(position);
+    }
+
     @Override
     public Iterator<Violation> iterator() {
         return violations.iterator();

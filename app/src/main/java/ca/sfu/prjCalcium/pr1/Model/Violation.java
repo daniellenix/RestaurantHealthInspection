@@ -17,7 +17,7 @@ public class Violation {
         return code;
     }
 
-    public String isCritical() {
+    public String getCritical() {
         return critical;
     }
 
@@ -25,7 +25,7 @@ public class Violation {
         return details;
     }
 
-    public String isRepeat() {
+    public String getRepeat() {
         return repeat;
     }
 
