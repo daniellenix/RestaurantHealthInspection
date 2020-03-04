@@ -60,8 +60,6 @@ public class RestaurantListActivity extends AppCompatActivity {
             Restaurant currentRestaurant = manager.getRestaurants().get(position);
 
             // fill the restaurant icon
-            ImageView imageView = itemView.findViewById(R.id.icon);
-            imageView.setImageResource(currentRestaurant.getIconID());
 
             // fill the name
             TextView textViewName = itemView.findViewById(R.id.name);
