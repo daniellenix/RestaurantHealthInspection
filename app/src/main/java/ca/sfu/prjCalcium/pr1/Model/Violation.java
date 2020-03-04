@@ -29,6 +29,17 @@ public class Violation {
         return repeat;
     }
 
+    //For Brief Information of Violation
+    public String convertDetailsToCategories() {
+        // code 100s = Regulations
+        // code 200s = Food
+        // code 300s = Equipments
+        // code 400s = Employees
+        // code 500s = Operator
+
+        return "";
+    }
+
     @Override
     public String toString() {
         return "" +
