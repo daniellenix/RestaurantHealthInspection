@@ -1,27 +1,40 @@
 package ca.sfu.prjCalcium.pr1.Model;
 
 public class Restaurant {
-    private String tracking_number;
-    private String restaurant_name;
+    private String trackingNumber;
+    private String restaurantName;
     private String address;
-    private String physical_city;
+    private String physicalCity;
+    private String facType;
     private double latitude;
     private double longitude;
+    //InspectionManager inspections;
 
-    public String getTracking_number() {
-        return tracking_number;
+    public Restaurant() {
+        this.trackingNumber = "";
+        this.restaurantName = "";
+        this.address = "";
+        this.physicalCity = "";
+        this.facType = "";
+        this.latitude = 0;
+        this.longitude = 0;
+        //this.inspections = null;
     }
 
-    public void setTracking_number(String tracking_number) {
-        this.tracking_number = tracking_number;
+    public String getTrackingNumber() {
+        return trackingNumber;
     }
 
-    public String getRestaurant_name() {
-        return restaurant_name;
+    public void setTrackingNumber(String trackingNumber) {
+        this.trackingNumber = trackingNumber;
     }
 
-    public void setRestaurant_name(String restaurant_name) {
-        this.restaurant_name = restaurant_name;
+    public String getRestaurantName() {
+        return restaurantName;
+    }
+
+    public void setRestaurantName(String restaurantName) {
+        this.restaurantName = restaurantName;
     }
 
     public String getAddress() {
@@ -32,12 +45,20 @@ public class Restaurant {
         this.address = address;
     }
 
-    public String getPhysical_city() {
-        return physical_city;
+    public String getPhysicalCity() {
+        return physicalCity;
     }
 
-    public void setPhysical_city(String physical_city) {
-        this.physical_city = physical_city;
+    public void setPhysicalCity(String physicalCity) {
+        this.physicalCity = physicalCity;
+    }
+
+    public String getFacType() {
+        return facType;
+    }
+
+    public void setFacType(String facType) {
+        this.facType = facType;
     }
 
     public double getLatitude() {
@@ -59,10 +80,10 @@ public class Restaurant {
     @Override
     public String toString() {
         return "Restaurant{" +
-                "tracking_number='" + tracking_number + '\'' +
-                ", restaurant_name='" + restaurant_name + '\'' +
+                "tracking_number='" + trackingNumber + '\'' +
+                ", restaurant_name='" + restaurantName + '\'' +
                 ", address='" + address + '\'' +
-                ", physical_city='" + physical_city + '\'' +
+                ", physical_city='" + physicalCity + '\'' +
                 ", latitude=" + latitude +
                 ", longitude=" + longitude +
                 '}';

@@ -3,5 +3,70 @@ package ca.sfu.prjCalcium.pr1.Model;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RestaurantManager {
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import ca.sfu.prjCalcium.pr1.Model.Inspection;
+import ca.sfu.prjCalcium.pr1.Model.Restaurant;
+import ca.sfu.prjCalcium.pr1.R;
+
+public class RestaurantManager implements Iterable<Restaurant>{
+
+    private List<Restaurant> restaurantSample = new ArrayList<>();
+
+    public void readRestaurantData(Context context){
+        InputStream is = context.getResources().openRawResource(R.raw.restaurants_itr1);
+        BufferedReader reader = new BufferedReader(
+                new InputStreamReader(is, Charset.forName("utf-8"))
+        );
+
+        String line = "";
+        try{
+
+            reader.readLine();
+
+            while((line = reader.readLine()) != null){
+                //Split by ","
+                String[] tokens = line.split(",");
+
+                //Read data
+                Restaurant sample = new Restaurant();
+                sample.setTrackingNumber(tokens[0]);
+                sample.setRestaurantName(tokens[1]);
+                sample.setAddress(tokens[2]);
+                sample.setPhysicalCity(tokens[3]);
+                sample.setFacType(tokens[4]);
+                sample.setLatitude(Double.parseDouble(tokens[5]));
+                sample.setLongitude(Double.parseDouble(tokens[6]));
+                restaurantSample.add(sample);
+
+                Log.d("MyActivity", "Just Created" + sample);
+
+            }
+        }catch(IOException e){
+            Log.wtf("MyActivity", "Error reading data file on line" + line, e);
+            e.printStackTrace();
+        }
+    }
+
+    public Restaurant getRestaurant(int position){
+        return restaurantSample.get(position);
+    }
+
+    @Override
+    public Iterator<Restaurant> iterator(){
+        return restaurantSample.iterator();
+    }
 }

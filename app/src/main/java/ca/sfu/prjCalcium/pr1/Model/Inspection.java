@@ -1,28 +1,38 @@
 package ca.sfu.prjCalcium.pr1.Model;
 
 public class Inspection {
-    private String tracking_number;
-    private String inspection_Date;
+    private String trackingNumber;
+    private String inspectionDate;
     private String inspeType;
     private int numCritical;
     private int numNonCritical;
     private String hazardRating;
     private String vioLump;
 
-    public String getTracking_number() {
-        return tracking_number;
+    public Inspection() {
+        this.trackingNumber = "";
+        this.inspectionDate = "";
+        this.inspeType = "";
+        this.numCritical = 0;
+        this.numNonCritical = 0;
+        this.hazardRating = "";
+        this.vioLump = "";
     }
 
-    public void setTracking_number(String tracking_number) {
-        this.tracking_number = tracking_number;
+    public String getTrackingNumber() {
+        return trackingNumber;
     }
 
-    public String getInspection_Date() {
-        return inspection_Date;
+    public void setTrackingNumber(String trackingNumber) {
+        this.trackingNumber = trackingNumber;
     }
 
-    public void setInspection_Date(String inspection_Date) {
-        this.inspection_Date = inspection_Date;
+    public String getInspectionDate() {
+        return inspectionDate;
+    }
+
+    public void setInspectionDate(String inspectionDate) {
+        this.inspectionDate = inspectionDate;
     }
 
     public String getInspeType() {
@@ -68,12 +78,16 @@ public class Inspection {
     @Override
     public String toString() {
         return "Inspection{" +
-                "tracking_number='" + tracking_number + '\'' +
-                ", inspection_Date='" + inspection_Date + '\'' +
+                "tracking_number='" + trackingNumber + '\'' +
+                ", inspection_Date='" + inspectionDate + '\'' +
                 ", numCritical=" + numCritical +
                 ", numNonCritical=" + numNonCritical +
                 ", hazardRating='" + hazardRating + '\'' +
                 ", vioLump='" + vioLump + '\'' +
                 '}';
+    }
+
+    public int getViolations(){
+        return numCritical + numNonCritical;
     }
 }
