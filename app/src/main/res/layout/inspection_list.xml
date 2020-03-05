@@ -25,7 +25,7 @@
         android:textAlignment="textStart" />
 
     <TextView
-        android:id="@+id/noncriticalIssues"
+        android:id="@+id/nonCriticalIssues"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/criticalIssues"
@@ -42,7 +42,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginStart="102dp"
         android:layout_marginTop="51dp"
-        android:layout_toEndOf="@+id/noncriticalIssues"
+        android:layout_toEndOf="@+id/nonCriticalIssues"
         android:text="Time"
         android:textAlignment="textEnd" />
 </RelativeLayout>

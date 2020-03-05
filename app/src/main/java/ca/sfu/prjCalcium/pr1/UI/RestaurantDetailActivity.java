@@ -7,7 +7,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inspector.InspectionCompanion;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
@@ -16,10 +15,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import ca.sfu.prjCalcium.pr1.Model.Inspection;
-import ca.sfu.prjCalcium.pr1.Model.Restaurant;
 import ca.sfu.prjCalcium.pr1.R;
 
 public class RestaurantDetailActivity extends AppCompatActivity {
+
+    // Singleton
+    // private RestaurantManager manager = RestaurantManager.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +66,7 @@ public class RestaurantDetailActivity extends AppCompatActivity {
             textViewCriticalIssues.setText(currentInspection.getCriticalIssues());
 
             // fill the non-critical issues
-            TextView textViewNonCriticalIssues = itemView.findViewById(R.id.noncriticalIssues);
+            TextView textViewNonCriticalIssues = itemView.findViewById(R.id.nonCriticalIssues);
             textViewNonCriticalIssues.setText(currentInspection.getNonCriticalIssues());
 
             // fill the time
