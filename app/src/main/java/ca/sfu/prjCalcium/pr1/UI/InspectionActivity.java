@@ -20,7 +20,7 @@ import ca.sfu.prjCalcium.pr1.R;
 public class InspectionActivity extends AppCompatActivity {
 
     // Singleton
-    // private RestaurantManager manager = RestaurantManager.getInstance();
+    // private Violation violationManager = ViolationManager.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +58,7 @@ public class InspectionActivity extends AppCompatActivity {
     private class MyListAdapter extends ArrayAdapter<Inspection> {
 
         public MyListAdapter() {
-            super(InspectionActivity.this, R.layout.violation_list, manager.getViolations());
+            super(InspectionActivity.this, R.layout.violation_list, violationManager.getViolation());
         }
 
         @NonNull
@@ -73,7 +73,7 @@ public class InspectionActivity extends AppCompatActivity {
             }
 
             // find the inspection to work with
-            Inspection currentInspection = manager.getViolations().get(position);
+            Inspection currentInspection = violationManager.getViolation().get(position);
 
             // fill the violation type icon (pest, food, ..)
             ImageView imageViewNature = itemView.findViewById(R.id.natureOfViolation);
@@ -81,11 +81,11 @@ public class InspectionActivity extends AppCompatActivity {
 
             // fill the short description
             TextView textViewShortDescription = itemView.findViewById(R.id.description);
-            textViewShortDescription.setText(currentInspection.getDescription());
+            textViewShortDescription.setText(currentInspection.getDetails());
 
             // fill the severity icon - (critical or non-critical)
             ImageView imageViewSeverity = itemView.findViewById(R.id.severity);
-            imageViewSeverity.setImageResource(currentInspection.getSeverity());
+            imageViewSeverity.setImageResource(currentInspection.getCritical());
 
             return itemView;
         }
@@ -98,8 +98,8 @@ public class InspectionActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                Inspection clickedViolation = manager.getInspections().get(position);
-                String message = "Long description: " + clickedViolation.getLongDescription();
+                Inspection clickedViolation = violationManager.getViolation().get(position);
+                String message = "Long description: " + clickedViolation.getDetails();
                 Toast.makeText(InspectionActivity.this, message, Toast.LENGTH_LONG).show();
 
                 // Launch the inspection activity
