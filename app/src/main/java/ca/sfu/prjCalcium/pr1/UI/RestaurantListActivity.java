@@ -24,6 +24,8 @@ import ca.sfu.prjCalcium.pr1.R;
 
 public class RestaurantListActivity extends AppCompatActivity {
 
+    RestaurantManager data = RestaurantManager.getInstance();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,8 +35,6 @@ public class RestaurantListActivity extends AppCompatActivity {
 //        InspectionManager test = new InspectionManager();
 //        test.readInspectionData(getApplicationContext());
 //        Toast.makeText(getApplicationContext(),test.getInspection(2).toString(), Toast.LENGTH_LONG).show();
-
-        RestaurantManager data = new RestaurantManager();
         data.readRestaurantData(getApplicationContext());
 //        Toast.makeText(getApplicationContext(), data.getRestaurant(2).toString(), Toast.LENGTH_LONG).show();
     }
