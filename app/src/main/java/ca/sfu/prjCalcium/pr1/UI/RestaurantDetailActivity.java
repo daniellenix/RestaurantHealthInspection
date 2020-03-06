@@ -15,12 +15,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import ca.sfu.prjCalcium.pr1.Model.Inspection;
+import ca.sfu.prjCalcium.pr1.Model.RestaurantManager;
 import ca.sfu.prjCalcium.pr1.R;
 
 public class RestaurantDetailActivity extends AppCompatActivity {
 
     // Singleton
-    // private RestaurantManager manager = RestaurantManager.getInstance();
+     private RestaurantManager manager = RestaurantManager.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,19 +60,19 @@ public class RestaurantDetailActivity extends AppCompatActivity {
 
             // fill the hazard icon
             ImageView imageViewHazard = itemView.findViewById(R.id.hazard);
-            imageViewHazard.setImageResource(currentInspection.getHazard());
+//            imageViewHazard.setImageResource();
 
             // fill the critical issues
             TextView textViewCriticalIssues = itemView.findViewById(R.id.criticalIssues);
-            textViewCriticalIssues.setText(currentInspection.getCriticalIssues());
+            textViewCriticalIssues.setText(currentInspection.getNumCritical());
 
             // fill the non-critical issues
             TextView textViewNonCriticalIssues = itemView.findViewById(R.id.nonCriticalIssues);
-            textViewNonCriticalIssues.setText(currentInspection.getNonCriticalIssues());
+            textViewNonCriticalIssues.setText(currentInspection.getNumNonCritical());
 
             // fill the time
             TextView textViewTime = itemView.findViewById(R.id.time);
-            textViewTime.setText(currentInspection.getTime());
+            textViewTime.setText(currentInspection.getInspectionDate());
 
             return itemView;
         }

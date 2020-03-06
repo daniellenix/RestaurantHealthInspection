@@ -16,13 +16,15 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import ca.sfu.prjCalcium.pr1.Model.Inspection;
 import ca.sfu.prjCalcium.pr1.Model.Restaurant;
+import ca.sfu.prjCalcium.pr1.Model.RestaurantManager;
 import ca.sfu.prjCalcium.pr1.R;
 
 public class RestaurantListActivity extends AppCompatActivity {
 
     // Singleton
-    // private RestaurantManager manager = RestaurantManager.getInstance();
+     private RestaurantManager manager = RestaurantManager.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,26 +60,25 @@ public class RestaurantListActivity extends AppCompatActivity {
 
             // find the restaurant to work with
             Restaurant currentRestaurant = manager.getRestaurants().get(position);
+            Inspection currentInspection = manager.getRestaurants().get(position);
 
             // fill the restaurant icon
 
             // fill the name
             TextView textViewName = itemView.findViewById(R.id.name);
-            textViewName.setText(currentRestaurant.getName());
+            textViewName.setText(currentRestaurant.getRestaurantName());
 
             // fill the number of issues
             TextView textViewIssues = itemView.findViewById(R.id.numOfIssues);
-            textViewIssues.setText(currentRestaurant.getIssue());
+            textViewIssues.setText(currentInspection.getNumCritical() + currentInspection.getNumNonCritical());
 
             // fill the time
             TextView textViewTime = itemView.findViewById(R.id.time);
-            textViewIssues.setText(currentRestaurant.getTime());
+            textViewTime.setText(currentInspection.getInspectionDate());
 
             // fill the hazard icon
             ImageView imageViewHazard = itemView.findViewById(R.id.hazard);
-            imageViewHazard.setImageResource(currentRestaurant.getHazard());
-
-
+//            imageViewHazard.setImageResource();
 
             return itemView;
         }

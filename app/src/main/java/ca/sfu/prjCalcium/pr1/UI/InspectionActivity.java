@@ -15,12 +15,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import ca.sfu.prjCalcium.pr1.Model.Inspection;
+import ca.sfu.prjCalcium.pr1.Model.Violation;
+import ca.sfu.prjCalcium.pr1.Model.ViolationManager;
 import ca.sfu.prjCalcium.pr1.R;
 
 public class InspectionActivity extends AppCompatActivity {
 
     // Singleton
-    // private Violation violationManager = ViolationManager.getInstance();
+     private Violation violationManager = ViolationManager.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +60,7 @@ public class InspectionActivity extends AppCompatActivity {
     private class MyListAdapter extends ArrayAdapter<Inspection> {
 
         public MyListAdapter() {
-            super(InspectionActivity.this, R.layout.violation_list, violationManager.getViolation());
+            super(InspectionActivity.this, R.layout.violation_list, violationManager.getViolations());
         }
 
         @NonNull
@@ -72,20 +74,20 @@ public class InspectionActivity extends AppCompatActivity {
                 itemView = getLayoutInflater().inflate(R.layout.violation_list, parent, false);
             }
 
-            // find the inspection to work with
-            Inspection currentInspection = violationManager.getViolation().get(position);
+            // find the violation to work with
+            Violation currentViolation = violationManager.getViolations().get(position);
 
             // fill the violation type icon (pest, food, ..)
             ImageView imageViewNature = itemView.findViewById(R.id.natureOfViolation);
-            imageViewNature.setImageResource(currentInspection.getViolation());
+            imageViewNature.setImageResource(currentViolation.getCode());
 
             // fill the short description
             TextView textViewShortDescription = itemView.findViewById(R.id.description);
-            textViewShortDescription.setText(currentInspection.getDetails());
+            textViewShortDescription.setText(currentViolation.getDetails());
 
             // fill the severity icon - (critical or non-critical)
             ImageView imageViewSeverity = itemView.findViewById(R.id.severity);
-            imageViewSeverity.setImageResource(currentInspection.getCritical());
+//            imageViewSeverity.setImageResource();
 
             return itemView;
         }
@@ -98,7 +100,7 @@ public class InspectionActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                Inspection clickedViolation = violationManager.getViolation().get(position);
+                Violation clickedViolation = violationManager.getViolations().get(position);
                 String message = "Long description: " + clickedViolation.getDetails();
                 Toast.makeText(InspectionActivity.this, message, Toast.LENGTH_LONG).show();
 
