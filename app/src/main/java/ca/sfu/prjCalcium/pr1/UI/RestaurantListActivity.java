@@ -1,18 +1,20 @@
 package ca.sfu.prjCalcium.pr1.UI;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
 
 import ca.sfu.prjCalcium.pr1.Model.Inspection;
 import ca.sfu.prjCalcium.pr1.Model.InspectionManager;
@@ -20,22 +22,82 @@ import ca.sfu.prjCalcium.pr1.Model.Restaurant;
 import ca.sfu.prjCalcium.pr1.Model.RestaurantManager;
 import ca.sfu.prjCalcium.pr1.R;
 
-//reference Brian Fraser's video
-
 public class RestaurantListActivity extends AppCompatActivity {
 
-    RestaurantManager data = RestaurantManager.getInstance();
+    // Singleton
+     private RestaurantManager manager = RestaurantManager.getInstance();
+     private InspectionManager inspectionManager = InspectionManager.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //Test if I get correct data in inspectionManager
-//        InspectionManager test = new InspectionManager();
-//        test.readInspectionData(getApplicationContext());
-//        Toast.makeText(getApplicationContext(),test.getInspection(2).toString(), Toast.LENGTH_LONG).show();
-        data.readRestaurantData(getApplicationContext());
-//        Toast.makeText(getApplicationContext(), data.getRestaurant(2).toString(), Toast.LENGTH_LONG).show();
+        populateListView();
+        clickRestaurant();
+    }
+
+    private void populateListView() {
+        ArrayAdapter<Restaurant> adapter = new MyListAdapter();
+        ListView list = findViewById(R.id.listView);
+        list.setAdapter(adapter);
+    }
+
+    private class MyListAdapter extends ArrayAdapter<Restaurant> {
+
+        public MyListAdapter() {
+            super(RestaurantListActivity.this, R.layout.restaurant_list, manager.getRestaurants());
+        }
+
+        @NonNull
+        @Override
+        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+
+            // make sure we have a view to work with
+            View itemView = convertView;
+
+            if(itemView == null) {
+                itemView = getLayoutInflater().inflate(R.layout.restaurant_list, parent, false);
+            }
+
+            // find the restaurant to work with
+            Restaurant currentRestaurant = manager.getRestaurants().get(position);
+            Inspection currentInspection = inspectionManager.getInspections().get(position);
+
+            // fill the restaurant icon
+
+            // fill the name
+            TextView textViewName = itemView.findViewById(R.id.name);
+            textViewName.setText(currentRestaurant.getRestaurantName());
+
+            // fill the number of issues
+            TextView textViewIssues = itemView.findViewById(R.id.numOfIssues);
+            textViewIssues.setText(currentInspection.getNumCritical() + currentInspection.getNumNonCritical());
+
+            // fill the time
+            TextView textViewTime = itemView.findViewById(R.id.time);
+            textViewTime.setText(currentInspection.getInspectionDate());
+
+            // fill the hazard icon
+            ImageView imageViewHazard = itemView.findViewById(R.id.hazard);
+//            imageViewHazard.setImageResource();
+
+            return itemView;
+        }
+    }
+
+    private void clickRestaurant() {
+        ListView list = findViewById(R.id.listView);
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                Restaurant clickedRestaurant = manager.getRestaurants().get(position);
+                String message = "You clicked # " + position + ", which is string: " + clickedRestaurant.toString();
+                Toast.makeText(RestaurantListActivity.this, message, Toast.LENGTH_LONG).show();
+
+                // Launch the restaurant detail activity
+            }
+        });
     }
 }
