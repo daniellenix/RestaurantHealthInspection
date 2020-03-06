@@ -9,54 +9,20 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 import ca.sfu.prjCalcium.pr1.R;
 
 public class InspectionManager implements Iterable<Inspection> {
 
     private List<Inspection> inspections = new ArrayList<>();
-
-    public void readInspectionData(Context context) {
-        InputStream is = context.getResources().openRawResource(R.raw.inspectionreports_itr1);
-        BufferedReader reader = new BufferedReader(
-                new InputStreamReader(is, Charset.forName("utf-8"))
-        );
-
-        String line = "";
-        try {
-            //Step over headers
-            reader.readLine();
-
-            while ((line = reader.readLine()) != null) {
-                //split by ","
-                String[] tokens = line.split(",");
-
-                //read data
-                Inspection sample = new Inspection();
-                sample.setTrackingNumber(tokens[0]);
-                sample.setInspectionDate(tokens[1]);
-                sample.setInspeType(tokens[2]);
-                sample.setNumCritical(Integer.parseInt(tokens[3]));
-                sample.setNumNonCritical(Integer.parseInt(tokens[4]));
-                sample.setHazardRating(tokens[5]);
-                if (tokens.length > 6 && tokens[6].length() > 0) {
-                    sample.setVioLump(tokens[6]);
-                } else {
-                    sample.setVioLump("");
-                }
-                inspections.add(sample);
-
-                Log.d("MyActivity", "Just created: " + sample);
-            }
-        } catch (IOException e) {
-            Log.wtf("MyActivity", "Error reading data file on line" + line, e);
-            e.printStackTrace();
-        }
-    }
 
     public void addInspectionsByTrackingNumber(Context context, String restID) {
         InputStream is = context.getResources().openRawResource(R.raw.inspectionreports_itr1);
@@ -77,7 +43,10 @@ public class InspectionManager implements Iterable<Inspection> {
                     Inspection sample = new Inspection();
 
                     sample.setTrackingNumber(tokens[0].substring(1, tokens[0].length() - 1));
-                    sample.setInspectionDate(tokens[1]);
+
+                    Date d = new SimpleDateFormat("yyyyMMdd", Locale.CANADA).parse(tokens[1]);
+
+                    sample.setInspectionDate(d);
                     sample.setInspeType(tokens[2].substring(1, tokens[2].length() - 1));
                     sample.setNumCritical(Integer.parseInt(tokens[3]));
                     sample.setNumNonCritical(Integer.parseInt(tokens[4]));
@@ -85,15 +54,35 @@ public class InspectionManager implements Iterable<Inspection> {
                     if (tokens.length > 6 && tokens[6].length() > 0) {
                         String[] vioLumpStrArray = Arrays.copyOfRange(tokens, 6, tokens.length);
                         String vioLumpStr = TextUtils.join(",", vioLumpStrArray);
-                        sample.setVioLump(vioLumpStr.substring(1, vioLumpStr.length() - 1));
-                    } else {
-                        sample.setVioLump("");
+                        vioLumpStr = vioLumpStr.substring(1, vioLumpStr.length() - 1);
+
+                        List<String> tokens_for_violations = new ArrayList<String>();
+
+                        if (!vioLumpStr.contains("|")) {
+                            tokens_for_violations.add(vioLumpStr);
+                        } else {
+                            tokens_for_violations = Arrays.asList(vioLumpStr.split("\\|")); // a list of violations
+                        }
+
+                        ViolationManager vManager = new ViolationManager();
+
+                        for (String t : tokens_for_violations) {
+                            String[] v_token = t.split(",");
+
+                            Violation v = new Violation(Integer.parseInt(v_token[0]), v_token[1], v_token[2], v_token[3]);
+                            vManager.add(v);
+                        }
+
+                        sample.setVioLump(vManager);
+
                     }
                     inspections.add(sample);
                 }
             }
         } catch (IOException e) {
             Log.wtf("MyActivity", "Error reading data file on line" + line, e);
+            e.printStackTrace();
+        } catch (ParseException e) {
             e.printStackTrace();
         }
     }

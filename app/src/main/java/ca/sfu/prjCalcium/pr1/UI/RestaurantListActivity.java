@@ -10,11 +10,12 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import java.util.Comparator;
 
 import ca.sfu.prjCalcium.pr1.Model.Inspection;
 import ca.sfu.prjCalcium.pr1.Model.InspectionManager;
@@ -37,6 +38,7 @@ public class RestaurantListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         manager.readRestaurantData(RestaurantListActivity.this);
+        manager.sort(new AlphabetComparator());
 
         populateListView();
         clickRestaurant();
@@ -56,7 +58,6 @@ public class RestaurantListActivity extends AppCompatActivity {
 
                 Restaurant clickedRestaurant = manager.getRestaurants().get(position);
                 String message = "You clicked # " + position + ", which is string: " + clickedRestaurant.toString();
-                Toast.makeText(RestaurantListActivity.this, message, Toast.LENGTH_LONG).show();
 
                 Intent intent = RestaurantDetailActivity.makeIntent(RestaurantListActivity.this, position);
                 startActivity(intent);
@@ -108,6 +109,14 @@ public class RestaurantListActivity extends AppCompatActivity {
 //            imageViewHazard.setImageResource();
 
             return itemView;
+        }
+    }
+
+    // https://stackoverflow.com/questions/2784514/sort-arraylist-of-custom-objects-by-property
+    public class AlphabetComparator implements Comparator<Restaurant> {
+        @Override
+        public int compare(Restaurant r1, Restaurant r2) {
+            return r1.getRestaurantName().compareTo(r2.getRestaurantName());
         }
     }
 }

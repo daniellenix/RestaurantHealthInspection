@@ -15,22 +15,22 @@
         app:srcCompat="@drawable/green" />
 
     <TextView
-        android:id="@+id/criticalIssues"
+        android:id="@+id/InspectionCriticalIssues"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="19dp"
-        android:layout_marginTop="30dp"
+        android:layout_marginStart="18dp"
+        android:layout_marginTop="36dp"
         android:layout_toEndOf="@+id/hazard"
         android:text="# critical issues"
         android:textAlignment="textStart" />
 
     <TextView
-        android:id="@+id/nonCriticalIssues"
+        android:id="@+id/InspectionNonCriticalIssues"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/criticalIssues"
-        android:layout_marginStart="19dp"
+        android:layout_below="@+id/InspectionCriticalIssues"
+        android:layout_marginStart="17dp"
         android:layout_marginTop="5dp"
         android:layout_toEndOf="@+id/hazard"
         android:text="# non-critical issues"
@@ -46,4 +46,14 @@
         android:layout_marginEnd="8dp"
         android:text="Time"
         android:textAlignment="textEnd" />
+
+    <TextView
+        android:id="@+id/inspectionListHazard"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="22dp"
+        android:layout_marginTop="10dp"
+        android:layout_toEndOf="@+id/hazard"
+        android:text="Hazard Level" />
 </RelativeLayout>
