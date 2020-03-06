@@ -16,11 +16,9 @@ import ca.sfu.prjCalcium.pr1.R;
 
 public class ViolationManager implements Iterable<Violation> {
 
-    private static ViolationManager instance;
     private List<Violation> violations = new ArrayList<>();
 
-    private ViolationManager() {
-    }
+    private static ViolationManager instance;
 
     public static ViolationManager getInstance() {
         if (instance == null) {
@@ -28,6 +26,9 @@ public class ViolationManager implements Iterable<Violation> {
         }
 
         return instance;
+    }
+
+    private ViolationManager() {
     }
 
     public void readFromTxt(Context context) {
