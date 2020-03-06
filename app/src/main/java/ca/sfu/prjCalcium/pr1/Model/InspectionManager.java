@@ -65,6 +65,10 @@ public class InspectionManager implements Iterable<Inspection> {
         }
     }
 
+    public List<Inspection> getInspections() {
+        return inspectionSample;
+    }
+
     public Inspection getInspection(int position){
         return inspectionSample.get(position);
     }

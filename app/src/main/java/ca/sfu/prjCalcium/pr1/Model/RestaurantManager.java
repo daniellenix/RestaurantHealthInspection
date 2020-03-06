@@ -66,6 +66,10 @@ public class RestaurantManager implements Iterable<Restaurant>{
         }
     }
 
+    public List<Restaurant> getRestaurants() {
+        return restaurantSample;
+    }
+
     public Restaurant getRestaurant(int position) {
         return restaurantSample.get(position);
     }

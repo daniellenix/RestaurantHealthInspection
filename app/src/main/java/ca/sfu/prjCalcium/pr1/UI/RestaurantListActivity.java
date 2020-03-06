@@ -17,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import ca.sfu.prjCalcium.pr1.Model.Inspection;
+import ca.sfu.prjCalcium.pr1.Model.InspectionManager;
 import ca.sfu.prjCalcium.pr1.Model.Restaurant;
 import ca.sfu.prjCalcium.pr1.Model.RestaurantManager;
 import ca.sfu.prjCalcium.pr1.R;
@@ -25,6 +26,7 @@ public class RestaurantListActivity extends AppCompatActivity {
 
     // Singleton
      private RestaurantManager manager = RestaurantManager.getInstance();
+     private InspectionManager inspectionManager = InspectionManager.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +62,7 @@ public class RestaurantListActivity extends AppCompatActivity {
 
             // find the restaurant to work with
             Restaurant currentRestaurant = manager.getRestaurants().get(position);
-            Inspection currentInspection = manager.getRestaurants().get(position);
+            Inspection currentInspection = inspectionManager.getInspections().get(position);
 
             // fill the restaurant icon
 
