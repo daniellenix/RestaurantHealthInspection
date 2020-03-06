@@ -14,7 +14,7 @@ import java.util.List;
 
 import ca.sfu.prjCalcium.pr1.R;
 
-public class ViolationManager implements Iterable<Violation>{
+public class ViolationManager implements Iterable<Violation> {
 
     private List<Violation> violations = new ArrayList<>();
 
@@ -28,9 +28,10 @@ public class ViolationManager implements Iterable<Violation>{
         return instance;
     }
 
-    private ViolationManager() { }
+    private ViolationManager() {
+    }
 
-    public void readFromTxt(Context context){
+    public void readFromTxt(Context context) {
         InputStream is = context.getResources().openRawResource(R.raw.allviolations);
         BufferedReader reader = new BufferedReader(
                 new InputStreamReader(is, Charset.forName("utf-8")) //default

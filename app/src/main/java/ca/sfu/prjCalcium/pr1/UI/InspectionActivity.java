@@ -1,9 +1,7 @@
 package ca.sfu.prjCalcium.pr1.UI;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +12,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import ca.sfu.prjCalcium.pr1.Model.Inspection;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+
 import ca.sfu.prjCalcium.pr1.Model.Violation;
 import ca.sfu.prjCalcium.pr1.Model.ViolationManager;
 import ca.sfu.prjCalcium.pr1.R;
@@ -22,7 +23,19 @@ import ca.sfu.prjCalcium.pr1.R;
 public class InspectionActivity extends AppCompatActivity {
 
     // Singleton
-     private ViolationManager violationManager = ViolationManager.getInstance();
+    private ViolationManager violationManager = ViolationManager.getInstance();
+
+    private static final String I_INSPECTION_POSITION_PASSED_IN = "i_inspection_position_passed_in";
+    private static final String I_RESTAURANT_POSITION_PASSED_IN = "i_restaurant_position_passed_in";
+
+    public static Intent makeIntent(Context c, int restaurantIndex, int restaurantInspectionIndex) {
+        Intent intent = new Intent(c, InspectionActivity.class);
+
+        intent.putExtra(I_RESTAURANT_POSITION_PASSED_IN, restaurantIndex);
+        intent.putExtra(I_INSPECTION_POSITION_PASSED_IN, restaurantInspectionIndex);
+
+        return intent;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +70,22 @@ public class InspectionActivity extends AppCompatActivity {
         list.setAdapter(adapter);
     }
 
+    // toast message when violation is clicked
+    private void clickViolation() {
+        ListView list = findViewById(R.id.listView);
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                Violation clickedViolation = violationManager.getViolations().get(position);
+                String message = "Long description: " + clickedViolation.getDetails();
+                Toast.makeText(InspectionActivity.this, message, Toast.LENGTH_LONG).show();
+
+                // Launch the inspection activity
+            }
+        });
+    }
+
     private class MyListAdapter extends ArrayAdapter<Violation> {
 
         public MyListAdapter() {
@@ -70,7 +99,7 @@ public class InspectionActivity extends AppCompatActivity {
             // make sure we have a view to work with
             View itemView = convertView;
 
-            if(itemView == null) {
+            if (itemView == null) {
                 itemView = getLayoutInflater().inflate(R.layout.violation_list, parent, false);
             }
 
@@ -93,19 +122,11 @@ public class InspectionActivity extends AppCompatActivity {
         }
     }
 
-    // toast message when violation is clicked
-    private void clickViolation() {
-        ListView list = findViewById(R.id.listView);
-        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                Violation clickedViolation = violationManager.getViolations().get(position);
-                String message = "Long description: " + clickedViolation.getDetails();
-                Toast.makeText(InspectionActivity.this, message, Toast.LENGTH_LONG).show();
-
-                // Launch the inspection activity
-            }
-        });
+    private void extractDataFromIntent() {
+        // TODO:
+//        Intent intent = getIntent();
+//
+//        r = rManager.getRestaurantByIndex(intent.getIntExtra(I_RESTAURANT_POSITION_PASSED_IN, 0));
+//        i = r.getInspectionManager().getInspectionByIndex(intent.getIntExtra(I_INSPECTION_POSITION_PASSED_IN, 0));
     }
 }

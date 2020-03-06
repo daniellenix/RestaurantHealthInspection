@@ -87,7 +87,7 @@ public class Inspection {
                 '}';
     }
 
-    public int getViolations(){
+    public int getViolations() {
         return numCritical + numNonCritical;
     }
 }

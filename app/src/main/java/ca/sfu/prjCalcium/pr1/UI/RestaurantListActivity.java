@@ -1,10 +1,6 @@
 package ca.sfu.prjCalcium.pr1.UI;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -16,6 +12,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+
 import ca.sfu.prjCalcium.pr1.Model.Inspection;
 import ca.sfu.prjCalcium.pr1.Model.InspectionManager;
 import ca.sfu.prjCalcium.pr1.Model.Restaurant;
@@ -25,8 +25,12 @@ import ca.sfu.prjCalcium.pr1.R;
 public class RestaurantListActivity extends AppCompatActivity {
 
     // Singleton
-     private RestaurantManager manager = RestaurantManager.getInstance();
-     private InspectionManager inspectionManager = InspectionManager.getInstance();
+    private RestaurantManager manager = RestaurantManager.getInstance();
+    private InspectionManager inspectionManager = InspectionManager.getInstance();
+
+    public static Intent makeIntent(Context c) {
+        return new Intent(c, RestaurantListActivity.class);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +47,21 @@ public class RestaurantListActivity extends AppCompatActivity {
         list.setAdapter(adapter);
     }
 
+    private void clickRestaurant() {
+        ListView list = findViewById(R.id.listView);
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                Restaurant clickedRestaurant = manager.getRestaurants().get(position);
+                String message = "You clicked # " + position + ", which is string: " + clickedRestaurant.toString();
+                Toast.makeText(RestaurantListActivity.this, message, Toast.LENGTH_LONG).show();
+
+                // Launch the restaurant detail activity
+            }
+        });
+    }
+
     private class MyListAdapter extends ArrayAdapter<Restaurant> {
 
         public MyListAdapter() {
@@ -56,7 +75,7 @@ public class RestaurantListActivity extends AppCompatActivity {
             // make sure we have a view to work with
             View itemView = convertView;
 
-            if(itemView == null) {
+            if (itemView == null) {
                 itemView = getLayoutInflater().inflate(R.layout.restaurant_list, parent, false);
             }
 
@@ -84,20 +103,5 @@ public class RestaurantListActivity extends AppCompatActivity {
 
             return itemView;
         }
-    }
-
-    private void clickRestaurant() {
-        ListView list = findViewById(R.id.listView);
-        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                Restaurant clickedRestaurant = manager.getRestaurants().get(position);
-                String message = "You clicked # " + position + ", which is string: " + clickedRestaurant.toString();
-                Toast.makeText(RestaurantListActivity.this, message, Toast.LENGTH_LONG).show();
-
-                // Launch the restaurant detail activity
-            }
-        });
     }
 }

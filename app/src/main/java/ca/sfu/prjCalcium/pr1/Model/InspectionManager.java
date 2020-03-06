@@ -16,9 +16,11 @@ import ca.sfu.prjCalcium.pr1.R;
 
 public class InspectionManager implements Iterable<Inspection> {
 
+    private static InspectionManager instance;
     private List<Inspection> inspections = new ArrayList<>();
 
-    private static InspectionManager instance;
+    private InspectionManager() {
+    }
 
     public static InspectionManager getInstance() {
         if (instance == null) {
@@ -27,8 +29,6 @@ public class InspectionManager implements Iterable<Inspection> {
 
         return instance;
     }
-
-    private InspectionManager() { }
 
     public void readInspectionData(Context context) {
         InputStream is = context.getResources().openRawResource(R.raw.inspectionreports_itr1);
@@ -53,10 +53,9 @@ public class InspectionManager implements Iterable<Inspection> {
                 sample.setNumCritical(Integer.parseInt(tokens[3]));
                 sample.setNumNonCritical(Integer.parseInt(tokens[4]));
                 sample.setHazardRating(tokens[5]);
-                if(tokens.length > 6 && tokens[6].length() > 0) {
+                if (tokens.length > 6 && tokens[6].length() > 0) {
                     sample.setVioLump(tokens[6]);
-                }
-                else{
+                } else {
                     sample.setVioLump("");
                 }
                 inspections.add(sample);
@@ -69,7 +68,7 @@ public class InspectionManager implements Iterable<Inspection> {
         }
     }
 
-    public Inspection getInspection(int position){
+    public Inspection getInspection(int position) {
         return inspections.get(position);
     }
 
