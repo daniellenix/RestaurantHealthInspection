@@ -66,13 +66,13 @@ public class InspectionActivity extends AppCompatActivity {
 
     private void populateListView() {
         ArrayAdapter<Violation> adapter = new InspectionActivity.MyListAdapter();
-        ListView list = findViewById(R.id.listView);
+        ListView list = findViewById(R.id.violationListView);
         list.setAdapter(adapter);
     }
 
     // toast message when violation is clicked
     private void clickViolation() {
-        ListView list = findViewById(R.id.listView);
+        ListView list = findViewById(R.id.violationListView);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

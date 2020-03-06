@@ -86,8 +86,4 @@ public class Inspection {
                 ", vioLump='" + vioLump + '\'' +
                 '}';
     }
-
-    public int getViolations() {
-        return numCritical + numNonCritical;
-    }
 }

@@ -16,15 +16,13 @@
 
     <TextView
         android:id="@+id/name"
-        android:layout_width="77dp"
+        android:layout_width="wrap_content"
         android:layout_height="22dp"
         android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
         android:layout_marginStart="8dp"
         android:layout_marginTop="17dp"
-        android:layout_marginEnd="252dp"
         android:layout_toEndOf="@+id/icon"
-        android:text="Name"
+        android:text=""
         android:textSize="15sp" />
 
     <ImageView
@@ -39,13 +37,11 @@
 
     <TextView
         android:id="@+id/numOfIssues"
-        android:layout_width="89dp"
+        android:layout_width="wrap_content"
         android:layout_height="26dp"
         android:layout_below="@+id/name"
         android:layout_marginStart="7dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="172dp"
-        android:layout_toStartOf="@+id/hazard"
         android:layout_toEndOf="@+id/icon"
         android:text="# of issues" />
 

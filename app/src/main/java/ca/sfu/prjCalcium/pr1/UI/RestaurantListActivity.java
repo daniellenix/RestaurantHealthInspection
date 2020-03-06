@@ -26,7 +26,6 @@ public class RestaurantListActivity extends AppCompatActivity {
 
     // Singleton
     private RestaurantManager manager = RestaurantManager.getInstance();
-    private InspectionManager inspectionManager = InspectionManager.getInstance();
 
     public static Intent makeIntent(Context c) {
         return new Intent(c, RestaurantListActivity.class);
@@ -37,18 +36,20 @@ public class RestaurantListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        manager.readRestaurantData(RestaurantListActivity.this);
+
         populateListView();
         clickRestaurant();
     }
 
     private void populateListView() {
         ArrayAdapter<Restaurant> adapter = new MyListAdapter();
-        ListView list = findViewById(R.id.listView);
+        ListView list = findViewById(R.id.restaurantListView);
         list.setAdapter(adapter);
     }
 
     private void clickRestaurant() {
-        ListView list = findViewById(R.id.listView);
+        ListView list = findViewById(R.id.restaurantListView);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -57,7 +58,8 @@ public class RestaurantListActivity extends AppCompatActivity {
                 String message = "You clicked # " + position + ", which is string: " + clickedRestaurant.toString();
                 Toast.makeText(RestaurantListActivity.this, message, Toast.LENGTH_LONG).show();
 
-                // Launch the restaurant detail activity
+                Intent intent = RestaurantDetailActivity.makeIntent(RestaurantListActivity.this, position);
+                startActivity(intent);
             }
         });
     }
@@ -80,8 +82,8 @@ public class RestaurantListActivity extends AppCompatActivity {
             }
 
             // find the restaurant to work with
-            Restaurant currentRestaurant = manager.getRestaurants().get(position);
-            Inspection currentInspection = inspectionManager.getInspections().get(position);
+            Restaurant currentRestaurant = manager.getRestaurantAtIndex(position);
+            InspectionManager restaurantInspections = currentRestaurant.getInspections();
 
             // fill the restaurant icon
 
@@ -91,11 +93,15 @@ public class RestaurantListActivity extends AppCompatActivity {
 
             // fill the number of issues
             TextView textViewIssues = itemView.findViewById(R.id.numOfIssues);
-            textViewIssues.setText(currentInspection.getNumCritical() + currentInspection.getNumNonCritical());
+            int totalIssues = 0;
+            for (Inspection i : restaurantInspections) {
+                totalIssues += i.getNumCritical() + i.getNumNonCritical();
+            }
+            textViewIssues.setText("Number of Issues: " + totalIssues);
 
             // fill the time
             TextView textViewTime = itemView.findViewById(R.id.time);
-            textViewTime.setText(currentInspection.getInspectionDate());
+//            textViewTime.setText(currentInspection.getInspectionDate());
 
             // fill the hazard icon
             ImageView imageViewHazard = itemView.findViewById(R.id.hazard);
