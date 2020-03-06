@@ -1,13 +1,7 @@
 package ca.sfu.prjCalcium.pr1.Model;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
 import android.util.Log;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -18,13 +12,23 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import ca.sfu.prjCalcium.pr1.Model.Inspection;
-import ca.sfu.prjCalcium.pr1.Model.Restaurant;
 import ca.sfu.prjCalcium.pr1.R;
 
 public class InspectionManager implements Iterable<Inspection> {
 
-    private List<Inspection> inspectionSample = new ArrayList<>();
+    private List<Inspection> inspections = new ArrayList<>();
+
+    private static InspectionManager instance;
+
+    public static InspectionManager getInstance() {
+        if (instance == null) {
+            instance = new InspectionManager();
+        }
+
+        return instance;
+    }
+
+    private InspectionManager() { }
 
     public void readInspectionData(Context context) {
         InputStream is = context.getResources().openRawResource(R.raw.inspectionreports_itr1);
@@ -55,7 +59,7 @@ public class InspectionManager implements Iterable<Inspection> {
                 else{
                     sample.setVioLump("");
                 }
-                inspectionSample.add(sample);
+                inspections.add(sample);
 
                 Log.d("MyActivity", "Just created: " + sample);
             }
@@ -66,12 +70,15 @@ public class InspectionManager implements Iterable<Inspection> {
     }
 
     public Inspection getInspection(int position){
-        return inspectionSample.get(position);
+        return inspections.get(position);
+    }
+
+    public List<Inspection> getInspections() {
+        return inspections;
     }
 
     @Override
     public Iterator<Inspection> iterator() {
-        return inspectionSample.iterator();
+        return inspections.iterator();
     }
-
 }
