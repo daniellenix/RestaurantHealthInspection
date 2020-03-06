@@ -39,7 +39,7 @@ Course Project URL: https://opencoursehub.cs.sfu.ca/bfraser/grav-cms/cmpt276/pro
         * [x] Restaurant name
         * [x] Restaurant address
         * [x] Restaurant GPS coords
-    * [x] I want it to list all inspections (in a scrollable list), with the most recent at the top, so I can easily understand the timeline of inspections.
+    * [ ] I want it to list all inspections (in a scrollable list), with the most recent at the top, so I can easily understand the timeline of inspections.
     * [ ] [15] I want each listing for an inspection report to show:
         * [x] critical issues found
         * [x] non-critical issues found
@@ -61,3 +61,11 @@ Course Project URL: https://opencoursehub.cs.sfu.ca/bfraser/grav-cms/cmpt276/pro
         * [ ] A brief description of the violation which **fits on one line**
         * [x] The severity of the violation: Use an icon and colour to make it easy to see if it's critical or not-critical
     * [x] I want to be able to tap on a single violation to see the long description. It's OK if this is shown on the screen for a moment (such as a toast or snackbar).
+
+## Style Guide
+
+https://google.github.io/styleguide/javaguide.html
+
+If you are unsure about it, you can always ask Android Studio to reformat the code for you.
+
+Code > Reformat Code
