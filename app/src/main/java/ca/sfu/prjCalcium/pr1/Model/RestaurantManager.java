@@ -17,7 +17,7 @@ import ca.sfu.prjCalcium.pr1.R;
 
 public class RestaurantManager implements Iterable<Restaurant>{
 
-    private List<Restaurant> restaurantSample = new ArrayList<>();
+    private List<Restaurant> restaurants = new ArrayList<>();
 
     private static RestaurantManager instance;
 
@@ -55,7 +55,7 @@ public class RestaurantManager implements Iterable<Restaurant>{
                 sample.setFacType(tokens[4]);
                 sample.setLatitude(Double.parseDouble(tokens[5]));
                 sample.setLongitude(Double.parseDouble(tokens[6]));
-                restaurantSample.add(sample);
+                restaurants.add(sample);
 
                 Log.d("MyActivity", "Just Created" + sample);
 
@@ -66,16 +66,16 @@ public class RestaurantManager implements Iterable<Restaurant>{
         }
     }
 
-    public List<Restaurant> getRestaurants() {
-        return restaurantSample;
+    public Restaurant getRestaurant(int position) {
+        return restaurants.get(position);
     }
 
-    public Restaurant getRestaurant(int position) {
-        return restaurantSample.get(position);
+    public List<Restaurant> getRestaurants() {
+        return restaurants;
     }
 
     @Override
     public Iterator<Restaurant> iterator() {
-        return restaurantSample.iterator();
+        return restaurants.iterator();
     }
 }

@@ -15,13 +15,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import ca.sfu.prjCalcium.pr1.Model.Inspection;
+import ca.sfu.prjCalcium.pr1.Model.InspectionManager;
 import ca.sfu.prjCalcium.pr1.Model.RestaurantManager;
 import ca.sfu.prjCalcium.pr1.R;
 
 public class RestaurantDetailActivity extends AppCompatActivity {
 
     // Singleton
-     private RestaurantManager manager = RestaurantManager.getInstance();
+     private InspectionManager manager = InspectionManager.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -22,7 +22,7 @@ import ca.sfu.prjCalcium.pr1.R;
 public class InspectionActivity extends AppCompatActivity {
 
     // Singleton
-     private Violation violationManager = ViolationManager.getInstance();
+     private ViolationManager violationManager = ViolationManager.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,12 +52,12 @@ public class InspectionActivity extends AppCompatActivity {
     }
 
     private void populateListView() {
-        ArrayAdapter<Inspection> adapter = new InspectionActivity.MyListAdapter();
+        ArrayAdapter<Violation> adapter = new InspectionActivity.MyListAdapter();
         ListView list = findViewById(R.id.listView);
         list.setAdapter(adapter);
     }
 
-    private class MyListAdapter extends ArrayAdapter<Inspection> {
+    private class MyListAdapter extends ArrayAdapter<Violation> {
 
         public MyListAdapter() {
             super(InspectionActivity.this, R.layout.violation_list, violationManager.getViolations());

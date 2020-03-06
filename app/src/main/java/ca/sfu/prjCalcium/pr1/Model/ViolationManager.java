@@ -18,6 +18,18 @@ public class ViolationManager implements Iterable<Violation>{
 
     private List<Violation> violations = new ArrayList<>();
 
+    private static ViolationManager instance;
+
+    public static ViolationManager getInstance() {
+        if (instance == null) {
+            instance = new ViolationManager();
+        }
+
+        return instance;
+    }
+
+    private ViolationManager() { }
+
     public void readFromTxt(Context context){
         InputStream is = context.getResources().openRawResource(R.raw.allviolations);
         BufferedReader reader = new BufferedReader(
@@ -48,6 +60,10 @@ public class ViolationManager implements Iterable<Violation>{
 
     public Violation getViolation(int position) {
         return violations.get(position);
+    }
+
+    public List<Violation> getViolations() {
+        return violations;
     }
 
     @Override
