@@ -1,5 +1,8 @@
 package ca.sfu.prjCalcium.pr1.Model;
 
+/**
+ * Represent a violation in an inspection.
+ */
 public class Violation {
     private int code;
     private String critical;

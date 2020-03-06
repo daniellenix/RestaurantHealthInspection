@@ -16,6 +16,9 @@ import java.util.List;
 
 import ca.sfu.prjCalcium.pr1.R;
 
+/**
+ * Represent a list of restaurants.
+ */
 public class RestaurantManager implements Iterable<Restaurant> {
 
     private static RestaurantManager instance;

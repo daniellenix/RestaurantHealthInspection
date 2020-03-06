@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * Represent a list of violations in an inspection.
+ */
 public class ViolationManager implements Iterable<Violation> {
 
     private List<Violation> violations = new ArrayList<>();

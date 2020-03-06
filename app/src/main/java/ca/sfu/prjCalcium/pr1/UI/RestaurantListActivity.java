@@ -101,10 +101,12 @@ public class RestaurantListActivity extends AppCompatActivity {
             textViewIssues.setText("Number of Issues: " + totalIssues);
 
             // fill the time
+            // TODO: Need to get the most recent inspection here.
             TextView textViewTime = itemView.findViewById(R.id.time);
 //            textViewTime.setText(currentInspection.getInspectionDate());
 
             // fill the hazard icon
+            // TODO: Need to get the most recent inspection here.
             ImageView imageViewHazard = itemView.findViewById(R.id.hazard);
 //            imageViewHazard.setImageResource();
 

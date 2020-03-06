@@ -2,6 +2,9 @@ package ca.sfu.prjCalcium.pr1.Model;
 
 import android.content.Context;
 
+/**
+ * Represent a restaurant.
+ */
 public class Restaurant {
     private String trackingNumber;
     private String restaurantName;

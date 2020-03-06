@@ -20,6 +20,9 @@ import java.util.Locale;
 
 import ca.sfu.prjCalcium.pr1.R;
 
+/**
+ * Represent a list of inspections for a restaurant.
+ */
 public class InspectionManager implements Iterable<Inspection> {
 
     private List<Inspection> inspections = new ArrayList<>();

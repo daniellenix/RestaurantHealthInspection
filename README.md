@@ -39,7 +39,7 @@ Course Project URL: https://opencoursehub.cs.sfu.ca/bfraser/grav-cms/cmpt276/pro
         * Restaurant name [x]
         * Restaurant address [x]
         * Restaurant GPS coords [x]
-    * I want it to list all inspections (in a scrollable list), with the most recent at the top, so I can easily understand the timeline of inspections.
+    * I want it to list all inspections (in a scrollable list), with the most recent at the top, so I can easily understand the timeline of inspections. [x]
     * [15] I want each listing for an inspection report to show:
         * critical issues found [x]
         * non-critical issues found [x]
@@ -48,8 +48,8 @@ Course Project URL: https://opencoursehub.cs.sfu.ca/bfraser/grav-cms/cmpt276/pro
 
 3. Display details of single inspection
 
-    * I want to see the details of a single inspection report to learn all I can about what the inspection found.
-    * [10] I want the inspection details screen to show:
+    * I want to see the details of a single inspection report to learn all I can about what the inspection found. [x]
+    * [10] I want the inspection details screen to show: [x]
         * Full date of the inspection (such as "May 12, 2019") [x]
         * Inspection type (routine / follow-up) [x]
         * critical issues found [x]

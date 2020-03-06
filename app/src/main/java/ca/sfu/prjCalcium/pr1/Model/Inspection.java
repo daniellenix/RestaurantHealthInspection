@@ -2,6 +2,9 @@ package ca.sfu.prjCalcium.pr1.Model;
 
 import java.util.Date;
 
+/**
+ * Represent an inspection event.
+ */
 public class Inspection {
     private String trackingNumber;
     private Date inspectionDate;

@@ -140,6 +140,8 @@ public class InspectionActivity extends AppCompatActivity {
             }
 
             // find the violation manager to work with
+
+            // TODO: Need to fill in the category of violating icon, interface is completed, need to find the icons then fill in the logic.
             ViolationManager vManager = i.getVioLump();
 
             if (vManager.isEmpty()) {
