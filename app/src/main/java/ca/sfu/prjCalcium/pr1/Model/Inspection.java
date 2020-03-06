@@ -1,22 +1,27 @@
 package ca.sfu.prjCalcium.pr1.Model;
 
+import java.util.Date;
+
+/**
+ * Represent an inspection event.
+ */
 public class Inspection {
     private String trackingNumber;
-    private String inspectionDate;
+    private Date inspectionDate;
     private String inspeType;
     private int numCritical;
     private int numNonCritical;
     private String hazardRating;
-    private String vioLump;
+    private ViolationManager vioLump;
 
     public Inspection() {
         this.trackingNumber = "";
-        this.inspectionDate = "";
+        this.inspectionDate = null;
         this.inspeType = "";
         this.numCritical = 0;
         this.numNonCritical = 0;
         this.hazardRating = "";
-        this.vioLump = "";
+        this.vioLump = new ViolationManager();
     }
 
     public String getTrackingNumber() {
@@ -27,11 +32,11 @@ public class Inspection {
         this.trackingNumber = trackingNumber;
     }
 
-    public String getInspectionDate() {
+    public Date getInspectionDate() {
         return inspectionDate;
     }
 
-    public void setInspectionDate(String inspectionDate) {
+    public void setInspectionDate(Date inspectionDate) {
         this.inspectionDate = inspectionDate;
     }
 
@@ -67,11 +72,11 @@ public class Inspection {
         this.hazardRating = hazardRating;
     }
 
-    public String getVioLump() {
+    public ViolationManager getVioLump() {
         return vioLump;
     }
 
-    public void setVioLump(String vioLump) {
+    public void setVioLump(ViolationManager vioLump) {
         this.vioLump = vioLump;
     }
 
@@ -85,9 +90,5 @@ public class Inspection {
                 ", hazardRating='" + hazardRating + '\'' +
                 ", vioLump='" + vioLump + '\'' +
                 '}';
-    }
-
-    public int getViolations() {
-        return numCritical + numNonCritical;
     }
 }

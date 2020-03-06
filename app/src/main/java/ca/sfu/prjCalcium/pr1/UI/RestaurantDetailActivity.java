@@ -2,6 +2,7 @@ package ca.sfu.prjCalcium.pr1.UI;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,20 +11,24 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+
 import ca.sfu.prjCalcium.pr1.Model.Inspection;
-import ca.sfu.prjCalcium.pr1.Model.InspectionManager;
+import ca.sfu.prjCalcium.pr1.Model.Restaurant;
+import ca.sfu.prjCalcium.pr1.Model.RestaurantManager;
 import ca.sfu.prjCalcium.pr1.R;
 
 public class RestaurantDetailActivity extends AppCompatActivity {
 
-    // Singleton
-    private InspectionManager manager = InspectionManager.getInstance();
+    Restaurant r;
+    int r_index;
+    private RestaurantManager manager;
 
     public static final String R_DETAIL_RESTAURANT_POSITION_PASSED_IN = "r_detail_restaurant_position_passed_in";
 
@@ -41,35 +46,60 @@ public class RestaurantDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_restaurant_detail);
 
+        manager = RestaurantManager.getInstance();
+
+        extractDataFromIntent();
+        populateInfo();
         populateListView();
         clickInspection();
     }
 
+    private void populateInfo() {
+        TextView nameView = findViewById(R.id.detailName);
+
+        nameView.setText(r.getRestaurantName());
+
+        TextView addressView = findViewById(R.id.detailAddress);
+
+        addressView.setText(r.getAddress());
+
+        TextView gpsView = findViewById(R.id.detailGps);
+
+        gpsView.setText("Longitude: " + r.getLongitude() + "\n" + "Latitude: " + r.getLatitude());
+    }
+
     private void populateListView() {
         ArrayAdapter<Inspection> adapter = new RestaurantDetailActivity.MyListAdapter();
-        ListView list = findViewById(R.id.listView);
+        ListView list = findViewById(R.id.restaurantInspectionListView);
         list.setAdapter(adapter);
     }
 
     private void clickInspection() {
-        ListView list = findViewById(R.id.listView);
+        ListView list = findViewById(R.id.restaurantInspectionListView);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                Inspection clickedInspection = manager.getInspections().get(position);
-                String message = "You clicked # " + position + ", which is string: " + clickedInspection.toString();
-                Toast.makeText(RestaurantDetailActivity.this, message, Toast.LENGTH_LONG).show();
+                Inspection clickedInspection = r.getInspections().getInspection(position);
 
-                // Launch the inspection activity
+                Intent intent = InspectionActivity.makeIntent(RestaurantDetailActivity.this, r_index, position);
+                startActivity(intent);
             }
         });
+    }
+
+    private void extractDataFromIntent() {
+        Intent intent = getIntent();
+
+        r_index = intent.getIntExtra(R_DETAIL_RESTAURANT_POSITION_PASSED_IN, 0);
+
+        r = manager.getRestaurantAtIndex(intent.getIntExtra(R_DETAIL_RESTAURANT_POSITION_PASSED_IN, 0));
     }
 
     private class MyListAdapter extends ArrayAdapter<Inspection> {
 
         public MyListAdapter() {
-            super(RestaurantDetailActivity.this, R.layout.inspection_list, manager.getInspections());
+            super(RestaurantDetailActivity.this, R.layout.inspection_list, r.getInspections().getInspections());
         }
 
         @NonNull
@@ -84,32 +114,46 @@ public class RestaurantDetailActivity extends AppCompatActivity {
             }
 
             // find the inspection to work with
-            Inspection currentInspection = manager.getInspections().get(position);
+            Inspection currentInspection = r.getInspections().getInspection(position);
+
+            TextView hazardTextView = itemView.findViewById(R.id.inspectionListHazard);
+            hazardTextView.setText("Hazard Level: " + currentInspection.getHazardRating());
 
             // fill the hazard icon
             ImageView imageViewHazard = itemView.findViewById(R.id.hazard);
-//            imageViewHazard.setImageResource();
+            if (currentInspection.getHazardRating().equals("Low")) {
+                imageViewHazard.setImageDrawable(getDrawable(R.drawable.green));
+                hazardTextView.setTextColor(Color.GREEN);
+            }
+
+            if (currentInspection.getHazardRating().equals("Moderate")) {
+                imageViewHazard.setImageDrawable(getDrawable(R.drawable.yellow));
+                hazardTextView.setTextColor(Color.YELLOW);
+
+            }
+
+            if (currentInspection.getHazardRating().equals("High")) {
+                imageViewHazard.setImageDrawable(getDrawable(R.drawable.red));
+                hazardTextView.setTextColor(Color.RED);
+            }
+
 
             // fill the critical issues
-            TextView textViewCriticalIssues = itemView.findViewById(R.id.criticalIssues);
-            textViewCriticalIssues.setText(currentInspection.getNumCritical());
+            TextView textViewCriticalIssues = itemView.findViewById(R.id.InspectionCriticalIssues);
+            textViewCriticalIssues.setText("Critical Issues: " + currentInspection.getNumCritical());
 
             // fill the non-critical issues
-            TextView textViewNonCriticalIssues = itemView.findViewById(R.id.nonCriticalIssues);
-            textViewNonCriticalIssues.setText(currentInspection.getNumNonCritical());
+            TextView textViewNonCriticalIssues = itemView.findViewById(R.id.InspectionNonCriticalIssues);
+            textViewNonCriticalIssues.setText("Non-critical Issues: " + currentInspection.getNumNonCritical());
 
             // fill the time
             TextView textViewTime = itemView.findViewById(R.id.time);
-            textViewTime.setText(currentInspection.getInspectionDate());
+
+            SimpleDateFormat formatter = new SimpleDateFormat("MMM dd, yyyy", Locale.CANADA);
+
+            textViewTime.setText(formatter.format(currentInspection.getInspectionDate()));
 
             return itemView;
         }
-    }
-
-    private void extractDataFromIntent() {
-//        TODO:
-//        Intent intent = getIntent();
-//
-//        r = RestaurantManager.getRestaurantByIndex(intent.getIntExtra(RESTAURANT_POSITION_PASSED_IN, 0));
     }
 }

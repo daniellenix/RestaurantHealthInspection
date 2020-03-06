@@ -1,5 +1,8 @@
 package ca.sfu.prjCalcium.pr1.Model;
 
+/**
+ * Represent a violation in an inspection.
+ */
 public class Violation {
     private int code;
     private String critical;
@@ -36,6 +39,25 @@ public class Violation {
         // code 300s = Equipments
         // code 400s = Employees
         // code 500s = Operator
+        if (100 <= this.code && this.code <= 199) {
+            return "regulation";
+        }
+
+        if (200 <= this.code && this.code <= 299) {
+            return "food";
+        }
+
+        if (300 <= this.code && this.code <= 399) {
+            return "equipments";
+        }
+
+        if (400 <= this.code && this.code <= 499) {
+            return "employees";
+        }
+
+        if (500 <= this.code && this.code <= 599) {
+            return "operator";
+        }
 
         return "";
     }

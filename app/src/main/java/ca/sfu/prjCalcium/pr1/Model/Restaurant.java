@@ -1,5 +1,10 @@
 package ca.sfu.prjCalcium.pr1.Model;
 
+import android.content.Context;
+
+/**
+ * Represent a restaurant.
+ */
 public class Restaurant {
     private String trackingNumber;
     private String restaurantName;
@@ -8,7 +13,7 @@ public class Restaurant {
     private String facType;
     private double latitude;
     private double longitude;
-//    InspectionManager inspections;
+    InspectionManager inspections;
 
     public Restaurant() {
         this.trackingNumber = "";
@@ -18,7 +23,7 @@ public class Restaurant {
         this.facType = "";
         this.latitude = 0;
         this.longitude = 0;
-//        this.inspections = null;
+        this.inspections = new InspectionManager();
     }
 
     public String getTrackingNumber() {
@@ -48,9 +53,6 @@ public class Restaurant {
     public String getPhysicalCity() {
         return physicalCity;
     }
-//    public InspectionManager getInspections() {
-//        return inspections;
-//    }
 
     public void setPhysicalCity(String physicalCity) {
         this.physicalCity = physicalCity;
@@ -79,9 +81,18 @@ public class Restaurant {
     public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
-//    public void setInspections(InspectionManager inspections) {
-//        this.inspections = inspections;
-//    }
+
+    public InspectionManager getInspections() {
+        return inspections;
+    }
+
+    public void setInspections(Context context) { // Set the inspection of this restaurant by its ID by reading
+        inspections.addInspectionsByTrackingNumber(context, this.getTrackingNumber());
+    }
+
+    public void setInspections(InspectionManager inspections) {
+        this.inspections = inspections;
+    }
 
     @Override
     public String toString() {

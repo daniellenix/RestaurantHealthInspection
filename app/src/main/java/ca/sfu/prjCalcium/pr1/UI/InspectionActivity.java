@@ -2,6 +2,7 @@ package ca.sfu.prjCalcium.pr1.UI;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,14 +17,22 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+
+import ca.sfu.prjCalcium.pr1.Model.Inspection;
+import ca.sfu.prjCalcium.pr1.Model.Restaurant;
+import ca.sfu.prjCalcium.pr1.Model.RestaurantManager;
 import ca.sfu.prjCalcium.pr1.Model.Violation;
 import ca.sfu.prjCalcium.pr1.Model.ViolationManager;
 import ca.sfu.prjCalcium.pr1.R;
 
 public class InspectionActivity extends AppCompatActivity {
 
+    Restaurant r;
+    Inspection i;
     // Singleton
-    private ViolationManager violationManager = ViolationManager.getInstance();
+    private RestaurantManager rManager;
 
     private static final String I_INSPECTION_POSITION_PASSED_IN = "i_inspection_position_passed_in";
     private static final String I_RESTAURANT_POSITION_PASSED_IN = "i_restaurant_position_passed_in";
@@ -42,54 +51,81 @@ public class InspectionActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inspection);
 
+        rManager = RestaurantManager.getInstance();
+
+        extractDataFromIntent();
         setInformation();
         populateListView();
         clickViolation();
     }
 
     private void setInformation() {
-        TextView date = findViewById(R.id.date);
-        date.setText("Date: ");
+        TextView date = findViewById(R.id.inspectionDate);
 
-        TextView hazardLevel = findViewById(R.id.hazardLevel);
-        hazardLevel.setText("Hazard level: ");
+        SimpleDateFormat formatter = new SimpleDateFormat("MMM dd, yyyy", Locale.CANADA);
+
+        date.setText("Date: " + formatter.format(i.getInspectionDate()));
+
+        TextView hazardLevel = findViewById(R.id.InspectionHazardLevel);
+        hazardLevel.setText("Hazard level: " + i.getHazardRating());
 
         TextView inspectionType = findViewById(R.id.inspectionType);
-        inspectionType.setText("Inspection Type: ");
+        inspectionType.setText("Inspection Type: " + i.getInspeType());
 
-        TextView numOfCriticalIssues = findViewById(R.id.criticalIssues);
-        numOfCriticalIssues.setText("# Of Critical Issues: ");
+        TextView numOfCriticalIssues = findViewById(R.id.InspectionCriticalIssues);
+        numOfCriticalIssues.setText("# Of Critical Issues: " + i.getNumCritical());
 
-        TextView numOfNonCriticalIssues = findViewById(R.id.nonCriticalIssues);
-        numOfNonCriticalIssues.setText("# Of Non Critical Issues: ");
+        TextView numOfNonCriticalIssues = findViewById(R.id.InspectionNonCriticalIssues);
+        numOfNonCriticalIssues.setText("# Of Non Critical Issues: " + i.getNumNonCritical());
+
+        ImageView hazardImgView = findViewById(R.id.InspectionImageView);
+        if (i.getHazardRating().equals("Low")) {
+            hazardImgView.setImageDrawable(getDrawable(R.drawable.green));
+            hazardLevel.setTextColor(Color.GREEN);
+        }
+
+        if (i.getHazardRating().equals("Moderate")) {
+            hazardImgView.setImageDrawable(getDrawable(R.drawable.yellow));
+            hazardLevel.setTextColor(Color.YELLOW);
+        }
+
+        if (i.getHazardRating().equals("High")) {
+            hazardImgView.setImageDrawable(getDrawable(R.drawable.red));
+            hazardLevel.setTextColor(Color.RED);
+        }
     }
 
     private void populateListView() {
         ArrayAdapter<Violation> adapter = new InspectionActivity.MyListAdapter();
-        ListView list = findViewById(R.id.listView);
+        ListView list = findViewById(R.id.violationListView);
         list.setAdapter(adapter);
     }
 
     // toast message when violation is clicked
     private void clickViolation() {
-        ListView list = findViewById(R.id.listView);
+        ListView list = findViewById(R.id.violationListView);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                Violation clickedViolation = violationManager.getViolations().get(position);
-                String message = "Long description: " + clickedViolation.getDetails();
+                Violation clickedViolation = i.getVioLump().getViolations().get(position);
+                String message = clickedViolation.getDetails();
                 Toast.makeText(InspectionActivity.this, message, Toast.LENGTH_LONG).show();
-
-                // Launch the inspection activity
             }
         });
+    }
+
+    private void extractDataFromIntent() {
+        Intent intent = getIntent();
+
+        r = rManager.getRestaurantAtIndex(intent.getIntExtra(I_RESTAURANT_POSITION_PASSED_IN, 0));
+        i = r.getInspections().getInspection(intent.getIntExtra(I_INSPECTION_POSITION_PASSED_IN, 0));
     }
 
     private class MyListAdapter extends ArrayAdapter<Violation> {
 
         public MyListAdapter() {
-            super(InspectionActivity.this, R.layout.violation_list, violationManager.getViolations());
+            super(InspectionActivity.this, R.layout.violation_list, i.getVioLump().getViolations());
         }
 
         @NonNull
@@ -103,12 +139,20 @@ public class InspectionActivity extends AppCompatActivity {
                 itemView = getLayoutInflater().inflate(R.layout.violation_list, parent, false);
             }
 
-            // find the violation to work with
-            Violation currentViolation = violationManager.getViolations().get(position);
+            // find the violation manager to work with
+
+            // TODO: Need to fill in the category of violating icon, interface is completed, need to find the icons then fill in the logic.
+            ViolationManager vManager = i.getVioLump();
+
+            if (vManager.isEmpty()) {
+                return itemView;
+            }
+
+            Violation currentViolation = vManager.getViolations().get(position);
 
             // fill the violation type icon (pest, food, ..)
             ImageView imageViewNature = itemView.findViewById(R.id.natureOfViolation);
-            imageViewNature.setImageResource(currentViolation.getCode());
+//            imageViewNature.setImageResource(currentViolation.getCode());
 
             // fill the short description
             TextView textViewShortDescription = itemView.findViewById(R.id.description);
@@ -116,17 +160,13 @@ public class InspectionActivity extends AppCompatActivity {
 
             // fill the severity icon - (critical or non-critical)
             ImageView imageViewSeverity = itemView.findViewById(R.id.severity);
-//            imageViewSeverity.setImageResource();
+            if (currentViolation.getCritical().equals("Not Critical")) {
+                imageViewSeverity.setImageDrawable(getDrawable(R.drawable.yellow_x));
+            } else {
+                imageViewSeverity.setImageDrawable(getDrawable(R.drawable.red_x));
+            }
 
             return itemView;
         }
-    }
-
-    private void extractDataFromIntent() {
-        // TODO:
-//        Intent intent = getIntent();
-//
-//        r = rManager.getRestaurantByIndex(intent.getIntExtra(I_RESTAURANT_POSITION_PASSED_IN, 0));
-//        i = r.getInspectionManager().getInspectionByIndex(intent.getIntExtra(I_INSPECTION_POSITION_PASSED_IN, 0));
     }
 }

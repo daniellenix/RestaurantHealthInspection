@@ -9,17 +9,23 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
 import ca.sfu.prjCalcium.pr1.R;
 
+/**
+ * Represent a list of restaurants.
+ */
 public class RestaurantManager implements Iterable<Restaurant> {
 
     private static RestaurantManager instance;
     private List<Restaurant> restaurants = new ArrayList<>();
 
     private RestaurantManager() {
+
     }
 
     public static RestaurantManager getInstance() {
@@ -47,16 +53,15 @@ public class RestaurantManager implements Iterable<Restaurant> {
 
                 //Read data
                 Restaurant sample = new Restaurant();
-                sample.setTrackingNumber(tokens[0]);
-                sample.setRestaurantName(tokens[1]);
-                sample.setAddress(tokens[2]);
-                sample.setPhysicalCity(tokens[3]);
-                sample.setFacType(tokens[4]);
+                sample.setTrackingNumber(tokens[0].substring(1, tokens[0].length() - 1)); // Remove the quotation marks
+                sample.setRestaurantName(tokens[1].substring(1, tokens[1].length() - 1));
+                sample.setAddress(tokens[2].substring(1, tokens[2].length() - 1));
+                sample.setPhysicalCity(tokens[3].substring(1, tokens[3].length() - 1));
+                sample.setFacType(tokens[4].substring(1, tokens[4].length() - 1));
                 sample.setLatitude(Double.parseDouble(tokens[5]));
                 sample.setLongitude(Double.parseDouble(tokens[6]));
+                sample.setInspections(context);
                 restaurants.add(sample);
-
-                Log.d("MyActivity", "Just Created" + sample);
 
             }
         } catch (IOException e) {
@@ -65,12 +70,16 @@ public class RestaurantManager implements Iterable<Restaurant> {
         }
     }
 
-    public Restaurant getRestaurant(int position) {
+    public Restaurant getRestaurantAtIndex(int position) {
         return restaurants.get(position);
     }
 
     public List<Restaurant> getRestaurants() {
         return restaurants;
+    }
+
+    public void sort(Comparator<Restaurant> c) {
+        Collections.sort(restaurants, c);
     }
 
     @Override

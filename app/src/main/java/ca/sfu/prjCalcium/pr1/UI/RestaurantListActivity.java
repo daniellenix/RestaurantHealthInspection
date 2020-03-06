@@ -10,11 +10,12 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import java.util.Comparator;
 
 import ca.sfu.prjCalcium.pr1.Model.Inspection;
 import ca.sfu.prjCalcium.pr1.Model.InspectionManager;
@@ -26,7 +27,6 @@ public class RestaurantListActivity extends AppCompatActivity {
 
     // Singleton
     private RestaurantManager manager = RestaurantManager.getInstance();
-    private InspectionManager inspectionManager = InspectionManager.getInstance();
 
     public static Intent makeIntent(Context c) {
         return new Intent(c, RestaurantListActivity.class);
@@ -37,27 +37,30 @@ public class RestaurantListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        manager.readRestaurantData(RestaurantListActivity.this);
+        manager.sort(new AlphabetComparator());
+
         populateListView();
         clickRestaurant();
     }
 
     private void populateListView() {
         ArrayAdapter<Restaurant> adapter = new MyListAdapter();
-        ListView list = findViewById(R.id.listView);
+        ListView list = findViewById(R.id.restaurantListView);
         list.setAdapter(adapter);
     }
 
     private void clickRestaurant() {
-        ListView list = findViewById(R.id.listView);
+        ListView list = findViewById(R.id.restaurantListView);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                 Restaurant clickedRestaurant = manager.getRestaurants().get(position);
                 String message = "You clicked # " + position + ", which is string: " + clickedRestaurant.toString();
-                Toast.makeText(RestaurantListActivity.this, message, Toast.LENGTH_LONG).show();
 
-                // Launch the restaurant detail activity
+                Intent intent = RestaurantDetailActivity.makeIntent(RestaurantListActivity.this, position);
+                startActivity(intent);
             }
         });
     }
@@ -80,8 +83,8 @@ public class RestaurantListActivity extends AppCompatActivity {
             }
 
             // find the restaurant to work with
-            Restaurant currentRestaurant = manager.getRestaurants().get(position);
-            Inspection currentInspection = inspectionManager.getInspections().get(position);
+            Restaurant currentRestaurant = manager.getRestaurantAtIndex(position);
+            InspectionManager restaurantInspections = currentRestaurant.getInspections();
 
             // fill the restaurant icon
 
@@ -91,17 +94,31 @@ public class RestaurantListActivity extends AppCompatActivity {
 
             // fill the number of issues
             TextView textViewIssues = itemView.findViewById(R.id.numOfIssues);
-            textViewIssues.setText(currentInspection.getNumCritical() + currentInspection.getNumNonCritical());
+            int totalIssues = 0;
+            for (Inspection i : restaurantInspections) {
+                totalIssues += i.getNumCritical() + i.getNumNonCritical();
+            }
+            textViewIssues.setText("Number of Issues: " + totalIssues);
 
             // fill the time
+            // TODO: Need to get the most recent inspection here.
             TextView textViewTime = itemView.findViewById(R.id.time);
-            textViewTime.setText(currentInspection.getInspectionDate());
+//            textViewTime.setText(currentInspection.getInspectionDate());
 
             // fill the hazard icon
+            // TODO: Need to get the most recent inspection here.
             ImageView imageViewHazard = itemView.findViewById(R.id.hazard);
 //            imageViewHazard.setImageResource();
 
             return itemView;
+        }
+    }
+
+    // https://stackoverflow.com/questions/2784514/sort-arraylist-of-custom-objects-by-property
+    public class AlphabetComparator implements Comparator<Restaurant> {
+        @Override
+        public int compare(Restaurant r1, Restaurant r2) {
+            return r1.getRestaurantName().compareTo(r2.getRestaurantName());
         }
     }
 }
