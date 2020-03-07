@@ -2,6 +2,7 @@ package ca.sfu.prjCalcium.pr1.UI;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +16,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.text.SimpleDateFormat;
 import java.util.Comparator;
+import java.util.Locale;
 
 import ca.sfu.prjCalcium.pr1.Model.Inspection;
 import ca.sfu.prjCalcium.pr1.Model.InspectionManager;
@@ -39,6 +42,12 @@ public class RestaurantListActivity extends AppCompatActivity {
 
         manager.readRestaurantData(RestaurantListActivity.this);
         manager.sort(new AlphabetComparator());
+
+        for (Restaurant r : manager) {
+            InspectionManager iManager = r.getInspections();
+
+            iManager.sort(new InspectionComparator().reversed());
+        }
 
         populateListView();
         clickRestaurant();
@@ -92,23 +101,40 @@ public class RestaurantListActivity extends AppCompatActivity {
             TextView textViewName = itemView.findViewById(R.id.name);
             textViewName.setText(currentRestaurant.getRestaurantName());
 
-            // fill the number of issues
-            TextView textViewIssues = itemView.findViewById(R.id.numOfIssues);
-            int totalIssues = 0;
-            for (Inspection i : restaurantInspections) {
-                totalIssues += i.getNumCritical() + i.getNumNonCritical();
-            }
-            textViewIssues.setText("Number of Issues: " + totalIssues);
-
-            // fill the time
-            // TODO: Need to get the most recent inspection here.
             TextView textViewTime = itemView.findViewById(R.id.time);
-//            textViewTime.setText(currentInspection.getInspectionDate());
-
-            // fill the hazard icon
-            // TODO: Need to get the most recent inspection here.
+            TextView textViewIssues = itemView.findViewById(R.id.numOfIssues);
             ImageView imageViewHazard = itemView.findViewById(R.id.hazard);
-//            imageViewHazard.setImageResource();
+
+            if (currentRestaurant.getInspections().isEmpty()) {
+                textViewTime.setText("No inspections");
+                textViewIssues.setText("Number of Issues: 0");
+                textViewIssues.setTextColor(Color.GREEN);
+                imageViewHazard.setImageDrawable(getDrawable(R.drawable.green));
+            } else {
+                Inspection firstInspection = currentRestaurant.getInspections().getInspection(0);
+
+                int totalIssues = firstInspection.getNumCritical() + firstInspection.getNumNonCritical();
+
+                textViewIssues.setText("Number of Issues: " + totalIssues);
+
+                SimpleDateFormat formatter = new SimpleDateFormat("MMM dd, yyyy", Locale.CANADA);
+                textViewTime.setText(formatter.format(firstInspection.getInspectionDate()));
+
+                if (firstInspection.getHazardRating().equals("Low")) {
+                    imageViewHazard.setImageDrawable(getDrawable(R.drawable.green));
+                    textViewIssues.setTextColor(Color.GREEN);
+                }
+
+                if (firstInspection.getHazardRating().equals("Moderate")) {
+                    imageViewHazard.setImageDrawable(getDrawable(R.drawable.yellow));
+                    textViewIssues.setTextColor(Color.YELLOW);
+                }
+
+                if (firstInspection.getHazardRating().equals("High")) {
+                    imageViewHazard.setImageDrawable(getDrawable(R.drawable.red));
+                    textViewIssues.setTextColor(Color.RED);
+                }
+            }
 
             return itemView;
         }
@@ -119,6 +145,13 @@ public class RestaurantListActivity extends AppCompatActivity {
         @Override
         public int compare(Restaurant r1, Restaurant r2) {
             return r1.getRestaurantName().compareTo(r2.getRestaurantName());
+        }
+    }
+
+    public class InspectionComparator implements Comparator<Inspection> {
+        @Override
+        public int compare(Inspection i1, Inspection i2) {
+            return i1.getInspectionDate().compareTo(i2.getInspectionDate());
         }
     }
 }
