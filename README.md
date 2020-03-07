@@ -22,9 +22,9 @@ Course Project URL: https://opencoursehub.cs.sfu.ca/bfraser/grav-cms/cmpt276/pro
         * [x] Restaurant name
         * [x] An icon for the restaurant (generic OK)
         * [ ] Info on most the restaurant's most recent inspection report:
-            * [ ] number of issues found (sum of crit and non-crit issues)
-            * [ ] colour for hazard level (low, medium, high)
-            * [ ] icon for the hazard level
+            * [x] number of issues found (sum of crit and non-crit issues)
+            * [x] colour for hazard level (low, medium, high)
+            * [x] icon for the hazard level
             * [ ] how long ago was the inspection done (see next point)
     * [ ] [5] I want to be told when something happened in an intelligent format so that it's easier to understand than dates:
         * [ ] If it was within 30 days, tell me the number of days ago it was (such as "24 days")
@@ -39,7 +39,7 @@ Course Project URL: https://opencoursehub.cs.sfu.ca/bfraser/grav-cms/cmpt276/pro
         * [x] Restaurant name
         * [x] Restaurant address
         * [x] Restaurant GPS coords
-    * [ ] I want it to list all inspections (in a scrollable list), with the most recent at the top, so I can easily understand the timeline of inspections.
+    * [x] I want it to list all inspections (in a scrollable list), with the most recent at the top, so I can easily understand the timeline of inspections.
     * [ ] [15] I want each listing for an inspection report to show:
         * [x] critical issues found
         * [x] non-critical issues found
