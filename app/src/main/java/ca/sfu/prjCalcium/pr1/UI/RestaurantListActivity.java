@@ -40,13 +40,18 @@ public class RestaurantListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        manager.readRestaurantData(RestaurantListActivity.this);
-        manager.sort(new AlphabetComparator());
+        if (!manager.isDataRead()) {
+            manager.readRestaurantData(RestaurantListActivity.this);
 
-        for (Restaurant r : manager) {
-            InspectionManager iManager = r.getInspections();
+            manager.sort(new AlphabetComparator());
 
-            iManager.sort(new InspectionComparator().reversed());
+            for (Restaurant r : manager) {
+                InspectionManager iManager = r.getInspections();
+
+                iManager.sort(new InspectionComparator().reversed());
+            }
+            
+            manager.setDataRead(true);
         }
 
         populateListView();
@@ -64,9 +69,6 @@ public class RestaurantListActivity extends AppCompatActivity {
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                Restaurant clickedRestaurant = manager.getRestaurants().get(position);
-                String message = "You clicked # " + position + ", which is string: " + clickedRestaurant.toString();
 
                 Intent intent = RestaurantDetailActivity.makeIntent(RestaurantListActivity.this, position);
                 startActivity(intent);
@@ -93,9 +95,7 @@ public class RestaurantListActivity extends AppCompatActivity {
 
             // find the restaurant to work with
             Restaurant currentRestaurant = manager.getRestaurantAtIndex(position);
-            InspectionManager restaurantInspections = currentRestaurant.getInspections();
 
-            // fill the restaurant icon
 
             // fill the name
             TextView textViewName = itemView.findViewById(R.id.name);
