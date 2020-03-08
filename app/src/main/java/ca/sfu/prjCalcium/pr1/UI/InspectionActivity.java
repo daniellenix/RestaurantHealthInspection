@@ -156,7 +156,7 @@ public class InspectionActivity extends AppCompatActivity {
 
             // fill the short description
             TextView textViewShortDescription = itemView.findViewById(R.id.description);
-            textViewShortDescription.setText(currentViolation.getDetails());
+            textViewShortDescription.setText(currentViolation.convertDetailsToCategories());
 
             // fill the severity icon - (critical or non-critical)
             ImageView imageViewSeverity = itemView.findViewById(R.id.severity);
