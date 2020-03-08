@@ -31,7 +31,7 @@ public class InspectionActivity extends AppCompatActivity {
 
     Restaurant r;
     Inspection i;
-    
+
     // Singleton
     private RestaurantManager rManager;
 

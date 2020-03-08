@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">cmpt276-pr1</string>
+    <string name="inspection_type">Inspection Type :</string>
+    <string name="date">Date :</string>
+    <string name="of_critical_issues"># of critical issues :</string>
+    <string name="of_non_critical_issues"># of non critical issues :</string>
+    <string name="hazard_level">Hazard level :</string>
+    <string name="of_issues"># of issues</string>
+    <string name="time">Time</string>
 </resources>
