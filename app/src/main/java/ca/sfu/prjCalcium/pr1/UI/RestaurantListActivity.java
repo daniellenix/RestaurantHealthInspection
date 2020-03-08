@@ -17,8 +17,11 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.text.SimpleDateFormat;
+import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import ca.sfu.prjCalcium.pr1.Model.Inspection;
 import ca.sfu.prjCalcium.pr1.Model.InspectionManager;
@@ -118,7 +121,25 @@ public class RestaurantListActivity extends AppCompatActivity {
                 textViewIssues.setText("Number of Issues: " + totalIssues);
 
                 SimpleDateFormat formatter = new SimpleDateFormat("MMM dd, yyyy", Locale.CANADA);
-                textViewTime.setText(formatter.format(firstInspection.getInspectionDate()));
+//                textViewTime.setText(formatter.format(firstInspection.getInspectionDate()));
+
+                Date currentDate = new Date();
+                Date pastDate = firstInspection.getInspectionDate();
+
+                long dateDifference = TimeUnit.MILLISECONDS.toDays(currentDate.getTime() - pastDate.getTime());
+
+                if (dateDifference < 30){
+//                    SimpleDateFormat formatter = new SimpleDateFormat("dd", Locale.CANADA);
+                    textViewTime.setText(dateDifference + " days ago");
+                }
+                else if (dateDifference > 30 && dateDifference <= 366){
+                    SimpleDateFormat formatter1 = new SimpleDateFormat("MMM dd", Locale.CANADA);
+                    textViewTime.setText(formatter1.format(pastDate));
+                }
+                else {
+                    SimpleDateFormat formatter2 = new SimpleDateFormat("MMM yyyy", Locale.CANADA);
+                    textViewTime.setText(formatter2.format(pastDate));
+                }
 
                 if (firstInspection.getHazardRating().equals("Low")) {
                     imageViewHazard.setImageDrawable(getDrawable(R.drawable.green));
