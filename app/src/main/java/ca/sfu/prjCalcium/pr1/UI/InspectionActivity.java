@@ -31,6 +31,7 @@ public class InspectionActivity extends AppCompatActivity {
 
     Restaurant r;
     Inspection i;
+    
     // Singleton
     private RestaurantManager rManager;
 
@@ -140,8 +141,6 @@ public class InspectionActivity extends AppCompatActivity {
             }
 
             // find the violation manager to work with
-
-            // TODO: Need to fill in the category of violating icon, interface is completed, need to find the icons then fill in the logic.
             ViolationManager vManager = i.getVioLump();
 
             if (vManager.isEmpty()) {
@@ -152,7 +151,23 @@ public class InspectionActivity extends AppCompatActivity {
 
             // fill the violation type icon (pest, food, ..)
             ImageView imageViewNature = itemView.findViewById(R.id.natureOfViolation);
-//            imageViewNature.setImageResource(currentViolation.getCode());
+            switch (currentViolation.convertDetailsToCategories()) {
+                case "regulation":
+                    imageViewNature.setImageResource(R.drawable.regulations);
+                    break;
+                case "food":
+                    imageViewNature.setImageResource(R.drawable.food);
+                    break;
+                case "equipments":
+                    imageViewNature.setImageResource(R.drawable.settings);
+                    break;
+                case "employees":
+                    imageViewNature.setImageResource(R.drawable.employee);
+                    break;
+                default:
+                    imageViewNature.setImageResource(R.drawable.operator);
+                    break;
+            }
 
             // fill the short description
             TextView textViewShortDescription = itemView.findViewById(R.id.description);
