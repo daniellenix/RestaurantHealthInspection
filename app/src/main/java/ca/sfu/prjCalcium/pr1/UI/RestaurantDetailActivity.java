@@ -151,8 +151,6 @@ public class RestaurantDetailActivity extends AppCompatActivity {
             // fill the time
             TextView textViewTime = itemView.findViewById(R.id.time);
 
-
-            //Display date in intelligent format
             SimpleDateFormat formatter = new SimpleDateFormat("MMM dd, yyyy", Locale.CANADA);
             Date currentDate = new Date();
             Date pastDate = currentInspection.getInspectionDate();
