@@ -120,16 +120,14 @@ public class RestaurantListActivity extends AppCompatActivity {
 
                 textViewIssues.setText("Number of Issues: " + totalIssues);
 
+                //Display date in intelligent format
                 SimpleDateFormat formatter = new SimpleDateFormat("MMM dd, yyyy", Locale.CANADA);
-//                textViewTime.setText(formatter.format(firstInspection.getInspectionDate()));
-
                 Date currentDate = new Date();
                 Date pastDate = firstInspection.getInspectionDate();
 
                 long dateDifference = TimeUnit.MILLISECONDS.toDays(currentDate.getTime() - pastDate.getTime());
 
                 if (dateDifference < 30){
-//                    SimpleDateFormat formatter = new SimpleDateFormat("dd", Locale.CANADA);
                     textViewTime.setText(dateDifference + " days ago");
                 }
                 else if (dateDifference > 30 && dateDifference <= 366){
