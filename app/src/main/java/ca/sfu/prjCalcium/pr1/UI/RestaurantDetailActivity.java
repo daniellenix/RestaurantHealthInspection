@@ -17,7 +17,9 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import ca.sfu.prjCalcium.pr1.Model.Inspection;
 import ca.sfu.prjCalcium.pr1.Model.Restaurant;
@@ -150,8 +152,22 @@ public class RestaurantDetailActivity extends AppCompatActivity {
             TextView textViewTime = itemView.findViewById(R.id.time);
 
             SimpleDateFormat formatter = new SimpleDateFormat("MMM dd, yyyy", Locale.CANADA);
+            Date currentDate = new Date();
+            Date pastDate = currentInspection.getInspectionDate();
 
-            textViewTime.setText(formatter.format(currentInspection.getInspectionDate()));
+            long dateDifference = TimeUnit.MILLISECONDS.toDays(currentDate.getTime() - pastDate.getTime());
+
+            if (dateDifference < 30){
+                textViewTime.setText(dateDifference + " days ago");
+            }
+            else if (dateDifference > 30 && dateDifference <= 366){
+                SimpleDateFormat formatter1 = new SimpleDateFormat("MMM dd", Locale.CANADA);
+                textViewTime.setText(formatter1.format(pastDate));
+            }
+            else {
+                SimpleDateFormat formatter2 = new SimpleDateFormat("MMM yyyy", Locale.CANADA);
+                textViewTime.setText(formatter2.format(pastDate));
+            }
 
             return itemView;
         }
