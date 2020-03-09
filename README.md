@@ -21,15 +21,15 @@ Course Project URL: https://opencoursehub.cs.sfu.ca/bfraser/grav-cms/cmpt276/pro
     Each restaurant in the list must include:
         * [x] Restaurant name
         * [x] An icon for the restaurant (generic OK)
-        * [ ] Info on most the restaurant's most recent inspection report:
-            * [ ] number of issues found (sum of crit and non-crit issues)
-            * [ ] colour for hazard level (low, medium, high)
-            * [ ] icon for the hazard level
-            * [ ] how long ago was the inspection done (see next point)
-    * [ ] [5] I want to be told when something happened in an intelligent format so that it's easier to understand than dates:
-        * [ ] If it was within 30 days, tell me the number of days ago it was (such as "24 days")
-        * [ ] Otherwise, if it was less than a year ago, tell me the month and day (such as "May 12")
-        * [ ] Otherwise, tell me just the month and year (such as "May 2018")
+        * [x] Info on most the restaurant's most recent inspection report:
+            * [x] number of issues found (sum of crit and non-crit issues)
+            * [x] colour for hazard level (low, medium, high)
+            * [x] icon for the hazard level
+            * [x] how long ago was the inspection done (see next point)
+    * [x] [5] I want to be told when something happened in an intelligent format so that it's easier to understand than dates:
+        * [x] If it was within 30 days, tell me the number of days ago it was (such as "24 days")
+        * [x] Otherwise, if it was less than a year ago, tell me the month and day (such as "May 12")
+        * [x] Otherwise, tell me just the month and year (such as "May 2018")
     * [x] I want to be able to click a restaurant in the list and have it show me the details about that restaurant (see below).
 
 2. Display details of single restaurant
@@ -39,11 +39,11 @@ Course Project URL: https://opencoursehub.cs.sfu.ca/bfraser/grav-cms/cmpt276/pro
         * [x] Restaurant name
         * [x] Restaurant address
         * [x] Restaurant GPS coords
-    * [ ] I want it to list all inspections (in a scrollable list), with the most recent at the top, so I can easily understand the timeline of inspections.
-    * [ ] [15] I want each listing for an inspection report to show:
+    * [x] I want it to list all inspections (in a scrollable list), with the most recent at the top, so I can easily understand the timeline of inspections.
+    * [x] [15] I want each listing for an inspection report to show:
         * [x] critical issues found
         * [x] non-critical issues found
-        * [ ] How long ago the inspection occurred (see formatting notes from above)
+        * [x] How long ago the inspection occurred (see formatting notes from above)
         * [x] Change the colour, and display an icon, for the hazard level
 
 3. Display details of single inspection
@@ -58,7 +58,7 @@ Course Project URL: https://opencoursehub.cs.sfu.ca/bfraser/grav-cms/cmpt276/pro
         * [x] Scrollable list of violations. 
     * [15] I want each violation in the list to show:
         * [ ] An icon reflecting the nature of the violation (food, pest, equipment, ...)
-        * [ ] A brief description of the violation which **fits on one line**
+        * [x] A brief description of the violation which **fits on one line**
         * [x] The severity of the violation: Use an icon and colour to make it easy to see if it's critical or not-critical
     * [x] I want to be able to tap on a single violation to see the long description. It's OK if this is shown on the screen for a moment (such as a toast or snackbar).
 

@@ -40,23 +40,23 @@ public class Violation {
         // code 400s = Employees
         // code 500s = Operator
         if (100 <= this.code && this.code <= 199) {
-            return "regulation";
+            return code + ": Regulation Violation";
         }
 
         if (200 <= this.code && this.code <= 299) {
-            return "food";
+            return code + ": Food Violation";
         }
 
         if (300 <= this.code && this.code <= 399) {
-            return "equipments";
+            return code + ": Equipments Violation";
         }
 
         if (400 <= this.code && this.code <= 499) {
-            return "employees";
+            return code + ": Employees Violation";
         }
 
         if (500 <= this.code && this.code <= 599) {
-            return "operator";
+            return code + ": Operator Violation";
         }
 
         return "";

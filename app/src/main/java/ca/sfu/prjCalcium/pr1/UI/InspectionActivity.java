@@ -151,27 +151,22 @@ public class InspectionActivity extends AppCompatActivity {
 
             // fill the violation type icon (pest, food, ..)
             ImageView imageViewNature = itemView.findViewById(R.id.natureOfViolation);
-            switch (currentViolation.convertDetailsToCategories()) {
-                case "regulation":
-                    imageViewNature.setImageResource(R.drawable.regulations);
-                    break;
-                case "food":
-                    imageViewNature.setImageResource(R.drawable.food);
-                    break;
-                case "equipments":
-                    imageViewNature.setImageResource(R.drawable.settings);
-                    break;
-                case "employees":
-                    imageViewNature.setImageResource(R.drawable.employee);
-                    break;
-                default:
-                    imageViewNature.setImageResource(R.drawable.operator);
-                    break;
+
+            if ((100 <= currentViolation.getCode() && currentViolation.getCode() <= 199)) {
+                imageViewNature.setImageResource(R.drawable.regulations);
+            } else if (200 <= currentViolation.getCode() && currentViolation.getCode() <= 299) {
+                imageViewNature.setImageResource(R.drawable.food);
+            } else if (300 <= currentViolation.getCode() && currentViolation.getCode() <= 399) {
+                imageViewNature.setImageResource(R.drawable.settings);
+            } else if (400 <= currentViolation.getCode() && currentViolation.getCode() <= 499) {
+                imageViewNature.setImageResource(R.drawable.employee);
+            } else {
+                imageViewNature.setImageResource(R.drawable.operator);
             }
 
             // fill the short description
             TextView textViewShortDescription = itemView.findViewById(R.id.description);
-            textViewShortDescription.setText(currentViolation.getDetails());
+            textViewShortDescription.setText(currentViolation.convertDetailsToCategories());
 
             // fill the severity icon - (critical or non-critical)
             ImageView imageViewSeverity = itemView.findViewById(R.id.severity);

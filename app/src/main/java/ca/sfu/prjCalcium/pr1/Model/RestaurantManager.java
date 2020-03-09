@@ -22,10 +22,19 @@ import ca.sfu.prjCalcium.pr1.R;
 public class RestaurantManager implements Iterable<Restaurant> {
 
     private static RestaurantManager instance;
-    private List<Restaurant> restaurants = new ArrayList<>();
+    private boolean isDataRead = false;
 
     private RestaurantManager() {
+    }
 
+    public boolean isDataRead() {
+        return isDataRead;
+    }
+
+    private List<Restaurant> restaurants = new ArrayList<>();
+
+    public void setDataRead(boolean dataRead) {
+        isDataRead = dataRead;
     }
 
     public static RestaurantManager getInstance() {

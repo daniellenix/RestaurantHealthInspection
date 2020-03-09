@@ -2,6 +2,7 @@ package ca.sfu.prjCalcium.pr1.UI;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +16,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.text.SimpleDateFormat;
+import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
+import java.util.Date;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import ca.sfu.prjCalcium.pr1.Model.Inspection;
 import ca.sfu.prjCalcium.pr1.Model.InspectionManager;
@@ -37,8 +43,19 @@ public class RestaurantListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        manager.readRestaurantData(RestaurantListActivity.this);
-        manager.sort(new AlphabetComparator());
+        if (!manager.isDataRead()) {
+            manager.readRestaurantData(RestaurantListActivity.this);
+
+            manager.sort(new AlphabetComparator());
+
+            for (Restaurant r : manager) {
+                InspectionManager iManager = r.getInspections();
+
+                iManager.sort(new InspectionComparator().reversed());
+            }
+            
+            manager.setDataRead(true);
+        }
 
         populateListView();
         clickRestaurant();
@@ -55,9 +72,6 @@ public class RestaurantListActivity extends AppCompatActivity {
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                Restaurant clickedRestaurant = manager.getRestaurants().get(position);
-                String message = "You clicked # " + position + ", which is string: " + clickedRestaurant.toString();
 
                 Intent intent = RestaurantDetailActivity.makeIntent(RestaurantListActivity.this, position);
                 startActivity(intent);
@@ -84,31 +98,62 @@ public class RestaurantListActivity extends AppCompatActivity {
 
             // find the restaurant to work with
             Restaurant currentRestaurant = manager.getRestaurantAtIndex(position);
-            InspectionManager restaurantInspections = currentRestaurant.getInspections();
 
-            // fill the restaurant icon
 
             // fill the name
             TextView textViewName = itemView.findViewById(R.id.name);
             textViewName.setText(currentRestaurant.getRestaurantName());
 
-            // fill the number of issues
-            TextView textViewIssues = itemView.findViewById(R.id.numOfIssues);
-            int totalIssues = 0;
-            for (Inspection i : restaurantInspections) {
-                totalIssues += i.getNumCritical() + i.getNumNonCritical();
-            }
-            textViewIssues.setText("Number of Issues: " + totalIssues);
-
-            // fill the time
-            // TODO: Need to get the most recent inspection here.
             TextView textViewTime = itemView.findViewById(R.id.time);
-//            textViewTime.setText(currentInspection.getInspectionDate());
-
-            // fill the hazard icon
-            // TODO: Need to get the most recent inspection here.
+            TextView textViewIssues = itemView.findViewById(R.id.numOfIssues);
             ImageView imageViewHazard = itemView.findViewById(R.id.hazard);
-//            imageViewHazard.setImageResource();
+
+            if (currentRestaurant.getInspections().isEmpty()) {
+                textViewTime.setText("No inspections");
+                textViewIssues.setText("Number of Issues: 0");
+                textViewIssues.setTextColor(Color.GREEN);
+                imageViewHazard.setImageDrawable(getDrawable(R.drawable.green));
+            } else {
+                Inspection firstInspection = currentRestaurant.getInspections().getInspection(0);
+
+                int totalIssues = firstInspection.getNumCritical() + firstInspection.getNumNonCritical();
+
+                textViewIssues.setText("Number of Issues: " + totalIssues);
+
+                //Display date in intelligent format
+                SimpleDateFormat formatter = new SimpleDateFormat("MMM dd, yyyy", Locale.CANADA);
+                Date currentDate = new Date();
+                Date pastDate = firstInspection.getInspectionDate();
+
+                long dateDifference = TimeUnit.MILLISECONDS.toDays(currentDate.getTime() - pastDate.getTime());
+
+                if (dateDifference < 30){
+                    textViewTime.setText(dateDifference + " days ago");
+                }
+                else if (dateDifference > 30 && dateDifference <= 366){
+                    SimpleDateFormat formatter1 = new SimpleDateFormat("MMM dd", Locale.CANADA);
+                    textViewTime.setText(formatter1.format(pastDate));
+                }
+                else {
+                    SimpleDateFormat formatter2 = new SimpleDateFormat("MMM yyyy", Locale.CANADA);
+                    textViewTime.setText(formatter2.format(pastDate));
+                }
+
+                if (firstInspection.getHazardRating().equals("Low")) {
+                    imageViewHazard.setImageDrawable(getDrawable(R.drawable.green));
+                    textViewIssues.setTextColor(Color.GREEN);
+                }
+
+                if (firstInspection.getHazardRating().equals("Moderate")) {
+                    imageViewHazard.setImageDrawable(getDrawable(R.drawable.yellow));
+                    textViewIssues.setTextColor(Color.YELLOW);
+                }
+
+                if (firstInspection.getHazardRating().equals("High")) {
+                    imageViewHazard.setImageDrawable(getDrawable(R.drawable.red));
+                    textViewIssues.setTextColor(Color.RED);
+                }
+            }
 
             return itemView;
         }
@@ -119,6 +164,13 @@ public class RestaurantListActivity extends AppCompatActivity {
         @Override
         public int compare(Restaurant r1, Restaurant r2) {
             return r1.getRestaurantName().compareTo(r2.getRestaurantName());
+        }
+    }
+
+    public class InspectionComparator implements Comparator<Inspection> {
+        @Override
+        public int compare(Inspection i1, Inspection i2) {
+            return i1.getInspectionDate().compareTo(i2.getInspectionDate());
         }
     }
 }

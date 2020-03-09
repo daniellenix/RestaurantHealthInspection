@@ -8,11 +8,11 @@
 
     <TextView
         android:id="@+id/detailGps"
-        android:layout_width="251dp"
-        android:layout_height="64dp"
-        android:layout_marginTop="12dp"
+        android:layout_width="279dp"
+        android:layout_height="53dp"
+        android:layout_marginTop="20dp"
         android:textAlignment="center"
-        android:textSize="15sp"
+        android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/detailAddress" />

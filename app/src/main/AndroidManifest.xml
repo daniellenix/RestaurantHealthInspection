@@ -11,14 +11,11 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".UI.InspectionActivity"
-            android:label="Inspection Information">
-        </activity>
+            android:parentActivityName=".UI.RestaurantDetailActivity" />
         <activity
             android:name=".UI.RestaurantDetailActivity"
-            android:label="Restaurant Information"/>
-        <activity
-            android:name=".UI.RestaurantListActivity"
-            android:label="List of Restaurants">
+            android:parentActivityName=".UI.RestaurantListActivity" />
+        <activity android:name=".UI.RestaurantListActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
