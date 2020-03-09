@@ -125,12 +125,12 @@ public class RestaurantDetailActivity extends AppCompatActivity {
             ImageView imageViewHazard = itemView.findViewById(R.id.hazard);
             if (currentInspection.getHazardRating().equals("Low")) {
                 imageViewHazard.setImageDrawable(getDrawable(R.drawable.green));
-                hazardTextView.setTextColor(Color.GREEN);
+                hazardTextView.setTextColor(getResources().getColor(R.color.green));
             }
 
             if (currentInspection.getHazardRating().equals("Moderate")) {
                 imageViewHazard.setImageDrawable(getDrawable(R.drawable.yellow));
-                hazardTextView.setTextColor(Color.YELLOW);
+                hazardTextView.setTextColor(getResources().getColor(R.color.yellow));
 
             }
 

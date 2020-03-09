@@ -109,9 +109,9 @@ public class RestaurantListActivity extends AppCompatActivity {
             ImageView imageViewHazard = itemView.findViewById(R.id.hazard);
 
             if (currentRestaurant.getInspections().isEmpty()) {
-                textViewTime.setText("No inspections");
+                textViewTime.setText("N/A");
                 textViewIssues.setText("Number of Issues: 0");
-                textViewIssues.setTextColor(Color.GREEN);
+                textViewIssues.setTextColor(getResources().getColor(R.color.green));
                 imageViewHazard.setImageDrawable(getDrawable(R.drawable.green));
             } else {
                 Inspection firstInspection = currentRestaurant.getInspections().getInspection(0);
@@ -141,12 +141,12 @@ public class RestaurantListActivity extends AppCompatActivity {
 
                 if (firstInspection.getHazardRating().equals("Low")) {
                     imageViewHazard.setImageDrawable(getDrawable(R.drawable.green));
-                    textViewIssues.setTextColor(Color.GREEN);
+                    textViewIssues.setTextColor(getResources().getColor(R.color.green));
                 }
 
                 if (firstInspection.getHazardRating().equals("Moderate")) {
                     imageViewHazard.setImageDrawable(getDrawable(R.drawable.yellow));
-                    textViewIssues.setTextColor(Color.YELLOW);
+                    textViewIssues.setTextColor(getResources().getColor(R.color.yellow));
                 }
 
                 if (firstInspection.getHazardRating().equals("High")) {
