@@ -41,6 +41,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/detailName" />
 
+    <TextView
+        android:id="@+id/inspectionNoItems"
+        android:layout_width="401dp"
+        android:layout_height="286dp"
+        android:gravity="center"
+        android:text="No Inspections"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/detailGps" />
+
     <ListView
         android:id="@+id/restaurantInspectionListView"
         android:layout_width="402dp"
