@@ -8,14 +8,18 @@
 
     <ImageView
         android:id="@+id/natureOfViolation"
-        android:layout_width="49dp"
-        android:layout_height="51dp"
+        android:layout_width="48dp"
+        android:layout_height="41dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="11dp"
+        android:layout_marginTop="23dp"
         app:srcCompat="@drawable/bug" />
 
     <TextView
         android:id="@+id/description"
-        android:layout_width="273dp"
-        android:layout_height="wrap_content"
+        android:layout_width="266dp"
+        android:layout_height="47dp"
         android:layout_alignParentTop="true"
         android:layout_marginStart="11dp"
         android:layout_marginTop="19dp"
@@ -27,8 +31,8 @@
         android:layout_width="56dp"
         android:layout_height="60dp"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="17dp"
-        android:layout_marginTop="11dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="13dp"
         android:layout_toEndOf="@+id/description"
         app:srcCompat="@drawable/red_x" />
 
