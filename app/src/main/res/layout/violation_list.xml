@@ -24,7 +24,8 @@
         android:layout_marginStart="11dp"
         android:layout_marginTop="19dp"
         android:layout_toEndOf="@+id/natureOfViolation"
-        android:text="violation description" />
+        android:text="violation description"
+        android:textSize="17sp" />
 
     <ImageView
         android:id="@+id/severity"

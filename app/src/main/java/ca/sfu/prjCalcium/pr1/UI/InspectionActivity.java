@@ -82,12 +82,12 @@ public class InspectionActivity extends AppCompatActivity {
         ImageView hazardImgView = findViewById(R.id.InspectionImageView);
         if (i.getHazardRating().equals("Low")) {
             hazardImgView.setImageDrawable(getDrawable(R.drawable.green));
-            hazardLevel.setTextColor(Color.GREEN);
+            hazardLevel.setTextColor(getResources().getColor(R.color.green));
         }
 
         if (i.getHazardRating().equals("Moderate")) {
             hazardImgView.setImageDrawable(getDrawable(R.drawable.yellow));
-            hazardLevel.setTextColor(Color.YELLOW);
+            hazardLevel.setTextColor(getResources().getColor(R.color.yellow));
         }
 
         if (i.getHazardRating().equals("High")) {
