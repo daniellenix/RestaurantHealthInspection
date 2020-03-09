@@ -6,8 +6,8 @@
 
     <ImageView
         android:id="@+id/hazard"
-        android:layout_width="52dp"
-        android:layout_height="55dp"
+        android:layout_width="39dp"
+        android:layout_height="40dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_marginStart="19dp"
@@ -18,32 +18,35 @@
         android:id="@+id/InspectionCriticalIssues"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/inspectionListHazard"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="18dp"
-        android:layout_marginTop="36dp"
-        android:layout_toEndOf="@+id/hazard"
-        android:text="# critical issues"
-        android:textAlignment="textStart" />
+        android:layout_marginStart="-1dp"
+        android:layout_marginTop="39dp"
+        android:text="# critical issues" />
 
     <TextView
         android:id="@+id/InspectionNonCriticalIssues"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/InspectionCriticalIssues"
-        android:layout_marginStart="17dp"
-        android:layout_marginTop="5dp"
-        android:layout_toEndOf="@+id/hazard"
+        android:layout_alignStart="@+id/inspectionListHazard"
+        android:layout_marginStart="-2dp"
+        android:layout_marginTop="2dp"
         android:text="# non-critical issues"
         android:textAlignment="textStart" />
 
     <TextView
         android:id="@+id/time"
-        android:layout_width="wrap_content"
+        android:layout_width="67dp"
         android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/InspectionNonCriticalIssues"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginTop="51dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginStart="69dp"
+        android:layout_marginTop="62dp"
+        android:layout_marginEnd="59dp"
+        android:layout_marginBottom="-2dp"
+        android:layout_toEndOf="@+id/InspectionNonCriticalIssues"
         android:text="Time"
         android:textAlignment="textEnd" />
 
@@ -53,7 +56,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_marginStart="22dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="12dp"
         android:layout_toEndOf="@+id/hazard"
-        android:text="Hazard Level" />
+        android:text="Hazard Level"
+        android:textSize="17sp" />
 </RelativeLayout>
