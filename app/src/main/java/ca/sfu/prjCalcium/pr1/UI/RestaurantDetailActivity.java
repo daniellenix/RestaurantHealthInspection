@@ -58,21 +58,19 @@ public class RestaurantDetailActivity extends AppCompatActivity {
 
     private void populateInfo() {
         TextView nameView = findViewById(R.id.detailName);
-
         nameView.setText(r.getRestaurantName());
 
         TextView addressView = findViewById(R.id.detailAddress);
-
         addressView.setText(r.getAddress());
 
         TextView gpsView = findViewById(R.id.detailGps);
-
         gpsView.setText("Longitude: " + r.getLongitude() + "\n" + "Latitude: " + r.getLatitude());
     }
 
     private void populateListView() {
         ArrayAdapter<Inspection> adapter = new RestaurantDetailActivity.MyListAdapter();
         ListView list = findViewById(R.id.restaurantInspectionListView);
+        list.setEmptyView(findViewById(R.id.inspectionNoItems));
         list.setAdapter(adapter);
     }
 
