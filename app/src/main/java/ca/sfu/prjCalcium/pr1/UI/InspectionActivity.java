@@ -27,6 +27,9 @@ import ca.sfu.prjCalcium.pr1.Model.Violation;
 import ca.sfu.prjCalcium.pr1.Model.ViolationManager;
 import ca.sfu.prjCalcium.pr1.R;
 
+/**
+ * Represent the logic inside the screen that displays the inspections.
+ */
 public class InspectionActivity extends AppCompatActivity {
 
     Restaurant r;

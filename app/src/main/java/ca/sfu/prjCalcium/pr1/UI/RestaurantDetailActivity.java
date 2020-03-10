@@ -26,6 +26,9 @@ import ca.sfu.prjCalcium.pr1.Model.Restaurant;
 import ca.sfu.prjCalcium.pr1.Model.RestaurantManager;
 import ca.sfu.prjCalcium.pr1.R;
 
+/**
+ * Represent the logic inside the screen that displays the detail of a restaurant
+ */
 public class RestaurantDetailActivity extends AppCompatActivity {
 
     Restaurant r;
@@ -153,12 +156,10 @@ public class RestaurantDetailActivity extends AppCompatActivity {
 
             if (dateDifference < 30){
                 textViewTime.setText(getString(R.string.inspection_days_ago, dateDifference));
-            }
-            else if (dateDifference > 30 && dateDifference <= 366){
+            } else if (dateDifference > 30 && dateDifference <= 366){
                 SimpleDateFormat formatter1 = new SimpleDateFormat("MMM dd", Locale.CANADA);
                 textViewTime.setText(formatter1.format(pastDate));
-            }
-            else {
+            } else {
                 SimpleDateFormat formatter2 = new SimpleDateFormat("MMM yyyy", Locale.CANADA);
                 textViewTime.setText(formatter2.format(pastDate));
             }
