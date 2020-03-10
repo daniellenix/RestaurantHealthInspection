@@ -57,7 +57,7 @@ Course Project URL: https://opencoursehub.cs.sfu.ca/bfraser/grav-cms/cmpt276/pro
         * [x] Hazard level icon, hazard level in words, and colour coded.
         * [x] Scrollable list of violations. 
     * [15] I want each violation in the list to show:
-        * [ ] An icon reflecting the nature of the violation (food, pest, equipment, ...)
+        * [x] An icon reflecting the nature of the violation (food, pest, equipment, ...)
         * [x] A brief description of the violation which **fits on one line**
         * [x] The severity of the violation: Use an icon and colour to make it easy to see if it's critical or not-critical
     * [x] I want to be able to tap on a single violation to see the long description. It's OK if this is shown on the screen for a moment (such as a toast or snackbar).

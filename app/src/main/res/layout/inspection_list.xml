@@ -22,7 +22,6 @@
         android:layout_alignParentTop="true"
         android:layout_marginStart="-1dp"
         android:layout_marginTop="39dp"
-        android:text="# critical issues"
         android:textSize="17sp" />
 
     <TextView
@@ -33,7 +32,6 @@
         android:layout_alignStart="@+id/inspectionListHazard"
         android:layout_marginStart="-2dp"
         android:layout_marginTop="2dp"
-        android:text="# non-critical issues"
         android:textAlignment="textStart"
         android:textSize="17sp" />
 
@@ -49,7 +47,6 @@
         android:layout_marginEnd="29dp"
         android:layout_marginBottom="-4dp"
         android:layout_toEndOf="@+id/InspectionNonCriticalIssues"
-        android:text="Time"
         android:textAlignment="center"
         android:textSize="17sp" />
 
@@ -61,6 +58,5 @@
         android:layout_marginStart="22dp"
         android:layout_marginTop="12dp"
         android:layout_toEndOf="@+id/hazard"
-        android:text="Hazard Level"
         android:textSize="20sp" />
 </RelativeLayout>
