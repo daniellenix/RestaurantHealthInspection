@@ -11,14 +11,17 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".UI.InspectionActivity"
+            android:label="Inspection"
             android:parentActivityName=".UI.RestaurantDetailActivity" />
         <activity
             android:name=".UI.RestaurantDetailActivity"
+            android:label="Restaurant Detail"
             android:parentActivityName=".UI.RestaurantListActivity" />
-        <activity android:name=".UI.RestaurantListActivity">
+        <activity
+            android:name=".UI.RestaurantListActivity"
+            android:label="Restaurants">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

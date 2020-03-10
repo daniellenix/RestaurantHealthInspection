@@ -17,7 +17,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.text.SimpleDateFormat;
-import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Locale;
@@ -109,8 +108,8 @@ public class RestaurantListActivity extends AppCompatActivity {
             ImageView imageViewHazard = itemView.findViewById(R.id.hazard);
 
             if (currentRestaurant.getInspections().isEmpty()) {
-                textViewTime.setText("N/A");
-                textViewIssues.setText("Number of Issues: 0");
+                textViewTime.setText(R.string.no_recent_inspections);
+                textViewIssues.setText(R.string.zero_number_of_issues);
                 textViewIssues.setTextColor(getResources().getColor(R.color.green));
                 imageViewHazard.setImageDrawable(getDrawable(R.drawable.green));
             } else {
@@ -118,17 +117,16 @@ public class RestaurantListActivity extends AppCompatActivity {
 
                 int totalIssues = firstInspection.getNumCritical() + firstInspection.getNumNonCritical();
 
-                textViewIssues.setText("Number of Issues: " + totalIssues);
+                textViewIssues.setText(getString(R.string.restaurant_list_num_issues, totalIssues));
 
                 //Display date in intelligent format
-                SimpleDateFormat formatter = new SimpleDateFormat("MMM dd, yyyy", Locale.CANADA);
                 Date currentDate = new Date();
                 Date pastDate = firstInspection.getInspectionDate();
 
                 long dateDifference = TimeUnit.MILLISECONDS.toDays(currentDate.getTime() - pastDate.getTime());
 
                 if (dateDifference < 30){
-                    textViewTime.setText(dateDifference + " days ago");
+                    textViewTime.setText(getString(R.string.inspection_days_ago, dateDifference));
                 }
                 else if (dateDifference > 30 && dateDifference <= 366){
                     SimpleDateFormat formatter1 = new SimpleDateFormat("MMM dd", Locale.CANADA);

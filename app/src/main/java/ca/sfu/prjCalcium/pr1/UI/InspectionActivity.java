@@ -65,19 +65,19 @@ public class InspectionActivity extends AppCompatActivity {
 
         SimpleDateFormat formatter = new SimpleDateFormat("MMM dd, yyyy", Locale.CANADA);
 
-        date.setText("Date: " + formatter.format(i.getInspectionDate()));
+        date.setText(getString(R.string.inspection_date, formatter.format(i.getInspectionDate())));
 
         TextView hazardLevel = findViewById(R.id.InspectionHazardLevel);
-        hazardLevel.setText("Hazard level: " + i.getHazardRating());
+        hazardLevel.setText(getString(R.string.restaurant_detail_hazard_level, i.getHazardRating()));
 
         TextView inspectionType = findViewById(R.id.inspectionType);
-        inspectionType.setText("Inspection Type: " + i.getInspeType());
+        inspectionType.setText(getString(R.string.inspection_inspection_type, i.getInspeType()));
 
         TextView numOfCriticalIssues = findViewById(R.id.InspectionCriticalIssues);
-        numOfCriticalIssues.setText("# Of Critical Issues: " + i.getNumCritical());
+        numOfCriticalIssues.setText(getString(R.string.restaurant_detail_num_critical_issue, i.getNumCritical()));
 
         TextView numOfNonCriticalIssues = findViewById(R.id.InspectionNonCriticalIssues);
-        numOfNonCriticalIssues.setText("# Of Non Critical Issues: " + i.getNumNonCritical());
+        numOfNonCriticalIssues.setText(getString(R.string.restaurant_detail_num_non_critical_issue, i.getNumNonCritical()));
 
         ImageView hazardImgView = findViewById(R.id.InspectionImageView);
         if (i.getHazardRating().equals("Low")) {
