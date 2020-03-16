@@ -15,8 +15,8 @@ Course Project URL: https://opencoursehub.cs.sfu.ca/bfraser/grav-cms/cmpt276/pro
 
 1. [30] Get updated data
 
-   * [] When the app start up, if it's been 20 hours or more since data was last updated, I want the application to check with the City of Surrey's server to see if there is more recent data to be downloaded.
-   * [] If there is new data on the server, I want the app to ask the user if they want to update the data so they can choose if now is a good time to do the update.
+   * [ ] When the app start up, if it's been 20 hours or more since data was last updated, I want the application to check with the City of Surrey's server to see if there is more recent data to be downloaded.
+   * [ ] If there is new data on the server, I want the app to ask the user if they want to update the data so they can choose if now is a good time to do the update.
         * [ ] If the user does not want the data updated, then the next time the app starts up it should ask the user again if they want to update.
         * [ ] The app must only download the data if an update is available otherwise it will waste the user's bandwidth and battery.
    * [ ] I want the application to store downloaded data locally so that it can work offline.
