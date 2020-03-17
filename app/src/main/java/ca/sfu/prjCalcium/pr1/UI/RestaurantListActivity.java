@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -59,8 +60,21 @@ public class RestaurantListActivity extends AppCompatActivity {
             manager.setDataRead(true);
         }
 
+        mapViewBtn();
         populateListView();
         clickRestaurant();
+    }
+
+    private void mapViewBtn() {
+        Button mapBtn = findViewById(R.id.mapBtn);
+
+        mapBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = MapsActivity.makeIntent(RestaurantListActivity.this);
+                startActivity(intent);
+            }
+        });
     }
 
     private void populateListView() {
