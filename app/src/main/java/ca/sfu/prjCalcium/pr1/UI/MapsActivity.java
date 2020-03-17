@@ -7,6 +7,8 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -50,6 +52,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         rManager = RestaurantManager.getInstance();
         getLocationPermission();
+        initButton();
+    }
+
+    private void initButton() {
+        Button listBtn = findViewById(R.id.mapBackToListBtn);
+
+        listBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = RestaurantListActivity.makeIntent(MapsActivity.this);
+                startActivity(intent);
+            }
+        });
     }
 
     private void initMap() {

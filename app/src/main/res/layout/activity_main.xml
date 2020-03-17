@@ -14,7 +14,7 @@
             android:id="@+id/mapBtn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Swich To Map" />
+            android:text="@string/main_switch_to_map" />
 
         <ListView
             android:id="@+id/restaurantListView"
