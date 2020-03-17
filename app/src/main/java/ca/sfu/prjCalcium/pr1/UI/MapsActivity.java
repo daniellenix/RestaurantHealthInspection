@@ -21,9 +21,12 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+import ca.sfu.prjCalcium.pr1.Model.Restaurant;
+import ca.sfu.prjCalcium.pr1.Model.RestaurantManager;
 import ca.sfu.prjCalcium.pr1.R;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
@@ -32,6 +35,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     boolean mLocationPermissionGranted = false;
     private GoogleMap mMap;
     private FusedLocationProviderClient mFLPC;
+
+    private RestaurantManager rManager;
 
     public static Intent makeIntent(Context c) {
         return new Intent(c, MapsActivity.class);
@@ -43,6 +48,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setContentView(R.layout.activity_maps);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
 
+        rManager = RestaurantManager.getInstance();
         getLocationPermission();
     }
 
@@ -74,6 +80,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             getDeviceLocation();
             mMap.setMyLocationEnabled(true);
         }
+
+        for (Restaurant r : rManager) {
+            LatLng restLagLng = new LatLng(r.getLatitude(), r.getLongitude());
+            mMap.addMarker(new MarkerOptions().position(restLagLng).title(r.getRestaurantName()));
+        }
     }
 
     // https://www.youtube.com/watch?v=fPFr0So1LmI&list=PLgCYzUzKIBE-vInwQhGSdnbyJ62nixHCt&index=5
@@ -89,7 +100,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     public void onComplete(@NonNull Task task) {
                         if (task.isSuccessful()) {
                             Location currentLocation = (Location) task.getResult();
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), 5f));
+                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), 10f));
                             Toast.makeText(MapsActivity.this, "Got location. ", Toast.LENGTH_SHORT).show();
                         } else {
                             Toast.makeText(MapsActivity.this, "Could not determine location. ", Toast.LENGTH_SHORT).show();
