@@ -28,18 +28,18 @@ Course Project URL: https://opencoursehub.cs.sfu.ca/bfraser/grav-cms/cmpt276/pro
 
 2. [30] Map
 
-   * [ ] When the application starts up, I want the default view to be a map centred on the user's current location.
-   * [ ] The map should display pegs showing the location of each restaurant we have data for.
-   * [ ] I want the map to allow the user to pan (move map around) and pinch to zoom.
+   * [x] When the application starts up, I want the default view to be a map centred on the user's current location.
+   * [x] The map should display pegs showing the location of each restaurant we have data for.
+   * [x] I want the map to allow the user to pan (move map around) and pinch to zoom.
    * [ ] I want the restaurant pegs to show the hazard level of the most recent inspection report for a restaurant.
         * [ ] Each peg must show the hazard level using a colour and an icon. i.e., icon for medium must be different than high hazard.
    * [ ] When there are too many pegs in an area, I want the pegs to be clustered intelligently.
-   * [ ] I want the app to show the user's current GPS position on the map as some form of dot or icon which is distinct from the restaurant pegs.
-        * [ ] As the user moves, I want the dot on the screen to update to a new location, and have the map follow the user so the display stays relevant as the user moves through the city.
+   * [x] I want the app to show the user's current GPS position on the map as some form of dot or icon which is distinct from the restaurant pegs.
+        * [x] As the user moves, I want the dot on the screen to update to a new location, and have the map follow the user so the display stays relevant as the user moves through the city.
    * [ ] I want the user to be able to interact with a peg to get more information.
         * [ ] Tapping on a peg should show a small pop-up display of the restaurant name, address, and hazard level of its most recent inspection.
         * [ ] The pop-up display must also allow the user to tap again to go to restaurant's full information screen
-   * [ ] I want the user to have a clear way to toggle between the map screen and the list of restaurants screen (iteration 1) so the user can find a restaurant by either its location on the map, or the list of restaurants.
+   * [x] I want the user to have a clear way to toggle between the map screen and the list of restaurants screen (iteration 1) so the user can find a restaurant by either its location on the map, or the list of restaurants.
 
 3. [15] Custom images / icons
 
