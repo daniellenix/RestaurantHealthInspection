@@ -27,6 +27,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+import ca.sfu.prjCalcium.pr1.Model.InspectionManager;
 import ca.sfu.prjCalcium.pr1.Model.Restaurant;
 import ca.sfu.prjCalcium.pr1.Model.RestaurantManager;
 import ca.sfu.prjCalcium.pr1.R;
@@ -38,7 +39,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     private FusedLocationProviderClient mFLPC;
 
-    private RestaurantManager rManager;
+    private RestaurantManager manager = RestaurantManager.getInstance();
+
+    private android.os.Handler handler = new android.os.Handler();
 
     public static Intent makeIntent(Context c) {
         return new Intent(c, MapsActivity.class);
@@ -50,7 +53,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setContentView(R.layout.activity_maps);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
 
-        rManager = RestaurantManager.getInstance();
+        if (!manager.isDataRead()) {
+            manager.readRestaurantData(this);
+
+            manager.sort(new RestaurantListActivity.AlphabetComparator());
+
+            for (Restaurant r : manager) {
+                InspectionManager iManager = r.getInspections();
+
+                iManager.sort(new RestaurantListActivity.InspectionComparator().reversed());
+            }
+
+            manager.setDataRead(true);
+        }
+
         getLocationPermission();
         initButton();
     }
@@ -87,19 +103,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Add a marker in Sydney and move the camera
-//        LatLng sydney = new LatLng(-34, 151);
-//        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-//        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-        if (mLocationPermissionGranted) {
-            getDeviceLocation();
-            mMap.setMyLocationEnabled(true);
-        }
-
-        for (Restaurant r : rManager) {
+        for (Restaurant r : manager) {
             LatLng restLagLng = new LatLng(r.getLatitude(), r.getLongitude());
             mMap.addMarker(new MarkerOptions().position(restLagLng).title(r.getRestaurantName()));
         }
+
+        if (mLocationPermissionGranted) {
+            mMap.setMyLocationEnabled(true);
+            mMap.getUiSettings().setMyLocationButtonEnabled(true);
+            getDeviceLocation();
+        }
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                getDeviceLocation();
+                handler.postDelayed(this, 50000);
+            }
+        }, 50000);
     }
 
     // https://www.youtube.com/watch?v=fPFr0So1LmI&list=PLgCYzUzKIBE-vInwQhGSdnbyJ62nixHCt&index=5
@@ -116,7 +136,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         if (task.isSuccessful()) {
                             Location currentLocation = (Location) task.getResult();
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), 10f));
-                            Toast.makeText(MapsActivity.this, "Got location. ", Toast.LENGTH_SHORT).show();
                         } else {
                             Toast.makeText(MapsActivity.this, "Could not determine location. ", Toast.LENGTH_SHORT).show();
                         }
@@ -131,6 +150,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     // https://developers.google.com/maps/documentation/android-sdk/current-place-tutorial
     private void getLocationPermission() {
+
         /*
          * Request location permission, so that we can get the location of the
          * device. The result of the permission request is handled by a callback,
@@ -161,7 +181,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
-        mLocationPermissionGranted = false;
         switch (requestCode) {
             case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
                 // If request is cancelled, the result arrays are empty.
