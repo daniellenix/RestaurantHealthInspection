@@ -46,20 +46,6 @@ public class RestaurantListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if (!manager.isDataRead()) {
-            manager.readRestaurantData(RestaurantListActivity.this);
-
-            manager.sort(new AlphabetComparator());
-
-            for (Restaurant r : manager) {
-                InspectionManager iManager = r.getInspections();
-
-                iManager.sort(new InspectionComparator().reversed());
-            }
-
-            manager.setDataRead(true);
-        }
-
         mapViewBtn();
         populateListView();
         clickRestaurant();
@@ -173,14 +159,14 @@ public class RestaurantListActivity extends AppCompatActivity {
     }
 
     // https://stackoverflow.com/questions/2784514/sort-arraylist-of-custom-objects-by-property
-    public class AlphabetComparator implements Comparator<Restaurant> {
+    public static class AlphabetComparator implements Comparator<Restaurant> {
         @Override
         public int compare(Restaurant r1, Restaurant r2) {
             return r1.getRestaurantName().compareTo(r2.getRestaurantName());
         }
     }
 
-    public class InspectionComparator implements Comparator<Inspection> {
+    public static class InspectionComparator implements Comparator<Inspection> {
         @Override
         public int compare(Inspection i1, Inspection i2) {
             return i1.getInspectionDate().compareTo(i2.getInspectionDate());

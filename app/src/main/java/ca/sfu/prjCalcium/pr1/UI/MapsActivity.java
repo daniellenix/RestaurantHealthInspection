@@ -27,6 +27,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+import ca.sfu.prjCalcium.pr1.Model.InspectionManager;
 import ca.sfu.prjCalcium.pr1.Model.Restaurant;
 import ca.sfu.prjCalcium.pr1.Model.RestaurantManager;
 import ca.sfu.prjCalcium.pr1.R;
@@ -38,7 +39,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     private FusedLocationProviderClient mFLPC;
 
-    private RestaurantManager rManager;
+    private RestaurantManager manager = RestaurantManager.getInstance();
+
+    private android.os.Handler handler = new android.os.Handler();
 
     public static Intent makeIntent(Context c) {
         return new Intent(c, MapsActivity.class);
@@ -50,7 +53,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setContentView(R.layout.activity_maps);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
 
-        rManager = RestaurantManager.getInstance();
+        if (!manager.isDataRead()) {
+            manager.readRestaurantData(this);
+
+            manager.sort(new RestaurantListActivity.AlphabetComparator());
+
+            for (Restaurant r : manager) {
+                InspectionManager iManager = r.getInspections();
+
+                iManager.sort(new RestaurantListActivity.InspectionComparator().reversed());
+            }
+
+            manager.setDataRead(true);
+        }
+
         getLocationPermission();
         initButton();
     }
@@ -87,19 +103,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Add a marker in Sydney and move the camera
-//        LatLng sydney = new LatLng(-34, 151);
-//        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-//        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-        if (mLocationPermissionGranted) {
-            getDeviceLocation();
-            mMap.setMyLocationEnabled(true);
+        for (Restaurant r : manager) {
+            LatLng restLagLng = new LatLng(r.getLatitude(), r.getLongitude());
+
+            String sniStr = "Address:" + r.getAddress() +
+                    "Hazard level:" + r.getInspections().getInspection(0).getHazardRating();
+
+            mMap.addMarker(new MarkerOptions()
+                    .position(restLagLng)
+                    .title(r.getRestaurantName())
+                    .snippet(sniStr));
         }
 
-        for (Restaurant r : rManager) {
-            LatLng restLagLng = new LatLng(r.getLatitude(), r.getLongitude());
-            mMap.addMarker(new MarkerOptions().position(restLagLng).title(r.getRestaurantName()));
+        if (mLocationPermissionGranted) {
+            mMap.setMyLocationEnabled(true);
+            mMap.getUiSettings().setMyLocationButtonEnabled(true);
+            getDeviceLocation();
         }
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                getDeviceLocation();
+                handler.postDelayed(this, 50000);
+            }
+        }, 50000);
+
     }
 
     // https://www.youtube.com/watch?v=fPFr0So1LmI&list=PLgCYzUzKIBE-vInwQhGSdnbyJ62nixHCt&index=5
