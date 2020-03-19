@@ -23,6 +23,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -103,7 +104,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
+        //Add marker
         for (Restaurant r : manager) {
             LatLng restLagLng = new LatLng(r.getLatitude(), r.getLongitude());
 
@@ -123,11 +124,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     .snippet(sniStr);
 
             CustomInfoWindowAdapter adapter = new CustomInfoWindowAdapter(MapsActivity.this);
-            googleMap.setInfoWindowAdapter(adapter);
+            mMap.setInfoWindowAdapter(adapter);
 
             mMap.addMarker(markerOpt).showInfoWindow();
 
         }
+        //Set a listener for info window events
+        mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+//
+
+//                Intent intent =
+//                startActivity(intent);
+            }
+        });
 
         if (mLocationPermissionGranted) {
             mMap.setMyLocationEnabled(true);
