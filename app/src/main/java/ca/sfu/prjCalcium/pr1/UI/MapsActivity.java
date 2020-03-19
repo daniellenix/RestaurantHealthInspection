@@ -27,6 +27,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+import ca.sfu.prjCalcium.pr1.Model.CustomInfoWindowAdapter;
 import ca.sfu.prjCalcium.pr1.Model.InspectionManager;
 import ca.sfu.prjCalcium.pr1.Model.Restaurant;
 import ca.sfu.prjCalcium.pr1.Model.RestaurantManager;
@@ -106,13 +107,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         for (Restaurant r : manager) {
             LatLng restLagLng = new LatLng(r.getLatitude(), r.getLongitude());
 
-            String sniStr = "Address:" + r.getAddress() +
-                    "Hazard level:" + r.getInspections().getInspection(0).getHazardRating();
+            String sniAdd = "Address:" + r.getAddress();
+            String sniStr;
+            if(r.getInspections().isEmpty())
+            {
+                sniStr = sniAdd + "\n" + "Hazard level undefined";
+            }
+            else {
+                sniStr = sniAdd + "\n" + "Hazard level: " + r.getInspections().getInspection(0).getHazardRating();
+            }
 
-            mMap.addMarker(new MarkerOptions()
-                    .position(restLagLng)
+            MarkerOptions markerOpt = new MarkerOptions();
+            markerOpt.position(restLagLng)
                     .title(r.getRestaurantName())
-                    .snippet(sniStr));
+                    .snippet(sniStr);
+
+            CustomInfoWindowAdapter adapter = new CustomInfoWindowAdapter(MapsActivity.this);
+            googleMap.setInfoWindowAdapter(adapter);
+
+            mMap.addMarker(markerOpt).showInfoWindow();
+
         }
 
         if (mLocationPermissionGranted) {
