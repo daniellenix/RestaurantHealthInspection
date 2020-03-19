@@ -1,6 +1,7 @@
 package ca.sfu.prjCalcium.pr1.UI;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -16,6 +17,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.text.SimpleDateFormat;
@@ -67,7 +69,7 @@ public class RestaurantListActivity extends AppCompatActivity {
         clickRestaurant();
 
         // Test code
-        //clearSharedReferencesData();
+        //clearSharedReferencesData(); // use this line to run app as it is ran for first time
         //checkTestTime(now);
         checkTime(now);
     }
@@ -77,8 +79,20 @@ public class RestaurantListActivity extends AppCompatActivity {
         // 20 hours = 72000000 milliseconds
         if (now - last >= 72000000) {
             Toast.makeText(getApplicationContext(), "Need Update!", Toast.LENGTH_LONG).show();
+
+            // To Do: Need to check if server has updated version of files
+
+            createDialog();
         } else {
-            Toast.makeText(getApplicationContext(), "Up to date!", Toast.LENGTH_LONG).show();
+            // Check user's last run choice
+            SharedPreferences pref = getSharedPreferences("Time", MODE_PRIVATE);
+            boolean choice = pref.getBoolean("UpdateRequired", true);
+            if (!choice) {
+                createDialog();
+                Toast.makeText(getApplicationContext(), "Have Update!", Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(getApplicationContext(), "Up to date!", Toast.LENGTH_LONG).show();
+            }
         }
         saveStartTime(now);
     }
@@ -94,6 +108,40 @@ public class RestaurantListActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = pref.edit();
         editor.putLong("LastRun", now);
         editor.commit();
+    }
+
+    private void createDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Update Found").setMessage("Do you want to update now?");
+        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                Toast.makeText(getApplicationContext(), "Updating", Toast.LENGTH_LONG).show();
+
+                // Update status of shared references
+                SharedPreferences pref = getSharedPreferences("Time", MODE_PRIVATE);
+                SharedPreferences.Editor editor = pref.edit();
+                editor.putBoolean("UpdateRequired", true);
+                editor.commit();
+
+                // To Do: update files
+            }
+        });
+        builder.setNegativeButton("Later", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                Toast.makeText(getApplicationContext(),
+                        "This message will show again on next start", Toast.LENGTH_LONG).show();
+
+                // Save user choice
+                SharedPreferences pref = getSharedPreferences("Time", MODE_PRIVATE);
+                SharedPreferences.Editor editor = pref.edit();
+                editor.putBoolean("UpdateRequired", false);
+                editor.commit();
+            }
+        });
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
     }
 
     // For testing only
