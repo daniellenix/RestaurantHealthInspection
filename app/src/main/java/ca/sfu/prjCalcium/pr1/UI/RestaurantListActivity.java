@@ -2,6 +2,7 @@ package ca.sfu.prjCalcium.pr1.UI;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
@@ -11,6 +12,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -45,6 +47,8 @@ public class RestaurantListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        long now = System.currentTimeMillis();
+
         if (!manager.isDataRead()) {
             manager.readRestaurantData(RestaurantListActivity.this);
 
@@ -61,6 +65,59 @@ public class RestaurantListActivity extends AppCompatActivity {
 
         populateListView();
         clickRestaurant();
+
+        // Test code
+        //clearSharedReferencesData();
+        //checkTestTime(now);
+        checkTime(now);
+    }
+
+    private void checkTime(long now) {
+        long last = getLastStartTime();
+        // 20 hours = 72000000 milliseconds
+        if (now - last >= 72000000) {
+            Toast.makeText(getApplicationContext(), "Need Update!", Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(getApplicationContext(), "Up to date!", Toast.LENGTH_LONG).show();
+        }
+        saveStartTime(now);
+    }
+
+    private long getLastStartTime() {
+        SharedPreferences pref = getSharedPreferences("Time", MODE_PRIVATE);
+        long time = pref.getLong("LastRun", 0);
+        return time;
+    }
+
+    private void saveStartTime(long now) {
+        SharedPreferences pref = getSharedPreferences("Time", MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putLong("LastRun", now);
+        editor.commit();
+    }
+
+    // For testing only
+    private void clearSharedReferencesData() {
+        SharedPreferences pref = getSharedPreferences("Time", MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.clear();
+        editor.commit();
+    }
+
+    // For testing only
+    private void setSharedReferencesData(long time) {
+        SharedPreferences pref = getSharedPreferences("Time", MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putLong("LastRun", time);
+        editor.commit();
+    }
+
+    // For testing only
+    private void checkTestTime(long now) {
+        clearSharedReferencesData();
+        setSharedReferencesData(now - 72000000); // launch time - 20 hours
+        long test = getLastStartTime();
+        checkTime(now);
     }
 
     private void populateListView() {
