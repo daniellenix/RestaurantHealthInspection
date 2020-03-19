@@ -50,9 +50,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private RestaurantManager manager = RestaurantManager.getInstance();
 
-    private ClusterManager<MyItem> mClusterManager;
-
     private android.os.Handler handler = new android.os.Handler();
+    private ClusterManager<MyItem> mClusterManager;
 
     public static Intent makeIntent(Context c) {
         return new Intent(c, MapsActivity.class);

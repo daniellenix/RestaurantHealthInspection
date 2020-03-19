@@ -24,7 +24,6 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import ca.sfu.prjCalcium.pr1.Model.Inspection;
-import ca.sfu.prjCalcium.pr1.Model.InspectionManager;
 import ca.sfu.prjCalcium.pr1.Model.Restaurant;
 import ca.sfu.prjCalcium.pr1.Model.RestaurantManager;
 import ca.sfu.prjCalcium.pr1.R;
