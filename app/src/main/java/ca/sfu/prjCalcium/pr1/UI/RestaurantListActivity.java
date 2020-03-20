@@ -50,6 +50,19 @@ public class RestaurantListActivity extends AppCompatActivity {
         clickRestaurant();
     }
 
+    @Override
+    public void onBackPressed() {
+
+// make sure you have this outcommented
+// super.onBackPressed();
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        finish();
+        System.exit(0);
+    }
+
     private void mapViewBtn() {
         Button mapBtn = findViewById(R.id.mapBtn);
 
