@@ -50,21 +50,21 @@ public class RestaurantManager implements Iterable<Restaurant> {
     }
 
     public void readRestaurantData(Context context) {
-//        InputStream is = context.getResources().openRawResource(R.raw.restaurants_itr1);
+        InputStream is = context.getResources().openRawResource(R.raw.restaurants_itr1);
 
         // Trying to read data
-        InputStream fis = null;
-        File textFile = new File(Environment
-                .getExternalStorageDirectory().toString()
-                + "/test.csv");
-        try {
-            fis = new FileInputStream(textFile);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+//        InputStream fis = null;
+//        File textFile = new File(Environment
+//                .getExternalStorageDirectory().toString()
+//                + "/test.csv");
+//        try {
+//            fis = new FileInputStream(textFile);
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        }
 
         BufferedReader reader = new BufferedReader(
-                new InputStreamReader(fis, StandardCharsets.UTF_8)
+                new InputStreamReader(is, StandardCharsets.UTF_8)
         );
 
         String line = "";
