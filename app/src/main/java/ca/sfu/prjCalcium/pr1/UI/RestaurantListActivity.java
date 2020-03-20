@@ -288,12 +288,12 @@ public class RestaurantListActivity extends AppCompatActivity {
 //                        Environment.DIRECTORY_DOCUMENTS), "test.csv");
 //                output = new FileOutputStream(mypath);
 
-                output = new FileOutputStream(Environment
-                        .getExternalStorageDirectory().toString()
-                        + "/test.csv");
+//                output = new FileOutputStream(Environment
+//                        .getExternalStorageDirectory().toString()
+//                        + "/test.csv");
 
 
-//                output = new FileOutputStream("/sdcard/test.csv");
+                output = new FileOutputStream("/sdcard/test.csv");
 
                 byte data[] = new byte[4096];
                 long total = 0;
@@ -358,8 +358,8 @@ public class RestaurantListActivity extends AppCompatActivity {
                 Toast.makeText(context,"File downloaded", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent();
                 intent.setAction(Intent.ACTION_VIEW);
-//                intent.setDataAndType(Uri.parse("/sdcard/test.csv"), "text/*");
-            intent.setDataAndType(Uri.parse(Environment.getExternalStorageDirectory().toString() + "/test.csv"), "text/*");
+                intent.setDataAndType(Uri.parse("/sdcard/test.csv"), "text/*");
+//            intent.setDataAndType(Uri.parse(Environment.getExternalStorageDirectory().toString() + "/test.csv"), "text/*");
 //            intent.setDataAndType(Uri.parse(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/test.csv"), "text/*");
 
 
