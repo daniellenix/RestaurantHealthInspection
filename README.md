@@ -21,9 +21,9 @@ Course Project URL: https://opencoursehub.cs.sfu.ca/bfraser/grav-cms/cmpt276/pro
         * [ ] The app must only download the data if an update is available otherwise it will waste the user's bandwidth and battery.
    * [ ] I want the application to store downloaded data locally so that it can work offline.
    * [ ] I want the application to initially install with the small data set (from iteration 1).
-   * [ ] Show a please-wait dialog, or a progress dialog, while data is downloading/updating.
-        * [ ] I need the dialog to have some animation showing the application is working.
-        * [ ] Plus it must have some way for the user to cancel the download.
+   * [x] Show a please-wait dialog, or a progress dialog, while data is downloading/updating.
+        * [x] I need the dialog to have some animation showing the application is working.
+        * [x] Plus it must have some way for the user to cancel the download.
         * [ ] When the download is cancelled the previously download data should still be used by the app.
 
 2. [30] Map
