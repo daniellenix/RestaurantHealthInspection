@@ -3,11 +3,13 @@ package ca.sfu.prjCalcium.pr1.Model;
 import android.content.Context;
 import android.util.Log;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -48,7 +50,7 @@ public class RestaurantManager implements Iterable<Restaurant> {
     public void readRestaurantData(Context context) {
         InputStream is = context.getResources().openRawResource(R.raw.restaurants_itr1);
         BufferedReader reader = new BufferedReader(
-                new InputStreamReader(is, Charset.forName("utf-8"))
+                new InputStreamReader(is, StandardCharsets.UTF_8)
         );
 
         String line = "";
@@ -81,6 +83,27 @@ public class RestaurantManager implements Iterable<Restaurant> {
 
     public Restaurant getRestaurantAtIndex(int position) {
         return restaurants.get(position);
+    }
+
+    public int getRestaurantIndexByName(String restName) {
+        for (Restaurant r : restaurants) {
+            if (r.getRestaurantName().equals(restName)) {
+                return restaurants.indexOf(r);
+            }
+        }
+
+        return -1;
+    }
+
+    public int getRestaurantIndexByLatLng(LatLng latLng) {
+        for (Restaurant r : restaurants) {
+            LatLng currentRLatLng = new LatLng(r.getLatitude(), r.getLongitude());
+            if (latLng.equals(currentRLatLng)) {
+                return restaurants.indexOf(r);
+            }
+        }
+
+        return -1;
     }
 
     public List<Restaurant> getRestaurants() {

@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -23,7 +24,6 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import ca.sfu.prjCalcium.pr1.Model.Inspection;
-import ca.sfu.prjCalcium.pr1.Model.InspectionManager;
 import ca.sfu.prjCalcium.pr1.Model.Restaurant;
 import ca.sfu.prjCalcium.pr1.Model.RestaurantManager;
 import ca.sfu.prjCalcium.pr1.R;
@@ -45,22 +45,34 @@ public class RestaurantListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if (!manager.isDataRead()) {
-            manager.readRestaurantData(RestaurantListActivity.this);
-
-            manager.sort(new AlphabetComparator());
-
-            for (Restaurant r : manager) {
-                InspectionManager iManager = r.getInspections();
-
-                iManager.sort(new InspectionComparator().reversed());
-            }
-
-            manager.setDataRead(true);
-        }
-
+        mapViewBtn();
         populateListView();
         clickRestaurant();
+    }
+
+    @Override
+    public void onBackPressed() {
+
+// make sure you have this outcommented
+// super.onBackPressed();
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        finish();
+        System.exit(0);
+    }
+
+    private void mapViewBtn() {
+        Button mapBtn = findViewById(R.id.mapBtn);
+
+        mapBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = MapsActivity.makeIntent(RestaurantListActivity.this);
+                startActivity(intent);
+            }
+        });
     }
 
     private void populateListView() {
@@ -159,14 +171,14 @@ public class RestaurantListActivity extends AppCompatActivity {
     }
 
     // https://stackoverflow.com/questions/2784514/sort-arraylist-of-custom-objects-by-property
-    public class AlphabetComparator implements Comparator<Restaurant> {
+    public static class AlphabetComparator implements Comparator<Restaurant> {
         @Override
         public int compare(Restaurant r1, Restaurant r2) {
             return r1.getRestaurantName().compareTo(r2.getRestaurantName());
         }
     }
 
-    public class InspectionComparator implements Comparator<Inspection> {
+    public static class InspectionComparator implements Comparator<Inspection> {
         @Override
         public int compare(Inspection i1, Inspection i2) {
             return i1.getInspectionDate().compareTo(i2.getInspectionDate());

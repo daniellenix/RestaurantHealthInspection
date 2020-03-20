@@ -11,4 +11,7 @@
     <string name="restaurant_detail_num_non_critical_issue">Non-critial Issues: %1$d</string>
     <string name="inspection_inspection_type">Inspection type: %1$s</string>
     <string name="inspection_date">Date: %1$s</string>
+    <string name="title_activity_maps">RestaurantMaps</string>
+    <string name="main_switch_to_map">Swich To Map</string>
+    <string name="map_switch_to_list">Switch To List</string>
 </resources>
