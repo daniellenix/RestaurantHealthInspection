@@ -15,6 +15,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import ca.sfu.prjCalcium.pr1.R;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Represent a list of restaurants.
