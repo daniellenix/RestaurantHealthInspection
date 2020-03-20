@@ -54,7 +54,6 @@ public class RestaurantDetailActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if (id == R.id.mybutton) {
-            // do something here
             finish();
         }
         return super.onOptionsItemSelected(item);
