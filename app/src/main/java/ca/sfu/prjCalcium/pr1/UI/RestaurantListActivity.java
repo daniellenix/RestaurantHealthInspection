@@ -99,6 +99,38 @@ public class RestaurantListActivity extends AppCompatActivity {
             // find the restaurant to work with
             Restaurant currentRestaurant = manager.getRestaurantAtIndex(position);
 
+            ImageView imageViewIcon = itemView.findViewById(R.id.icon);
+
+            if(currentRestaurant.getRestaurantName().contains("Pizza") ||
+                    currentRestaurant.getRestaurantName().contains("Panago") ||
+                    currentRestaurant.getRestaurantName().contains("Papa John's")) {
+                imageViewIcon.setImageDrawable(getDrawable(R.drawable.pizza));
+            } else if(currentRestaurant.getRestaurantName().contains("Pearl") ||
+                    currentRestaurant.getRestaurantName().contains("Chatime")) {
+                imageViewIcon.setImageDrawable(getDrawable(R.drawable.bubbletea));
+            } else if(currentRestaurant.getRestaurantName().contains("McDonalds")) {
+                imageViewIcon.setImageDrawable(getDrawable(R.drawable.brand));
+            } else if(currentRestaurant.getRestaurantName().contains("Coffee") ||
+                    currentRestaurant.getRestaurantName().contains("Cafe") ||
+                    currentRestaurant.getRestaurantName().contains("Tim Hortons")) {
+                imageViewIcon.setImageDrawable(getDrawable(R.drawable.coffee));
+            } else if(currentRestaurant.getRestaurantName().contains("Sushi") ||
+                    currentRestaurant.getRestaurantName().contains("Japanese")) {
+                imageViewIcon.setImageDrawable(getDrawable(R.drawable.sushi));
+            } else if(currentRestaurant.getRestaurantName().contains("Pho")) {
+                imageViewIcon.setImageDrawable(getDrawable(R.drawable.noodles));
+            } else if(currentRestaurant.getRestaurantName().contains("Sub") ||
+                    currentRestaurant.getRestaurantName().contains("Subway")) {
+                imageViewIcon.setImageDrawable(getDrawable(R.drawable.sandwich));
+            } else if(currentRestaurant.getRestaurantName().contains("Burger") ||
+                    currentRestaurant.getRestaurantName().contains("A&W")) {
+                imageViewIcon.setImageDrawable(getDrawable(R.drawable.burger));
+            } else if(currentRestaurant.getRestaurantName().contains("Ice Cream") ||
+                    currentRestaurant.getRestaurantName().contains("Dairy Queen")) {
+                imageViewIcon.setImageDrawable(getDrawable(R.drawable.icecream));
+            } else {
+                imageViewIcon.setImageDrawable(getDrawable(R.drawable.fork));
+            }
 
             // fill the name
             TextView textViewName = itemView.findViewById(R.id.name);
