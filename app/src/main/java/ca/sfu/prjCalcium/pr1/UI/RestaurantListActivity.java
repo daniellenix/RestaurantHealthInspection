@@ -2,14 +2,12 @@ package ca.sfu.prjCalcium.pr1.UI;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -56,6 +54,7 @@ public class RestaurantListActivity extends AppCompatActivity {
 
     // Singleton
     private RestaurantManager manager = RestaurantManager.getInstance();
+    private boolean mExternalStorageLocationGranted = false;
 
     public static Intent makeIntent(Context c) {
         return new Intent(c, RestaurantListActivity.class);
@@ -70,7 +69,7 @@ public class RestaurantListActivity extends AppCompatActivity {
     };
 
 
-    public static void verifyStoragePermissions(Activity activity) {
+    public void verifyStoragePermissions(Activity activity) {
         // Check if we have write permission
         int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
@@ -81,6 +80,9 @@ public class RestaurantListActivity extends AppCompatActivity {
                     PERMISSIONS_STORAGE,
                     REQUEST_EXTERNAL_STORAGE
             );
+        } else {
+            mExternalStorageLocationGranted = true;
+            initDataDownload();
         }
     }
 
@@ -103,25 +105,28 @@ public class RestaurantListActivity extends AppCompatActivity {
         clickRestaurant();
 
         verifyStoragePermissions(RestaurantListActivity.this);
+    }
 
-        mProgressDialog = new ProgressDialog(RestaurantListActivity.this);
-        mProgressDialog.setMessage("Currently downloading file");
-        mProgressDialog.setIndeterminate(true);
-        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        mProgressDialog.setCancelable(true);
+    private void initDataDownload() {
+        if (mExternalStorageLocationGranted) {
+            mProgressDialog = new ProgressDialog(RestaurantListActivity.this);
+            mProgressDialog.setMessage("Currently downloading file");
+            mProgressDialog.setIndeterminate(true);
+            mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            mProgressDialog.setCancelable(true);
 
-        // execute this when the downloader must be fired
-        final DownloadTask downloadTask = new DownloadTask(RestaurantListActivity.this);
-        downloadTask.execute(url);
+            // execute this when the downloader must be fired
+            final DownloadTask downloadTask = new DownloadTask(RestaurantListActivity.this);
+            downloadTask.execute(url);
 
-        mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
 
-            @Override
-            public void onCancel(DialogInterface dialog) {
-                downloadTask.cancel(true); //cancel the task
-            }
-        });
-
+                @Override
+                public void onCancel(DialogInterface dialog) {
+                    downloadTask.cancel(true); //cancel the task
+                }
+            });
+        }
     }
 
     private void populateListView() {
@@ -234,9 +239,24 @@ public class RestaurantListActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        mExternalStorageLocationGranted = false;
+
+        switch (requestCode) {
+            case REQUEST_EXTERNAL_STORAGE: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED
+                        && grantResults[1] == PackageManager.PERMISSION_GRANTED
+                ) {
+                    mExternalStorageLocationGranted = true;
+                    initDataDownload();
+                }
+            }
+        }
+    }
 
     private class DownloadTask extends AsyncTask<String, Integer, String> {
-
         private Context context;
         private PowerManager.WakeLock mWakeLock;
 
@@ -267,21 +287,12 @@ public class RestaurantListActivity extends AppCompatActivity {
 
                 // download the file
                 input = connection.getInputStream();
-//                File mypath = new File(Environment.getExternalStorageDirectory(), "test.csv");
-//                output = new FileOutputStream(mypath);
-
-//                File mypath = new File(Environment.getExternalStoragePublicDirectory(
-//                        Environment.DIRECTORY_DOCUMENTS), "test.csv");
-//                output = new FileOutputStream(mypath);
 
                 output = new FileOutputStream(Environment
                         .getExternalStorageDirectory().toString()
                         + "/test.csv");
 
-
-//                output = new FileOutputStream("/sdcard/test.csv");
-
-                byte data[] = new byte[4096];
+                byte[] data = new byte[4096];
                 long total = 0;
                 int count;
                 while ((count = input.read(data)) != -1) {
@@ -338,15 +349,11 @@ public class RestaurantListActivity extends AppCompatActivity {
         protected void onPostExecute(String result) {
             mWakeLock.release();
             mProgressDialog.dismiss();
-            if (result != null)
-                Toast.makeText(context,"Download error: "+result, Toast.LENGTH_LONG).show();
-            else
-                Toast.makeText(context,"File downloaded", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent();
-                intent.setAction(Intent.ACTION_VIEW);
-                intent.setDataAndType(Uri.parse(Environment.getExternalStorageDirectory().toString() + "/test.csv"), "text/*");
-
-                context.startActivity(intent);
+            if (result != null) {
+                Toast.makeText(context, "Download error: " + result, Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(context, "File downloaded", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 }
