@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -50,11 +51,11 @@ public class RestaurantListActivity extends AppCompatActivity {
         clickRestaurant();
     }
 
+
+    //https://gist.github.com/CreatorB/99cdb013a4888453b8a0
     @Override
     public void onBackPressed() {
 
-// make sure you have this outcommented
-// super.onBackPressed();
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_HOME);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -113,6 +114,44 @@ public class RestaurantListActivity extends AppCompatActivity {
             // find the restaurant to work with
             Restaurant currentRestaurant = manager.getRestaurantAtIndex(position);
 
+            ImageView imageViewIcon = itemView.findViewById(R.id.icon);
+
+            if(currentRestaurant.getRestaurantName().contains("Pizza") ||
+                    currentRestaurant.getRestaurantName().contains("Panago")) {
+                imageViewIcon.setImageDrawable(getDrawable(R.drawable.pizza));
+            } else if(currentRestaurant.getRestaurantName().contains("Papa John's")) {
+                imageViewIcon.setImageDrawable(getDrawable(R.drawable.papajohns));
+            } else if(currentRestaurant.getRestaurantName().contains("Pearl") ||
+                    currentRestaurant.getRestaurantName().contains("Chatime")) {
+                imageViewIcon.setImageDrawable(getDrawable(R.drawable.bubbletea));
+            } else if(currentRestaurant.getRestaurantName().contains("McDonald's")) {
+                imageViewIcon.setImageDrawable(getDrawable(R.drawable.brand));
+            } else if(currentRestaurant.getRestaurantName().contains("Coffee") ||
+                    currentRestaurant.getRestaurantName().contains("Cafe")) {
+                imageViewIcon.setImageDrawable(getDrawable(R.drawable.coffee));
+            } else if(currentRestaurant.getRestaurantName().contains("Tim Hortons")) {
+                imageViewIcon.setImageDrawable(getDrawable(R.drawable.timhortons));
+            } else if(currentRestaurant.getRestaurantName().contains("Sushi") ||
+                    currentRestaurant.getRestaurantName().contains("Japanese")) {
+                imageViewIcon.setImageDrawable(getDrawable(R.drawable.sushi));
+            } else if(currentRestaurant.getRestaurantName().contains("Pho")) {
+                imageViewIcon.setImageDrawable(getDrawable(R.drawable.noodles));
+            } else if(currentRestaurant.getRestaurantName().contains("Sub")) {
+                imageViewIcon.setImageDrawable(getDrawable(R.drawable.sandwich));
+            } else if(currentRestaurant.getRestaurantName().contains("Subway")) {
+                imageViewIcon.setImageDrawable(getDrawable(R.drawable.subway));
+            } else if(currentRestaurant.getRestaurantName().contains("Starbucks")) {
+                    imageViewIcon.setImageDrawable(getDrawable(R.drawable.starbucks));
+            } else if(currentRestaurant.getRestaurantName().contains("Burger")) {
+                imageViewIcon.setImageDrawable(getDrawable(R.drawable.burger));
+            } else if(currentRestaurant.getRestaurantName().contains("A&W")) {
+                imageViewIcon.setImageDrawable(getDrawable(R.drawable.aw));
+            } else if(currentRestaurant.getRestaurantName().contains("Ice Cream") ||
+                    currentRestaurant.getRestaurantName().contains("Dairy Queen")) {
+                imageViewIcon.setImageDrawable(getDrawable(R.drawable.icecream));
+            } else {
+                imageViewIcon.setImageDrawable(getDrawable(R.drawable.fork));
+            }
 
             // fill the name
             TextView textViewName = itemView.findViewById(R.id.name);
