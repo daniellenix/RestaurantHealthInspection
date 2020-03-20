@@ -13,7 +13,7 @@ public class Restaurant {
     private String facType;
     private double latitude;
     private double longitude;
-    InspectionManager inspections;
+    private InspectionManager inspections;
 
     public Restaurant() {
         this.trackingNumber = "";

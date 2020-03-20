@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -26,6 +28,9 @@ import ca.sfu.prjCalcium.pr1.Model.Restaurant;
 import ca.sfu.prjCalcium.pr1.Model.RestaurantManager;
 import ca.sfu.prjCalcium.pr1.R;
 
+/**
+ * Represent the logic inside the screen that displays the detail of a restaurant
+ */
 public class RestaurantDetailActivity extends AppCompatActivity {
 
     Restaurant r;
@@ -42,7 +47,18 @@ public class RestaurantDetailActivity extends AppCompatActivity {
 
         return intent;
     }
+    //https://stackoverflow.com/questions/38158953/how-to-create-button-in-action-bar-in-android
+    // handle button activities
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
 
+        if (id == R.id.mybutton) {
+            // do something here
+            finish();
+        }
+        return super.onOptionsItemSelected(item);
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,21 +74,19 @@ public class RestaurantDetailActivity extends AppCompatActivity {
 
     private void populateInfo() {
         TextView nameView = findViewById(R.id.detailName);
-
         nameView.setText(r.getRestaurantName());
 
         TextView addressView = findViewById(R.id.detailAddress);
-
         addressView.setText(r.getAddress());
 
         TextView gpsView = findViewById(R.id.detailGps);
-
-        gpsView.setText("Longitude: " + r.getLongitude() + "\n" + "Latitude: " + r.getLatitude());
+        gpsView.setText(getString(R.string.restaurant_detail_long_lati, r.getLongitude(), r.getLatitude()));
     }
 
     private void populateListView() {
         ArrayAdapter<Inspection> adapter = new RestaurantDetailActivity.MyListAdapter();
         ListView list = findViewById(R.id.restaurantInspectionListView);
+        list.setEmptyView(findViewById(R.id.inspectionNoItems));
         list.setAdapter(adapter);
     }
 
@@ -81,9 +95,6 @@ public class RestaurantDetailActivity extends AppCompatActivity {
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                Inspection clickedInspection = r.getInspections().getInspection(position);
-
                 Intent intent = InspectionActivity.makeIntent(RestaurantDetailActivity.this, r_index, position);
                 startActivity(intent);
             }
@@ -119,7 +130,7 @@ public class RestaurantDetailActivity extends AppCompatActivity {
             Inspection currentInspection = r.getInspections().getInspection(position);
 
             TextView hazardTextView = itemView.findViewById(R.id.inspectionListHazard);
-            hazardTextView.setText("Hazard Level: " + currentInspection.getHazardRating());
+            hazardTextView.setText(getString(R.string.restaurant_detail_hazard_level, currentInspection.getHazardRating()));
 
             // fill the hazard icon
             ImageView imageViewHazard = itemView.findViewById(R.id.hazard);
@@ -142,29 +153,26 @@ public class RestaurantDetailActivity extends AppCompatActivity {
 
             // fill the critical issues
             TextView textViewCriticalIssues = itemView.findViewById(R.id.InspectionCriticalIssues);
-            textViewCriticalIssues.setText("Critical Issues: " + currentInspection.getNumCritical());
+            textViewCriticalIssues.setText(getString(R.string.restaurant_detail_num_critical_issue, currentInspection.getNumCritical()));
 
             // fill the non-critical issues
             TextView textViewNonCriticalIssues = itemView.findViewById(R.id.InspectionNonCriticalIssues);
-            textViewNonCriticalIssues.setText("Non-critical Issues: " + currentInspection.getNumNonCritical());
+            textViewNonCriticalIssues.setText(getString(R.string.restaurant_detail_num_non_critical_issue, currentInspection.getNumNonCritical()));
 
             // fill the time
             TextView textViewTime = itemView.findViewById(R.id.time);
 
-            SimpleDateFormat formatter = new SimpleDateFormat("MMM dd, yyyy", Locale.CANADA);
             Date currentDate = new Date();
             Date pastDate = currentInspection.getInspectionDate();
 
             long dateDifference = TimeUnit.MILLISECONDS.toDays(currentDate.getTime() - pastDate.getTime());
 
             if (dateDifference < 30){
-                textViewTime.setText(dateDifference + " days ago");
-            }
-            else if (dateDifference > 30 && dateDifference <= 366){
+                textViewTime.setText(getString(R.string.inspection_days_ago, dateDifference));
+            } else if (dateDifference > 30 && dateDifference <= 366){
                 SimpleDateFormat formatter1 = new SimpleDateFormat("MMM dd", Locale.CANADA);
                 textViewTime.setText(formatter1.format(pastDate));
-            }
-            else {
+            } else {
                 SimpleDateFormat formatter2 = new SimpleDateFormat("MMM yyyy", Locale.CANADA);
                 textViewTime.setText(formatter2.format(pastDate));
             }

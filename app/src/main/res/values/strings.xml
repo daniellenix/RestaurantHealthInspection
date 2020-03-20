@@ -1,10 +1,17 @@
 <resources>
-    <string name="app_name">cmpt276-pr1</string>
-    <string name="inspection_type">Inspection Type :</string>
-    <string name="date">Date :</string>
-    <string name="of_critical_issues"># of critical issues :</string>
-    <string name="of_non_critical_issues"># of non critical issues :</string>
-    <string name="hazard_level">Hazard level :</string>
-    <string name="of_issues"># of issues</string>
-    <string name="time">Time</string>
+    <string name="app_name">Restaurant Inspection Viewer</string>
+    <string name="no_inspections">No Inspections</string>
+    <string name="zero_number_of_issues">Number of Issues: 0</string>
+    <string name="no_recent_inspections">N/A</string>
+    <string name="restaurant_list_num_issues">Number of Issues: %1$d</string>
+    <string name="inspection_days_ago">%1$d day(s) ago</string>
+    <string name="restaurant_detail_long_lati">Longitude: %1$f \n Latitude: %2$f</string>
+    <string name="restaurant_detail_hazard_level">Hazard Level: %1$s</string>
+    <string name="restaurant_detail_num_critical_issue">Critical Issues: %1$d</string>
+    <string name="restaurant_detail_num_non_critical_issue">Non-critial Issues: %1$d</string>
+    <string name="inspection_inspection_type">Inspection type: %1$s</string>
+    <string name="inspection_date">Date: %1$s</string>
+    <string name="title_activity_maps">RestaurantMaps</string>
+    <string name="main_switch_to_map">Swich To Map</string>
+    <string name="map_switch_to_list">Switch To List</string>
 </resources>
