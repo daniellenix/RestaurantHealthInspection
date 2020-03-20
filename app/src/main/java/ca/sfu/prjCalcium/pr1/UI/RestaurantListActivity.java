@@ -65,12 +65,32 @@ public class RestaurantListActivity extends AppCompatActivity {
     private static String restaurantURL = "https://data.surrey.ca/dataset/3c8cb648-0e80-4659-9078-ef4917b90ffb/resource/0e5d04a2-be9b-40fe-8de2-e88362ea916b/download/restaurants.csv";
     private static String inspectionURL = "https://data.surrey.ca/dataset/948e994d-74f5-41a2-b3cb-33fa6a98aa96/resource/30b38b66-649f-4507-a632-d5f6f5fe87f1/download/fraserhealthrestaurantinspectionreports.csv";
 
-
     private static String[] PERMISSIONS_STORAGE = {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        if (!manager.isDataRead()) {
+            verifyStoragePermissions(RestaurantListActivity.this);
+
+            manager.readRestaurantData();
+            manager.addInspectionsToRestaurants();
+            manager.sort(new AlphabetComparator());
+            for (Restaurant r : manager) {
+                InspectionManager iManager = r.getInspections();
+                iManager.sort(new InspectionComparator().reversed());
+            }
+            manager.setDataRead(true);
+        }
+
+        populateListView();
+        clickRestaurant();
+    }
 
     public void verifyStoragePermissions(Activity activity) {
         // Check if we have write permission
@@ -87,27 +107,6 @@ public class RestaurantListActivity extends AppCompatActivity {
             mExternalStorageLocationGranted = true;
             initDataDownload();
         }
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        if (!manager.isDataRead()) {
-            manager.readRestaurantData(RestaurantListActivity.this);
-            manager.sort(new AlphabetComparator());
-            for (Restaurant r : manager) {
-                InspectionManager iManager = r.getInspections();
-                iManager.sort(new InspectionComparator().reversed());
-            }
-            manager.setDataRead(true);
-        }
-
-        populateListView();
-        clickRestaurant();
-
-        verifyStoragePermissions(RestaurantListActivity.this);
     }
 
     private void initDataDownload() {
@@ -157,7 +156,7 @@ public class RestaurantListActivity extends AppCompatActivity {
     private class MyListAdapter extends ArrayAdapter<Restaurant> {
 
         public MyListAdapter() {
-            super(RestaurantListActivity.this, R.layout.restaurant_list, manager.getRestaurants());
+            super(RestaurantListActivity.this, R.layout.restaurant_list, manager.getRestaurantsAsLists());
         }
 
         @NonNull
