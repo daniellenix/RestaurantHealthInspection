@@ -2,7 +2,6 @@ package ca.sfu.prjCalcium.pr1.UI;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -14,7 +13,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.PowerManager;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -29,18 +27,12 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.channels.Channel;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
 import java.text.SimpleDateFormat;
 import java.util.Comparator;
 import java.util.Date;
@@ -52,7 +44,6 @@ import ca.sfu.prjCalcium.pr1.Model.InspectionManager;
 import ca.sfu.prjCalcium.pr1.Model.Restaurant;
 import ca.sfu.prjCalcium.pr1.Model.RestaurantManager;
 import ca.sfu.prjCalcium.pr1.R;
-import retrofit2.http.Url;
 
 
 /**
@@ -69,11 +60,9 @@ public class RestaurantListActivity extends AppCompatActivity {
         return new Intent(c, RestaurantListActivity.class);
     }
 
-    private static String url = "http://data.surrey.ca/dataset/3c8cb648-0e80-4659-9078-ef4917b90ffb/resource/0e5d04a2-be9b-40fe-8de2-e88362ea916b/download/restaurants.csv";
-//    private static String url = "http://data.surrey.ca/dataset/948e994d-74f5-41a2-b3cb-33fa6a98aa96/resource/30b38b66-649f-4507-a632-d5f6f5fe87f1/download/fraserhealthrestaurantinspectionreports.csv";
-
-
-    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static final int REQUEST_EXTERNAL_STORAGE = 1235;
+    //    private static String url = "https://data.surrey.ca/dataset/948e994d-74f5-41a2-b3cb-33fa6a98aa96/resource/30b38b66-649f-4507-a632-d5f6f5fe87f1/download/fraserhealthrestaurantinspectionreports.csv";
+    private static String url = "https://data.surrey.ca/dataset/3c8cb648-0e80-4659-9078-ef4917b90ffb/resource/0e5d04a2-be9b-40fe-8de2-e88362ea916b/download/restaurants.csv";
     private static String[] PERMISSIONS_STORAGE = {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
@@ -101,15 +90,11 @@ public class RestaurantListActivity extends AppCompatActivity {
 
         if (!manager.isDataRead()) {
             manager.readRestaurantData(RestaurantListActivity.this);
-
             manager.sort(new AlphabetComparator());
-
             for (Restaurant r : manager) {
                 InspectionManager iManager = r.getInspections();
-
                 iManager.sort(new InspectionComparator().reversed());
             }
-
             manager.setDataRead(true);
         }
 
@@ -248,7 +233,6 @@ public class RestaurantListActivity extends AppCompatActivity {
         }
     }
 
-
     private class DownloadTask extends AsyncTask<String, Integer, String> {
 
         private Context context;
@@ -295,7 +279,7 @@ public class RestaurantListActivity extends AppCompatActivity {
 
 //                output = new FileOutputStream("/sdcard/test.csv");
 
-                byte data[] = new byte[4096];
+                byte[] data = new byte[4096];
                 long total = 0;
                 int count;
                 while ((count = input.read(data)) != -1) {
@@ -335,7 +319,7 @@ public class RestaurantListActivity extends AppCompatActivity {
             PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
             mWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
                     getClass().getName());
-            mWakeLock.acquire();
+            mWakeLock.acquire(10 * 60 * 1000L /*10 minutes*/);
             mProgressDialog.show();
         }
 
@@ -358,10 +342,7 @@ public class RestaurantListActivity extends AppCompatActivity {
                 Toast.makeText(context,"File downloaded", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent();
                 intent.setAction(Intent.ACTION_VIEW);
-//                intent.setDataAndType(Uri.parse("/sdcard/test.csv"), "text/*");
             intent.setDataAndType(Uri.parse(Environment.getExternalStorageDirectory().toString() + "/test.csv"), "text/*");
-//            intent.setDataAndType(Uri.parse(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/test.csv"), "text/*");
-
 
                 context.startActivity(intent);
         }

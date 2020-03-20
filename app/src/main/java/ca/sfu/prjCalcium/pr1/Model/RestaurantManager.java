@@ -7,7 +7,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -15,8 +15,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import ca.sfu.prjCalcium.pr1.R;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Represent a list of restaurants.
@@ -50,7 +48,7 @@ public class RestaurantManager implements Iterable<Restaurant> {
     public void readRestaurantData(Context context) {
         InputStream is = context.getResources().openRawResource(R.raw.restaurants_itr1);
         BufferedReader reader = new BufferedReader(
-                new InputStreamReader(is, Charset.forName("utf-8"))
+                new InputStreamReader(is, StandardCharsets.UTF_8)
         );
 
         String line = "";
