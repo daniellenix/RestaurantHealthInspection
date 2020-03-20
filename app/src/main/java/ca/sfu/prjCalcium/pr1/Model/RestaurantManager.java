@@ -18,8 +18,6 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
-import ca.sfu.prjCalcium.pr1.R;
-
 /**
  * Represent a list of restaurants.
  */
@@ -78,16 +76,33 @@ public class RestaurantManager implements Iterable<Restaurant> {
 
                 //Read data
                 Restaurant sample = new Restaurant();
-                sample.setTrackingNumber(tokens[0].substring(1, tokens[0].length() - 1)); // Remove the quotation marks
-                sample.setRestaurantName(tokens[1].substring(1, tokens[1].length() - 1));
-                sample.setAddress(tokens[2].substring(1, tokens[2].length() - 1));
-                sample.setPhysicalCity(tokens[3].substring(1, tokens[3].length() - 1));
-                sample.setFacType(tokens[4].substring(1, tokens[4].length() - 1));
-                sample.setLatitude(Double.parseDouble(tokens[5]));
-                sample.setLongitude(Double.parseDouble(tokens[6]));
-                sample.setInspections(context);
-                restaurants.add(sample);
+                sample.setTrackingNumber(tokens[0]); // Remove the quotation marks
 
+                if (tokens[1].indexOf('\"') >= 0) { // if the restaurant name has comma, there should be a quotation mark
+                    int i = 1;
+                    StringBuilder restName = new StringBuilder();
+                    while (tokens[i].indexOf('\"') != -1) {
+                        restName.append(tokens[i]); // concat the string until the ending quotation mark
+                        i++;
+                    }
+                    sample.setRestaurantName(restName.toString());
+                    sample.setAddress(tokens[i]);
+                    sample.setPhysicalCity(tokens[++i]);
+                    sample.setFacType(tokens[++i]);
+                    sample.setLatitude(Double.parseDouble(tokens[++i]));
+                    sample.setLongitude(Double.parseDouble(tokens[++i]));
+                    sample.setInspections(context);
+                    restaurants.add(sample);
+                } else {
+                    sample.setRestaurantName(tokens[1]);
+                    sample.setAddress(tokens[2]);
+                    sample.setPhysicalCity(tokens[3]);
+                    sample.setFacType(tokens[4]);
+                    sample.setLatitude(Double.parseDouble(tokens[5]));
+                    sample.setLongitude(Double.parseDouble(tokens[6]));
+                    sample.setInspections(context);
+                    restaurants.add(sample);
+                }
             }
         } catch (IOException e) {
             Log.wtf("MyActivity", "Error reading data file on line" + line, e);
