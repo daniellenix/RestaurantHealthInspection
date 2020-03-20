@@ -1,9 +1,13 @@
 package ca.sfu.prjCalcium.pr1.Model;
 
 import android.content.Context;
+import android.os.Environment;
 import android.util.Log;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -46,9 +50,21 @@ public class RestaurantManager implements Iterable<Restaurant> {
     }
 
     public void readRestaurantData(Context context) {
-        InputStream is = context.getResources().openRawResource(R.raw.restaurants_itr1);
+//        InputStream is = context.getResources().openRawResource(R.raw.restaurants_itr1);
+
+        // Trying to read data
+        InputStream fis = null;
+        File textFile = new File(Environment
+                .getExternalStorageDirectory().toString()
+                + "/test.csv");
+        try {
+            fis = new FileInputStream(textFile);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
         BufferedReader reader = new BufferedReader(
-                new InputStreamReader(is, StandardCharsets.UTF_8)
+                new InputStreamReader(fis, StandardCharsets.UTF_8)
         );
 
         String line = "";
