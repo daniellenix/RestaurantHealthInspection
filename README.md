@@ -49,10 +49,10 @@ Course Project URL: https://opencoursehub.cs.sfu.ca/bfraser/grav-cms/cmpt276/pro
 
 4. [15] Back-button behaviour
 
-   * [ ] Toggling between map and restaurant list view is independent of the back button behaviour
-        * [ ] If a user goes from the map screen to the restaurant list screen and then pressing Android's back button, it exits the application.
-        * [ ] If a user goes from the restaurant list screen to the map screen and then pressing Android's back button, it exits the application.
-   * [ ] Pressing a back button (either Android's or the one on the app's screen) from the single restaurant screen takes the user back to either the map screen or the restaurant list screen, whichever the user last visited.
+   * [x] Toggling between map and restaurant list view is independent of the back button behaviour
+        * [x] If a user goes from the map screen to the restaurant list screen and then pressing Android's back button, it exits the application.
+        * [x] If a user goes from the restaurant list screen to the map screen and then pressing Android's back button, it exits the application.
+   * [x] Pressing a back button (either Android's or the one on the app's screen) from the single restaurant screen takes the user back to either the map screen or the restaurant list screen, whichever the user last visited.
    * [ ] On the single restaurant screen, tapping the GPS coords on a restaurant closes the current screen and returns to the map screen, selecting that restaurant and showing the small pop-up info about the restaurant.
 ## Style Guide
 

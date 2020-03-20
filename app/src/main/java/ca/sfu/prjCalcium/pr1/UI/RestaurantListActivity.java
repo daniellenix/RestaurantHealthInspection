@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -50,11 +51,11 @@ public class RestaurantListActivity extends AppCompatActivity {
         clickRestaurant();
     }
 
+
+    //https://gist.github.com/CreatorB/99cdb013a4888453b8a0
     @Override
     public void onBackPressed() {
 
-// make sure you have this outcommented
-// super.onBackPressed();
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_HOME);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
