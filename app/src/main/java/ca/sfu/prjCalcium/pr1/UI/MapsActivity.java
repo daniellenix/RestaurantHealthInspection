@@ -9,6 +9,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -55,6 +56,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public static Intent makeIntent(Context c) {
         return new Intent(c, MapsActivity.class);
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
     }
 
     @Override

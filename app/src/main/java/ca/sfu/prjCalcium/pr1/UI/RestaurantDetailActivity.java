@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -45,7 +47,17 @@ public class RestaurantDetailActivity extends AppCompatActivity {
 
         return intent;
     }
+    //https://stackoverflow.com/questions/38158953/how-to-create-button-in-action-bar-in-android
+    // handle button activities
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
 
+        if (id == R.id.mybutton) {
+            finish();
+        }
+        return super.onOptionsItemSelected(item);
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
