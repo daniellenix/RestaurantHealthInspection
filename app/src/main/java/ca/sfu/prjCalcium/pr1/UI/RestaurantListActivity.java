@@ -2,6 +2,7 @@ package ca.sfu.prjCalcium.pr1.UI;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -233,6 +234,7 @@ public class RestaurantListActivity extends AppCompatActivity {
         }
     }
 
+
     private class DownloadTask extends AsyncTask<String, Integer, String> {
 
         private Context context;
@@ -279,7 +281,7 @@ public class RestaurantListActivity extends AppCompatActivity {
 
 //                output = new FileOutputStream("/sdcard/test.csv");
 
-                byte[] data = new byte[4096];
+                byte data[] = new byte[4096];
                 long total = 0;
                 int count;
                 while ((count = input.read(data)) != -1) {
@@ -342,7 +344,7 @@ public class RestaurantListActivity extends AppCompatActivity {
                 Toast.makeText(context,"File downloaded", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent();
                 intent.setAction(Intent.ACTION_VIEW);
-            intent.setDataAndType(Uri.parse(Environment.getExternalStorageDirectory().toString() + "/test.csv"), "text/*");
+                intent.setDataAndType(Uri.parse(Environment.getExternalStorageDirectory().toString() + "/test.csv"), "text/*");
 
                 context.startActivity(intent);
         }
