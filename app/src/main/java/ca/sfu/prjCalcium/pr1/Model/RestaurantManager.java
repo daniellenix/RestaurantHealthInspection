@@ -18,6 +18,8 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
+import ca.sfu.prjCalcium.pr1.R;
+
 /**
  * Represent a list of restaurants.
  */
@@ -48,21 +50,21 @@ public class RestaurantManager implements Iterable<Restaurant> {
     }
 
     public void readRestaurantData(Context context) {
-        InputStream is = context.getResources().openRawResource(R.raw.restaurants_itr1);
+//        InputStream is = context.getResources().openRawResource(R.raw.restaurants_itr1);
 
         // Trying to read data
-//        InputStream fis = null;
-//        File textFile = new File(Environment
-//                .getExternalStorageDirectory().toString()
-//                + "/test.csv");
-//        try {
-//            fis = new FileInputStream(textFile);
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        }
+        InputStream fis = null;
+        File textFile = new File(Environment
+                .getExternalStorageDirectory().toString()
+                + "/restaurant.csv");
+        try {
+            fis = new FileInputStream(textFile);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
 
         BufferedReader reader = new BufferedReader(
-                new InputStreamReader(is, StandardCharsets.UTF_8)
+                new InputStreamReader(fis, StandardCharsets.UTF_8)
         );
 
         String line = "";

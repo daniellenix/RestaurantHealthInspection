@@ -1,10 +1,14 @@
 package ca.sfu.prjCalcium.pr1.Model;
 
 import android.content.Context;
+import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -30,9 +34,20 @@ public class InspectionManager implements Iterable<Inspection> {
     private List<Inspection> inspections = new ArrayList<>();
 
     public void addInspectionsByTrackingNumber(Context context, String restID) {
-        InputStream is = context.getResources().openRawResource(R.raw.inspectionreports_itr1);
+//        InputStream is = context.getResources().openRawResource(R.raw.inspectionreports_itr1);
+
+        InputStream fis = null;
+        File textFile = new File(Environment
+                .getExternalStorageDirectory().toString()
+                + "/inspection.csv");
+        try {
+            fis = new FileInputStream(textFile);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
         BufferedReader reader = new BufferedReader(
-                new InputStreamReader(is, StandardCharsets.UTF_8)
+                new InputStreamReader(fis, StandardCharsets.UTF_8)
         );
 
         String line = "";

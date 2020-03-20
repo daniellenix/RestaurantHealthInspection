@@ -61,7 +61,11 @@ public class RestaurantListActivity extends AppCompatActivity {
     }
 
     private static final int REQUEST_EXTERNAL_STORAGE = 1235;
-    private static String url = "https://data.surrey.ca/dataset/3c8cb648-0e80-4659-9078-ef4917b90ffb/resource/0e5d04a2-be9b-40fe-8de2-e88362ea916b/download/restaurants.csv";
+
+    private static String restaurantURL = "https://data.surrey.ca/dataset/3c8cb648-0e80-4659-9078-ef4917b90ffb/resource/0e5d04a2-be9b-40fe-8de2-e88362ea916b/download/restaurants.csv";
+    private static String inspectionURL = "https://data.surrey.ca/dataset/948e994d-74f5-41a2-b3cb-33fa6a98aa96/resource/30b38b66-649f-4507-a632-d5f6f5fe87f1/download/fraserhealthrestaurantinspectionreports.csv";
+
+
     private static String[] PERMISSIONS_STORAGE = {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
@@ -109,20 +113,23 @@ public class RestaurantListActivity extends AppCompatActivity {
     private void initDataDownload() {
         if (mExternalStorageLocationGranted) {
             mProgressDialog = new ProgressDialog(RestaurantListActivity.this);
-            mProgressDialog.setMessage("Currently downloading file");
+            mProgressDialog.setMessage("Currently downloading files");
             mProgressDialog.setIndeterminate(true);
             mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
             mProgressDialog.setCancelable(true);
 
             // execute this when the downloader must be fired
-            final DownloadTask downloadTask = new DownloadTask(RestaurantListActivity.this);
-            downloadTask.execute(url);
+            final DownloadTask downloadTask1 = new DownloadTask(RestaurantListActivity.this, "/restaurant.csv");
+            final DownloadTask downloadTask2 = new DownloadTask(RestaurantListActivity.this, "/inspection.csv");
+            downloadTask1.execute(restaurantURL);
+            downloadTask2.execute(inspectionURL);
 
             mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
 
                 @Override
                 public void onCancel(DialogInterface dialog) {
-                    downloadTask.cancel(true); //cancel the task
+                    downloadTask1.cancel(true); //cancel the task
+                    downloadTask2.cancel(true);
                 }
             });
         }
@@ -260,14 +267,17 @@ public class RestaurantListActivity extends AppCompatActivity {
         private Context context;
         private PowerManager.WakeLock mWakeLock;
 
-        public DownloadTask(Context context) {
+        private String downloadLocation;
+
+        public DownloadTask(Context context, String downloadLocation) {
             this.context = context;
+            this.downloadLocation = downloadLocation;
         }
 
         @Override
         protected String doInBackground(String... sUrl) {
             InputStream input = null;
-            OutputStream output = null;
+            OutputStream outputRestaurant = null;
             HttpURLConnection connection = null;
             try {
                 URL url = new URL(sUrl[0]);
@@ -287,10 +297,9 @@ public class RestaurantListActivity extends AppCompatActivity {
 
                 // download the file
                 input = connection.getInputStream();
-
-                output = new FileOutputStream(Environment
+                outputRestaurant = new FileOutputStream(Environment
                         .getExternalStorageDirectory().toString()
-                        + "/test.csv");
+                        + downloadLocation);
 
                 byte[] data = new byte[4096];
                 long total = 0;
@@ -305,14 +314,14 @@ public class RestaurantListActivity extends AppCompatActivity {
                     // publishing the progress....
                     if (fileLength > 0) // only if total length is known
                         publishProgress((int) (total * 100 / fileLength));
-                    output.write(data, 0, count);
+                    outputRestaurant.write(data, 0, count);
                 }
             } catch (Exception e) {
                 return e.toString();
             } finally {
                 try {
-                    if (output != null)
-                        output.close();
+                    if (outputRestaurant != null)
+                        outputRestaurant.close();
                     if (input != null)
                         input.close();
                 } catch (IOException ignored) {
