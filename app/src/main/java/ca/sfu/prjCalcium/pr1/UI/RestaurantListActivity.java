@@ -77,19 +77,10 @@ public class RestaurantListActivity extends AppCompatActivity {
 
         if (!manager.isDataRead()) {
             verifyStoragePermissions(RestaurantListActivity.this);
-
-            manager.readRestaurantData();
-            manager.addInspectionsToRestaurants();
-            manager.sort(new AlphabetComparator());
-            for (Restaurant r : manager) {
-                InspectionManager iManager = r.getInspections();
-                iManager.sort(new InspectionComparator().reversed());
-            }
-            manager.setDataRead(true);
+        } else {
+            populateListView();
+            clickRestaurant();
         }
-
-        populateListView();
-        clickRestaurant();
     }
 
     public void verifyStoragePermissions(Activity activity) {
@@ -361,6 +352,19 @@ public class RestaurantListActivity extends AppCompatActivity {
                 Toast.makeText(context, "Download error: " + result, Toast.LENGTH_LONG).show();
             } else {
                 Toast.makeText(context, "File downloaded", Toast.LENGTH_SHORT).show();
+
+                manager.clear();
+                manager.readRestaurantData();
+                manager.addInspectionsToRestaurants();
+                manager.sort(new AlphabetComparator());
+                for (Restaurant r : manager) {
+                    InspectionManager iManager = r.getInspections();
+                    iManager.sort(new InspectionComparator().reversed());
+                }
+                manager.setDataRead(true);
+
+                populateListView();
+                clickRestaurant();
             }
         }
     }

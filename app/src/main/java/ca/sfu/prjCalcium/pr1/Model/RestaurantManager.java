@@ -210,6 +210,10 @@ public class RestaurantManager implements Iterable<Restaurant> {
                             Violation v = new Violation(Integer.parseInt(v_token[0]), v_token[1], vDetailStr, v_token[v_token.length - 1]);
                             vManager.add(v);
                         } else if (v_token.length < 4) {
+                            if (v_token.length < 3) {
+                                Log.e("R", "V_token incorrect length. ");
+                                continue;
+                            }
                             Violation v = new Violation(Integer.parseInt(v_token[0]), v_token[1], v_token[2], "N/A");
                             vManager.add(v);
                         } else {
@@ -228,6 +232,10 @@ public class RestaurantManager implements Iterable<Restaurant> {
             Log.wtf("MyActivity", "Error reading data file on line" + line, e);
             e.printStackTrace();
         }
+    }
+
+    public void clear() {
+        restaurants.clear();
     }
 
     @Override
