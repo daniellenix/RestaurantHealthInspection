@@ -170,7 +170,9 @@ public class RestaurantManager implements Iterable<Restaurant> {
 
                 if (tokens[1].length() != 8) {
                     Log.e("R", "Restaurant date is not parsable. ");
+                    continue;
                 }
+
                 Date d = new SimpleDateFormat("yyyyMMdd", Locale.CANADA).parse(tokens[1]);
 
                 inspection.setInspectionDate(d);
