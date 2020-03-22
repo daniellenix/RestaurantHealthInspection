@@ -6,6 +6,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -26,9 +27,14 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -45,35 +51,44 @@ import ca.sfu.prjCalcium.pr1.Model.RestaurantManager;
 import ca.sfu.prjCalcium.pr1.R;
 
 
-/**
+/*
  * Represent the initial screen's logic structure.
  */
 public class RestaurantListActivity extends AppCompatActivity {
 
+    public static final String LAST_UPDATE_TIME_ON_SERVER = "lastUpdateTimeOnServer";
     ProgressDialog mProgressDialog;
+    private static final String restaurantURL = "https://data.surrey.ca/dataset/3c8cb648-0e80-4659-9078-ef4917b90ffb/resource/0e5d04a2-be9b-40fe-8de2-e88362ea916b/download/restaurants.csv";
 
     // Singleton
     private RestaurantManager manager = RestaurantManager.getInstance();
-    private boolean mExternalStorageLocationGranted = false;
 
-    public static Intent makeIntent(Context c) {
-        return new Intent(c, RestaurantListActivity.class);
-    }
+    private boolean mExternalStorageLocationGranted = false;
+    private static final String inspectionURL = "https://data.surrey.ca/dataset/948e994d-74f5-41a2-b3cb-33fa6a98aa96/resource/30b38b66-649f-4507-a632-d5f6f5fe87f1/download/fraserhealthrestaurantinspectionreports.csv";
+    private static final String restaurantJsonUrl = "https://data.surrey.ca/api/3/action/package_show?id=restaurants";
 
     private static final int REQUEST_EXTERNAL_STORAGE = 1235;
-
-    private static String restaurantURL = "https://data.surrey.ca/dataset/3c8cb648-0e80-4659-9078-ef4917b90ffb/resource/0e5d04a2-be9b-40fe-8de2-e88362ea916b/download/restaurants.csv";
-    private static String inspectionURL = "https://data.surrey.ca/dataset/948e994d-74f5-41a2-b3cb-33fa6a98aa96/resource/30b38b66-649f-4507-a632-d5f6f5fe87f1/download/fraserhealthrestaurantinspectionreports.csv";
+    private static final String inspectionJsonUrl = "https://data.surrey.ca/api/3/action/package_show?id=fraser-health-restaurant-inspection-reports";
+    ProgressDialog jsonProgressDialog;
+    private String restaurantUpdateTimeOnServer;
+    private String inspectionUpdateTimeOnServer;
 
     private static String[] PERMISSIONS_STORAGE = {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
 
+    public static Intent makeIntent(Context c) {
+        return new Intent(c, RestaurantListActivity.class);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+//        JsonTask restJsonTask = new JsonTask();
+//        restJsonTask.execute(restaurantJsonUrl, inspectionJsonUrl);
 
         if (!manager.isDataRead()) {
             verifyStoragePermissions(RestaurantListActivity.this);
@@ -83,7 +98,7 @@ public class RestaurantListActivity extends AppCompatActivity {
         }
     }
 
-    public void verifyStoragePermissions(Activity activity) {
+    private void verifyStoragePermissions(Activity activity) {
         // Check if we have write permission
         int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
@@ -143,6 +158,24 @@ public class RestaurantListActivity extends AppCompatActivity {
         });
     }
 
+    private void storeUpdateTimeToSharedPref() {
+        SharedPreferences preferences = getSharedPreferences(LAST_UPDATE_TIME_ON_SERVER, MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+
+        editor.putString("restaurantUpdateTimeOnServer", restaurantUpdateTimeOnServer);
+        editor.putString("inspectionLastUpdateTimeOnServer", inspectionUpdateTimeOnServer);
+        editor.apply();
+    }
+
+    private boolean isUpdateNeeded() {
+        SharedPreferences preferences = getSharedPreferences(LAST_UPDATE_TIME_ON_SERVER, MODE_PRIVATE);
+
+        String lastRestaurantUpdateTime = preferences.getString("restaurantUpdateTimeOnServer", "");
+        String lastInspectionUpdateTime = preferences.getString("inspectionLastUpdateTimeOnServer", "");
+
+        return !lastInspectionUpdateTime.equals(inspectionUpdateTimeOnServer) ||
+                !lastRestaurantUpdateTime.equals(restaurantUpdateTimeOnServer);
+    }
 
     private class MyListAdapter extends ArrayAdapter<Restaurant> {
 
@@ -366,6 +399,66 @@ public class RestaurantListActivity extends AppCompatActivity {
                 populateListView();
                 clickRestaurant();
             }
+        }
+    }
+
+    private class JsonTask extends AsyncTask<String, String, String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            jsonProgressDialog = new ProgressDialog(RestaurantListActivity.this);
+            jsonProgressDialog.setMessage("Please wait");
+            jsonProgressDialog.setProgressStyle(android.app.ProgressDialog.STYLE_SPINNER);
+            jsonProgressDialog.setCancelable(false);
+            jsonProgressDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+            HttpURLConnection connection = null;
+            BufferedReader reader = null;
+
+            try {
+
+                for (int i = 0; i < 2; i++) {
+                    URL link = new URL(strings[i]);
+
+                    connection = (HttpURLConnection) link.openConnection();
+                    connection.connect();
+
+                    InputStream stream = connection.getInputStream();
+
+                    reader = new BufferedReader(new InputStreamReader(stream));
+
+                    StringBuilder buffer = new StringBuilder();
+                    String line = "";
+
+                    while ((line = reader.readLine()) != null) {
+                        buffer.append(line).append("\n");
+                    }
+
+                    JSONObject jsonObject = new JSONObject(buffer.toString());
+                    JSONObject result = jsonObject.getJSONObject("result");
+
+                    if (i == 0) {
+                        restaurantUpdateTimeOnServer = result.getString("metadata_modified");
+                    } else {
+                        inspectionUpdateTimeOnServer = result.getString("metadata_modified");
+                    }
+
+                }
+            } catch (IOException | JSONException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            jsonProgressDialog.dismiss();
         }
     }
 }
