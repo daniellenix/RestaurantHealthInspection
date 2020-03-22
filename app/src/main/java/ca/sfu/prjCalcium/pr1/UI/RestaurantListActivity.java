@@ -51,27 +51,12 @@ public class RestaurantListActivity extends AppCompatActivity {
 
         long now = System.currentTimeMillis();
 
-        if (!manager.isDataRead()) {
-            manager.readRestaurantData(RestaurantListActivity.this);
-
-            manager.sort(new AlphabetComparator());
-
-            for (Restaurant r : manager) {
-                InspectionManager iManager = r.getInspections();
-
-                iManager.sort(new InspectionComparator().reversed());
-            }
-
-            manager.setDataRead(true);
-        }
-
-        populateListView();
-        clickRestaurant();
-
         // Test code
         //clearSharedReferencesData(); // use this line to run app as it is ran for first time
         //checkTestTime(now);
         checkTime(now);
+
+        clickRestaurant();
     }
 
     private void checkTime(long now) {
@@ -86,15 +71,15 @@ public class RestaurantListActivity extends AppCompatActivity {
         } else {
             // Check user's last run choice
             SharedPreferences pref = getSharedPreferences("Time", MODE_PRIVATE);
-            boolean choice = pref.getBoolean("UpdateRequired", true);
-            if (!choice) {
+            boolean choice = pref.getBoolean("UpdateRequired", false);
+            if (choice) {
                 createDialog();
                 Toast.makeText(getApplicationContext(), "Have Update!", Toast.LENGTH_LONG).show();
             } else {
                 Toast.makeText(getApplicationContext(), "Up to date!", Toast.LENGTH_LONG).show();
             }
         }
-        saveStartTime(now);
+        setSharedReferencesData("LastRun", now);
     }
 
     private long getLastStartTime() {
@@ -103,10 +88,14 @@ public class RestaurantListActivity extends AppCompatActivity {
         return time;
     }
 
-    private void saveStartTime(long now) {
+    private <T> void setSharedReferencesData(String name, T value) {
         SharedPreferences pref = getSharedPreferences("Time", MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
-        editor.putLong("LastRun", now);
+        if (value instanceof Long) {
+            editor.putLong(name, (Long)value);
+        } else { // value instanceof Boolean
+            editor.putBoolean(name, (Boolean)value);
+        }
         editor.commit();
     }
 
@@ -119,10 +108,7 @@ public class RestaurantListActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "Updating", Toast.LENGTH_LONG).show();
 
                 // Update status of shared references
-                SharedPreferences pref = getSharedPreferences("Time", MODE_PRIVATE);
-                SharedPreferences.Editor editor = pref.edit();
-                editor.putBoolean("UpdateRequired", true);
-                editor.commit();
+                setSharedReferencesData("UpdateRequired", false);
 
                 // To Do: update files
             }
@@ -133,11 +119,25 @@ public class RestaurantListActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(),
                         "This message will show again on next start", Toast.LENGTH_LONG).show();
 
+                // To Do: use old files
+                if (!manager.isDataRead()) {
+                    manager.readRestaurantData(RestaurantListActivity.this);
+
+                    manager.sort(new AlphabetComparator());
+
+                    for (Restaurant r : manager) {
+                        InspectionManager iManager = r.getInspections();
+
+                        iManager.sort(new InspectionComparator().reversed());
+                    }
+
+                    manager.setDataRead(true);
+
+                }
+                populateListView();
+
                 // Save user choice
-                SharedPreferences pref = getSharedPreferences("Time", MODE_PRIVATE);
-                SharedPreferences.Editor editor = pref.edit();
-                editor.putBoolean("UpdateRequired", false);
-                editor.commit();
+                setSharedReferencesData("UpdateRequired", true);
             }
         });
         AlertDialog alertDialog = builder.create();
@@ -153,7 +153,7 @@ public class RestaurantListActivity extends AppCompatActivity {
     }
 
     // For testing only
-    private void setSharedReferencesData(long time) {
+    private void setSharedReferencesTestData(long time) {
         SharedPreferences pref = getSharedPreferences("Time", MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
         editor.putLong("LastRun", time);
@@ -163,7 +163,7 @@ public class RestaurantListActivity extends AppCompatActivity {
     // For testing only
     private void checkTestTime(long now) {
         clearSharedReferencesData();
-        setSharedReferencesData(now - 72000000); // launch time - 20 hours
+        setSharedReferencesTestData(now - 72000000); // launch time - 20 hours
         long test = getLastStartTime();
         checkTime(now);
     }
