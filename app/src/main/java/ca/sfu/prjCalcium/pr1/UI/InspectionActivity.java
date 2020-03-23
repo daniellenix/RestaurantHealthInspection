@@ -37,6 +37,7 @@ public class InspectionActivity extends AppCompatActivity {
 
     // Singleton
     private RestaurantManager rManager;
+    private boolean mExternalStorageLocationGranted = false;
 
     private static final String I_INSPECTION_POSITION_PASSED_IN = "i_inspection_position_passed_in";
     private static final String I_RESTAURANT_POSITION_PASSED_IN = "i_restaurant_position_passed_in";
@@ -49,6 +50,7 @@ public class InspectionActivity extends AppCompatActivity {
 
         return intent;
     }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -182,4 +184,5 @@ public class InspectionActivity extends AppCompatActivity {
             return itemView;
         }
     }
+
 }
