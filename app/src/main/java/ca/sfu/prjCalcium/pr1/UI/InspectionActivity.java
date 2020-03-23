@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -37,7 +39,6 @@ public class InspectionActivity extends AppCompatActivity {
 
     // Singleton
     private RestaurantManager rManager;
-    private boolean mExternalStorageLocationGranted = false;
 
     private static final String I_INSPECTION_POSITION_PASSED_IN = "i_inspection_position_passed_in";
     private static final String I_RESTAURANT_POSITION_PASSED_IN = "i_restaurant_position_passed_in";
@@ -51,7 +52,6 @@ public class InspectionActivity extends AppCompatActivity {
         return intent;
     }
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,6 +63,22 @@ public class InspectionActivity extends AppCompatActivity {
         setInformation();
         populateListView();
         clickViolation();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.mybutton) {
+            finish();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return super.onCreateOptionsMenu(menu);
     }
 
     private void setInformation() {

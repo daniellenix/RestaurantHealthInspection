@@ -52,12 +52,10 @@
         </activity>
         <activity
             android:name=".UI.InspectionActivity"
-            android:label="Inspection"
-            android:parentActivityName=".UI.RestaurantDetailActivity" />
+            android:label="Inspection" />
         <activity
             android:name=".UI.RestaurantDetailActivity"
-            android:label="Restaurant Detail"
-            android:parentActivityName=".UI.RestaurantListActivity" />
+            android:label="Restaurant Detail" />
         <activity
             android:name=".UI.RestaurantListActivity"
             android:label="Restaurants">

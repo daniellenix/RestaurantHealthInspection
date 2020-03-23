@@ -170,13 +170,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         long last = getLastStartTime();
         // 20 hours = 72000000 milliseconds
         if (now - last >= 72000000) {
-            Toast.makeText(getApplicationContext(), "Need Update!", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), R.string.maps_toast_need_update, Toast.LENGTH_LONG).show();
 
             // Need to check if server has updated version of files
             if (isUpdateNeededFromServer()) {
                 createAskUserIfUpdateDialog();
             } else {
-                Toast.makeText(getApplicationContext(), "Welcome Back!", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), R.string.maps_toast_welcome_back, Toast.LENGTH_LONG).show();
             }
 
         } else {
