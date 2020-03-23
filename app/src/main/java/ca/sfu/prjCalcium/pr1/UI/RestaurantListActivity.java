@@ -57,13 +57,16 @@ import ca.sfu.prjCalcium.pr1.R;
  */
 public class RestaurantListActivity extends AppCompatActivity {
 
+    // Constants used for SharedPreferences
     public static final String LAST_UPDATE_TIME_ON_SERVER = "lastUpdateTimeOnServer";
     public static final String RESTAURANT_UPDATE_TIME_ON_SERVER = "restaurantUpdateTimeOnServer";
     public static final String INSPECTION_LAST_UPDATE_TIME_ON_SERVER = "inspectionLastUpdateTimeOnServer";
 
+    // Progress Dialogs
     ProgressDialog mProgressDialog;
     ProgressDialog jsonProgressDialog;
 
+    // Constants used to URLs
     private static final String inspectionURL = "https://data.surrey.ca/dataset/948e994d-74f5-41a2-b3cb-33fa6a98aa96/resource/30b38b66-649f-4507-a632-d5f6f5fe87f1/download/fraserhealthrestaurantinspectionreports.csv";
     private static final String restaurantURL = "https://data.surrey.ca/dataset/3c8cb648-0e80-4659-9078-ef4917b90ffb/resource/0e5d04a2-be9b-40fe-8de2-e88362ea916b/download/restaurants.csv";
     private static final String restaurantJsonUrl = "https://data.surrey.ca/api/3/action/package_show?id=restaurants";
@@ -74,6 +77,7 @@ public class RestaurantListActivity extends AppCompatActivity {
 
     private boolean mExternalStorageLocationGranted = false;
 
+    // Request code for call back listener
     private static final int REQUEST_EXTERNAL_STORAGE = 1235;
 
     private String restaurantUpdateTimeOnServer;
@@ -218,7 +222,51 @@ public class RestaurantListActivity extends AppCompatActivity {
     private void setUpViews() {
         populateListView();
         clickRestaurant();
+
+    private void verifyStoragePermissions(Activity activity) {
+        // Check if we have write permission
+        int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            // We don't have permission so prompt the user
+            ActivityCompat.requestPermissions(
+                    activity,
+                    PERMISSIONS_STORAGE,
+                    REQUEST_EXTERNAL_STORAGE
+            );
+        } else {
+            mExternalStorageLocationGranted = true;
+            initDataDownload();
+        }
     }
+
+    private void initDataDownload() {
+        if (mExternalStorageLocationGranted) {
+            mProgressDialog = new ProgressDialog(RestaurantListActivity.this);
+            mProgressDialog.setMessage("Currently downloading files");
+            mProgressDialog.setIndeterminate(true);
+            mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            mProgressDialog.setCancelable(true);
+
+            // execute this when the downloader must be fired
+            final DownloadTask downloadTask1 = new DownloadTask(RestaurantListActivity.this, "/restaurant.csv");
+            final DownloadTask downloadTask2 = new DownloadTask(RestaurantListActivity.this, "/inspection.csv");
+
+            mProgressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(android.R.string.cancel), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    downloadTask1.cancel(true); //cancel the task
+                    downloadTask2.cancel(true);
+
+                    // if cancel, load local data here
+                }
+            });
+
+            downloadTask1.execute(restaurantURL);
+            downloadTask2.execute(inspectionURL);
+        }
+    }
+
     private void verifyStoragePermissions(Activity activity) {
         // Check if we have write permission
         int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
@@ -374,21 +422,6 @@ public class RestaurantListActivity extends AppCompatActivity {
             }
 
             return itemView;
-        }
-    }
-
-    // https://stackoverflow.com/questions/2784514/sort-arraylist-of-custom-objects-by-property
-    public class AlphabetComparator implements Comparator<Restaurant> {
-        @Override
-        public int compare(Restaurant r1, Restaurant r2) {
-            return r1.getRestaurantName().compareTo(r2.getRestaurantName());
-        }
-    }
-
-    public class InspectionComparator implements Comparator<Inspection> {
-        @Override
-        public int compare(Inspection i1, Inspection i2) {
-            return i1.getInspectionDate().compareTo(i2.getInspectionDate());
         }
     }
 
@@ -594,6 +627,21 @@ public class RestaurantListActivity extends AppCompatActivity {
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
             jsonProgressDialog.dismiss();
+        }
+    }
+
+    // https://stackoverflow.com/questions/2784514/sort-arraylist-of-custom-objects-by-property
+    public class AlphabetComparator implements Comparator<Restaurant> {
+        @Override
+        public int compare(Restaurant r1, Restaurant r2) {
+            return r1.getRestaurantName().compareTo(r2.getRestaurantName());
+        }
+    }
+
+    public class InspectionComparator implements Comparator<Inspection> {
+        @Override
+        public int compare(Inspection i1, Inspection i2) {
+            return i1.getInspectionDate().compareTo(i2.getInspectionDate());
         }
     }
 }
