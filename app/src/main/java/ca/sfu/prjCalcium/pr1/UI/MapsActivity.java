@@ -69,27 +69,29 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public static final String INSPECTION_LAST_UPDATE_TIME_ON_SERVER = "inspectionLastUpdateTimeOnServer";
 
     // Constants used to URLs
-    private static final String inspectionURL = "https://data.surrey.ca/dataset/948e994d-74f5-41a2-b3cb-33fa6a98aa96/resource/30b38b66-649f-4507-a632-d5f6f5fe87f1/download/fraserhealthrestaurantinspectionreports.csv";
-    private static final String restaurantURL = "https://data.surrey.ca/dataset/3c8cb648-0e80-4659-9078-ef4917b90ffb/resource/0e5d04a2-be9b-40fe-8de2-e88362ea916b/download/restaurants.csv";
     private static final String restaurantJsonUrl = "https://data.surrey.ca/api/3/action/package_show?id=restaurants";
     private static final String inspectionJsonUrl = "https://data.surrey.ca/api/3/action/package_show?id=fraser-health-restaurant-inspection-reports";
 
     // Request code for call back listener
     private static final int REQUEST_EXTERNAL_STORAGE = 1235;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1234;
-    private static String[] PERMISSIONS_STORAGE = {
+
+    private static final String[] PERMISSIONS_STORAGE = {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
-    private static String[] PERMISSIONS_LOCATION = {
+    private static final String[] PERMISSIONS_LOCATION = {
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION
     };
+
     // Progress Dialogs
     ProgressDialog mProgressDialog;
     ProgressDialog jsonProgressDialog;
+
     private boolean mLocationPermissionGranted = false;
     private boolean mExternalStorageLocationGranted = false;
+
     private String restaurantUpdateTimeOnServer;
     private String inspectionUpdateTimeOnServer;
 
@@ -99,6 +101,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private RestaurantManager manager = RestaurantManager.getInstance();
 
     private ClusterManager<MyItem> mClusterManager;
+
+    private static String inspectionURL;
+    private static String restaurantURL;
 
     public static Intent makeIntent(Context c) {
         return new Intent(c, MapsActivity.class);
@@ -117,12 +122,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        long now = System.currentTimeMillis();
 
         JsonTask restJsonTask = new JsonTask();
         restJsonTask.execute(restaurantJsonUrl, inspectionJsonUrl);
 
-        checkTime(now);
         initBackToListButton();
     }
 
@@ -346,21 +349,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mProgressDialog.setCancelable(true);
 
             // execute this when the downloader must be fired
-            final DownloadTask downloadTask1 = new DownloadTask(MapsActivity.this, "/restaurant.csv");
-            final DownloadTask downloadTask2 = new DownloadTask(MapsActivity.this, "/inspection.csv");
+            final DownloadTask downloadTask = new DownloadTask(MapsActivity.this, new String[]{"/restaurant.csv", "/inspection.csv"});
 
             mProgressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(android.R.string.cancel), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    downloadTask1.cancel(true); //cancel the task
-                    downloadTask2.cancel(true);
-
+                    downloadTask.cancel(true); //cancel the task
                     loadManagerFromInternal();
                 }
             });
 
-            downloadTask1.execute(restaurantURL);
-            downloadTask2.execute(inspectionURL);
+            downloadTask.execute(restaurantURL, inspectionURL);
         }
     }
 
@@ -560,9 +559,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         private Context context;
         private PowerManager.WakeLock mWakeLock;
 
-        private String downloadLocation;
+        private String[] downloadLocation;
 
-        public DownloadTask(Context context, String downloadLocation) {
+        public DownloadTask(Context context, String[] downloadLocation) {
             this.context = context;
             this.downloadLocation = downloadLocation;
         }
@@ -572,56 +571,66 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             InputStream input = null;
             OutputStream outputRestaurant = null;
             HttpURLConnection connection = null;
-            try {
-                URL url = new URL(sUrl[0]);
-                connection = (HttpURLConnection) url.openConnection();
-                connection.connect();
 
-                // expect HTTP 200 OK, so we don't mistakenly save error report
-                // instead of the file
-                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                    return "Server returned HTTP " + connection.getResponseCode()
-                            + " " + connection.getResponseMessage();
-                }
-
-                // this will be useful to display download percentage
-                // might be -1: server did not report the length
-                int fileLength = connection.getContentLength();
-
-                // download the file
-                input = connection.getInputStream();
-                outputRestaurant = new FileOutputStream(Environment
-                        .getExternalStorageDirectory().toString()
-                        + downloadLocation);
-
-                byte[] data = new byte[4096];
-                long total = 0;
-                int count;
-                while ((count = input.read(data)) != -1) {
-                    // allow canceling with back button
-                    if (isCancelled()) {
-                        input.close();
-                        return null;
-                    }
-                    total += count;
-                    // publishing the progress....
-                    if (fileLength > 0) // only if total length is known
-                        publishProgress((int) (total * 100 / fileLength));
-                    outputRestaurant.write(data, 0, count);
-                }
-            } catch (Exception e) {
-                return e.toString();
-            } finally {
+            for (int i = 0; i < sUrl.length; i++) {
                 try {
-                    if (outputRestaurant != null)
-                        outputRestaurant.close();
-                    if (input != null)
-                        input.close();
-                } catch (IOException ignored) {
-                }
+                    URL link = new URL(sUrl[i]);
+                    connection = (HttpURLConnection) link.openConnection();
+                    connection.connect();
 
-                if (connection != null)
-                    connection.disconnect();
+                    // expect HTTP 200 OK, so we don't mistakenly save error report
+                    // instead of the file
+                    if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                        return "Server returned HTTP " + connection.getResponseCode()
+                                + " " + connection.getResponseMessage();
+                    }
+
+                    // this will be useful to display download percentage
+                    // might be -1: server did not report the length
+                    int fileLength = connection.getContentLength();
+
+                    // download the file
+                    input = connection.getInputStream();
+
+                    if (i == 0) {
+                        outputRestaurant = new FileOutputStream(Environment
+                                .getExternalStorageDirectory().toString()
+                                + downloadLocation[0]);
+                    } else {
+                        outputRestaurant = new FileOutputStream(Environment
+                                .getExternalStorageDirectory().toString()
+                                + downloadLocation[1]);
+                    }
+
+                    byte[] data = new byte[4096];
+                    long total = 0;
+                    int count;
+                    while ((count = input.read(data)) != -1) {
+                        // allow canceling with back button
+                        if (isCancelled()) {
+                            input.close();
+                            return null;
+                        }
+                        total += count;
+                        // publishing the progress....
+                        if (fileLength > 0) // only if total length is known
+                            publishProgress((int) (total * 100 / fileLength));
+                        outputRestaurant.write(data, 0, count);
+                    }
+                } catch (Exception e) {
+                    return e.toString();
+                } finally {
+                    try {
+                        if (outputRestaurant != null)
+                            outputRestaurant.close();
+                        if (input != null)
+                            input.close();
+                    } catch (IOException ignored) {
+                    }
+
+                    if (connection != null)
+                        connection.disconnect();
+                }
             }
             return null;
         }
@@ -682,8 +691,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             BufferedReader reader = null;
 
             try {
-
-                for (int i = 0; i < 2; i++) {
+                for (int i = 0; i < strings.length; i++) {
                     URL link = new URL(strings[i]);
 
                     connection = (HttpURLConnection) link.openConnection();
@@ -705,8 +713,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     if (i == 0) {
                         restaurantUpdateTimeOnServer = result.getString("metadata_modified");
+                        restaurantURL = result.getJSONArray("resources").getJSONObject(0).getString("url");
+                        restaurantURL = restaurantURL.replace("http://", "https://");
                     } else {
                         inspectionUpdateTimeOnServer = result.getString("metadata_modified");
+                        inspectionURL = result.getJSONArray("resources").getJSONObject(0).getString("url");
+                        inspectionURL = inspectionURL.replace("http://", "https://");
                     }
 
                 }
@@ -721,6 +733,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
             jsonProgressDialog.dismiss();
+
+            long now = System.currentTimeMillis();
+            checkTime(now);
         }
     }
 }
