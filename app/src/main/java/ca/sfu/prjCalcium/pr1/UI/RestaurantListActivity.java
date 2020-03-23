@@ -112,8 +112,8 @@ public class RestaurantListActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "Need Update!", Toast.LENGTH_LONG).show();
 
             // Need to check if server has updated version of files
-            if (isUpdateNeeded()) {
-                createDialog();
+            if (isUpdateNeededFromServer()) {
+                createAskUserIfUpdateDialog();
             } else {
                 Toast.makeText(getApplicationContext(), "Welcome Back!", Toast.LENGTH_LONG).show();
             }
@@ -123,7 +123,7 @@ public class RestaurantListActivity extends AppCompatActivity {
             SharedPreferences pref = getSharedPreferences("Time", MODE_PRIVATE);
             boolean choice = pref.getBoolean("UpdateRequired", false);
             if (choice) {
-                createDialog();
+                createAskUserIfUpdateDialog();
                 Toast.makeText(getApplicationContext(), "Have Update!", Toast.LENGTH_LONG).show();
             } else {
                 int permission = ActivityCompat.checkSelfPermission(RestaurantListActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
@@ -132,26 +132,15 @@ public class RestaurantListActivity extends AppCompatActivity {
                     AlertDialog.Builder builder = new AlertDialog.Builder(this);
                     builder.setTitle("Permission Denied, Using deafault data")
                             .setMessage("If you want to update data\n" +
-                                    "go to Setting-> Apps -> Permission -> enable");
+                                    "go to Setting -> Apps -> Permission -> enable");
                     AlertDialog alertDialog = builder.create();
                     alertDialog.show();
-                    manager.readRestaurantDataFromInternal(getApplicationContext());
-                    manager.sort(new AlphabetComparator());
-                    for (Restaurant r : manager) {
-                        InspectionManager iManager = r.getInspections();
-                        iManager.sort(new InspectionComparator().reversed());
-                    }
-                    manager.setDataRead(true);
+
+                    loadManagerFromInternal();
                 } else {
                     Toast.makeText(getApplicationContext(), "Up to date!", Toast.LENGTH_LONG).show();
-                    manager.readRestaurantDataFromExternal();
-                    manager.addInspectionsToRestaurantsFromExternal();
-                    manager.sort(new AlphabetComparator());
-                    for (Restaurant r : manager) {
-                        InspectionManager iManager = r.getInspections();
-                        iManager.sort(new InspectionComparator().reversed());
-                    }
-                    manager.setDataRead(true);
+
+                    loadManagerFromExternal();
                 }
                 setUpViews();
             }
@@ -168,28 +157,25 @@ public class RestaurantListActivity extends AppCompatActivity {
         SharedPreferences pref = getSharedPreferences("Time", MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
         if (value instanceof Long) {
-            editor.putLong(name, (Long)value);
+            editor.putLong(name, (Long) value);
         } else { // value instanceof Boolean
-            editor.putBoolean(name, (Boolean)value);
+            editor.putBoolean(name, (Boolean) value);
         }
         editor.apply();
     }
 
-    private void createDialog() {
+    private void createAskUserIfUpdateDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Update Found").setMessage("Do you want to update now?");
-        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                //Toast.makeText(getApplicationContext(), "Updating", Toast.LENGTH_LONG).show();
-
                 // Update status of shared references
                 setSharedReferencesData("UpdateRequired", false);
 
                 // Update files
                 verifyStoragePermissions(RestaurantListActivity.this);
                 storeUpdateTimeToSharedPref();
-                setUpViews();
             }
         });
         builder.setNegativeButton("Later", new DialogInterface.OnClickListener() {
@@ -200,14 +186,7 @@ public class RestaurantListActivity extends AppCompatActivity {
 
                 // Use old files
                 if (!manager.isDataRead()) {
-                    manager.readRestaurantDataFromInternal(getApplicationContext());
-
-                    manager.sort(new AlphabetComparator());
-                    for (Restaurant r : manager) {
-                        InspectionManager iManager = r.getInspections();
-                        iManager.sort(new InspectionComparator().reversed());
-                    }
-                    manager.setDataRead(true);
+                    loadManagerFromInternal();
                 }
                 setUpViews();
 
@@ -219,10 +198,6 @@ public class RestaurantListActivity extends AppCompatActivity {
         alertDialog.show();
     }
 
-    private void setUpViews() {
-        populateListView();
-        clickRestaurant();
-
     private void verifyStoragePermissions(Activity activity) {
         // Check if we have write permission
         int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
@@ -258,51 +233,7 @@ public class RestaurantListActivity extends AppCompatActivity {
                     downloadTask1.cancel(true); //cancel the task
                     downloadTask2.cancel(true);
 
-                    // if cancel, load local data here
-                }
-            });
-
-            downloadTask1.execute(restaurantURL);
-            downloadTask2.execute(inspectionURL);
-        }
-    }
-
-    private void verifyStoragePermissions(Activity activity) {
-        // Check if we have write permission
-        int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-
-        if (permission != PackageManager.PERMISSION_GRANTED) {
-            // We don't have permission so prompt the user
-            ActivityCompat.requestPermissions(
-                    activity,
-                    PERMISSIONS_STORAGE,
-                    REQUEST_EXTERNAL_STORAGE
-            );
-        } else {
-            mExternalStorageLocationGranted = true;
-            initDataDownload();
-        }
-    }
-
-    private void initDataDownload() {
-        if (mExternalStorageLocationGranted) {
-            mProgressDialog = new ProgressDialog(RestaurantListActivity.this);
-            mProgressDialog.setMessage("Currently downloading files");
-            mProgressDialog.setIndeterminate(true);
-            mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-            mProgressDialog.setCancelable(true);
-
-            // execute this when the downloader must be fired
-            final DownloadTask downloadTask1 = new DownloadTask(RestaurantListActivity.this, "/restaurant.csv");
-            final DownloadTask downloadTask2 = new DownloadTask(RestaurantListActivity.this, "/inspection.csv");
-
-            mProgressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(android.R.string.cancel), new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    downloadTask1.cancel(true); //cancel the task
-                    downloadTask2.cancel(true);
-
-                    // if cancel, load local data here
+                    loadManagerFromInternal();
                 }
             });
 
@@ -338,7 +269,7 @@ public class RestaurantListActivity extends AppCompatActivity {
         editor.apply();
     }
 
-    private boolean isUpdateNeeded() {
+    private boolean isUpdateNeededFromServer() {
         SharedPreferences preferences = getSharedPreferences(LAST_UPDATE_TIME_ON_SERVER, MODE_PRIVATE);
 
         String lastRestaurantUpdateTime = preferences.getString(RESTAURANT_UPDATE_TIME_ON_SERVER, "");
@@ -346,6 +277,58 @@ public class RestaurantListActivity extends AppCompatActivity {
 
         return !lastInspectionUpdateTime.equals(inspectionUpdateTimeOnServer) ||
                 !lastRestaurantUpdateTime.equals(restaurantUpdateTimeOnServer);
+    }
+
+    private void setUpViews() {
+        populateListView();
+        clickRestaurant();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        mExternalStorageLocationGranted = false;
+
+        switch (requestCode) {
+            case REQUEST_EXTERNAL_STORAGE: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED
+                        && grantResults[1] == PackageManager.PERMISSION_GRANTED
+                ) {
+                    mExternalStorageLocationGranted = true;
+                    initDataDownload();
+                } else { // if user does not give permission
+                    Toast.makeText(getApplicationContext(), "Update canceled", Toast.LENGTH_LONG).show();
+
+                    loadManagerFromInternal();
+
+                    setUpViews();
+                }
+            }
+        }
+    }
+
+    private void loadManagerFromInternal() {
+        manager.clear();
+        manager.readRestaurantDataFromInternal(this);
+        manager.sort(new AlphabetComparator());
+        for (Restaurant r : manager) {
+            InspectionManager iManager = r.getInspections();
+            iManager.sort(new InspectionComparator().reversed());
+        }
+        manager.setDataRead(true);
+    }
+
+    private void loadManagerFromExternal() {
+        manager.clear();
+        manager.readRestaurantDataFromExternal();
+        manager.addInspectionsToRestaurantsFromExternal();
+        manager.sort(new AlphabetComparator());
+        for (Restaurant r : manager) {
+            InspectionManager iManager = r.getInspections();
+            iManager.sort(new InspectionComparator().reversed());
+        }
+        manager.setDataRead(true);
     }
 
     private class MyListAdapter extends ArrayAdapter<Restaurant> {
@@ -395,9 +378,9 @@ public class RestaurantListActivity extends AppCompatActivity {
 
                 long dateDifference = TimeUnit.MILLISECONDS.toDays(currentDate.getTime() - pastDate.getTime());
 
-                if (dateDifference < 30){
+                if (dateDifference < 30) {
                     textViewTime.setText(getString(R.string.inspection_days_ago, dateDifference));
-                } else if (dateDifference > 30 && dateDifference <= 366){
+                } else if (dateDifference > 30 && dateDifference <= 366) {
                     SimpleDateFormat formatter1 = new SimpleDateFormat("MMM dd", Locale.CANADA);
                     textViewTime.setText(formatter1.format(pastDate));
                 } else {
@@ -422,36 +405,6 @@ public class RestaurantListActivity extends AppCompatActivity {
             }
 
             return itemView;
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        mExternalStorageLocationGranted = false;
-
-        switch (requestCode) {
-            case REQUEST_EXTERNAL_STORAGE: {
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED
-                        && grantResults[1] == PackageManager.PERMISSION_GRANTED
-                ) {
-                    mExternalStorageLocationGranted = true;
-                    initDataDownload();
-                } else {
-                    Toast.makeText(getApplicationContext(), "Update canceled", Toast.LENGTH_LONG).show();
-                    manager.clear();
-                    manager.readRestaurantDataFromInternal(this);
-
-                    manager.sort(new AlphabetComparator());
-                    for (Restaurant r : manager) {
-                        InspectionManager iManager = r.getInspections();
-                        iManager.sort(new InspectionComparator().reversed());
-                    }
-                    manager.setDataRead(true);
-
-                    setUpViews();
-                }
-            }
         }
     }
 
@@ -555,15 +508,7 @@ public class RestaurantListActivity extends AppCompatActivity {
             } else {
                 Toast.makeText(context, "File downloaded", Toast.LENGTH_SHORT).show();
 
-                manager.clear();
-                manager.readRestaurantDataFromExternal();
-                manager.addInspectionsToRestaurantsFromExternal();
-                manager.sort(new AlphabetComparator());
-                for (Restaurant r : manager) {
-                    InspectionManager iManager = r.getInspections();
-                    iManager.sort(new InspectionComparator().reversed());
-                }
-                manager.setDataRead(true);
+                loadManagerFromExternal();
 
                 setUpViews();
             }
@@ -644,4 +589,5 @@ public class RestaurantListActivity extends AppCompatActivity {
             return i1.getInspectionDate().compareTo(i2.getInspectionDate());
         }
     }
+
 }

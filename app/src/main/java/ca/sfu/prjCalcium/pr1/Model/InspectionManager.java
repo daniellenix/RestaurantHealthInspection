@@ -100,7 +100,6 @@ public class InspectionManager implements Iterable<Inspection> {
         }
     }
 
-
     public List<Inspection> getInspections() {
         return inspections;
     }
