@@ -1,5 +1,6 @@
 package ca.sfu.prjCalcium.pr1.Model;
 
+import android.content.Context;
 import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
@@ -23,6 +24,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
+import ca.sfu.prjCalcium.pr1.R;
+
 /**
  * Represent a list of restaurants.
  */
@@ -30,18 +33,9 @@ public class RestaurantManager implements Iterable<Restaurant> {
 
     private static RestaurantManager instance;
     private boolean isDataRead = false;
-
-    private RestaurantManager() {
-    }
-
-    public boolean isDataRead() {
-        return isDataRead;
-    }
-
     private List<Restaurant> restaurants = new ArrayList<>();
 
-    public void setDataRead(boolean dataRead) {
-        isDataRead = dataRead;
+    private RestaurantManager() {
     }
 
     public static RestaurantManager getInstance() {
@@ -52,7 +46,15 @@ public class RestaurantManager implements Iterable<Restaurant> {
         return instance;
     }
 
-    public void readRestaurantData() {
+    public boolean isDataRead() {
+        return isDataRead;
+    }
+
+    public void setDataRead(boolean dataRead) {
+        isDataRead = dataRead;
+    }
+
+    public void readRestaurantDataFromExternal() {
         // Trying to read data
         InputStream fis = null;
         File textFile = new File(Environment
@@ -110,6 +112,40 @@ public class RestaurantManager implements Iterable<Restaurant> {
         }
     }
 
+    public void readRestaurantDataFromInternal(Context context) {
+        InputStream is = context.getResources().openRawResource(R.raw.restaurants_itr1);
+        BufferedReader reader = new BufferedReader(
+                new InputStreamReader(is, StandardCharsets.UTF_8)
+        );
+
+        String line = "";
+        try {
+
+            reader.readLine();
+
+            while ((line = reader.readLine()) != null) {
+                //Split by ","
+                String[] tokens = line.split(",");
+
+                //Read data
+                Restaurant sample = new Restaurant();
+                sample.setTrackingNumber(tokens[0].substring(1, tokens[0].length() - 1)); // Remove the quotation marks
+                sample.setRestaurantName(tokens[1].substring(1, tokens[1].length() - 1));
+                sample.setAddress(tokens[2].substring(1, tokens[2].length() - 1));
+                sample.setPhysicalCity(tokens[3].substring(1, tokens[3].length() - 1));
+                sample.setFacType(tokens[4].substring(1, tokens[4].length() - 1));
+                sample.setLatitude(Double.parseDouble(tokens[5]));
+                sample.setLongitude(Double.parseDouble(tokens[6]));
+                sample.setInspections(context);
+                restaurants.add(sample);
+
+            }
+        } catch (IOException e) {
+            Log.wtf("MyActivity", "Error reading data file on line" + line, e);
+            e.printStackTrace();
+        }
+    }
+
     public Restaurant getRestaurantAtIndex(int position) {
         return restaurants.get(position);
     }
@@ -132,7 +168,7 @@ public class RestaurantManager implements Iterable<Restaurant> {
         Collections.sort(restaurants, c);
     }
 
-    public void addInspectionsToRestaurants() {
+    public void addInspectionsToRestaurantsFromExternal() {
         InputStream fis = null;
         File textFile = new File(Environment
                 .getExternalStorageDirectory().toString()

@@ -61,12 +61,12 @@ public class RestaurantListActivity extends AppCompatActivity {
     public static final String INSPECTION_LAST_UPDATE_TIME_ON_SERVER = "inspectionLastUpdateTimeOnServer";
 
     ProgressDialog mProgressDialog;
-    private static final String inspectionURL = "https://data.surrey.ca/dataset/948e994d-74f5-41a2-b3cb-33fa6a98aa96/resource/30b38b66-649f-4507-a632-d5f6f5fe87f1/download/fraserhealthrestaurantinspectionreports.csv";
+    ProgressDialog jsonProgressDialog;
 
+    private static final String inspectionURL = "https://data.surrey.ca/dataset/948e994d-74f5-41a2-b3cb-33fa6a98aa96/resource/30b38b66-649f-4507-a632-d5f6f5fe87f1/download/fraserhealthrestaurantinspectionreports.csv";
     private static final String restaurantURL = "https://data.surrey.ca/dataset/3c8cb648-0e80-4659-9078-ef4917b90ffb/resource/0e5d04a2-be9b-40fe-8de2-e88362ea916b/download/restaurants.csv";
     private static final String restaurantJsonUrl = "https://data.surrey.ca/api/3/action/package_show?id=restaurants";
     private static final String inspectionJsonUrl = "https://data.surrey.ca/api/3/action/package_show?id=fraser-health-restaurant-inspection-reports";
-    ProgressDialog jsonProgressDialog;
 
     // Singleton
     private RestaurantManager manager = RestaurantManager.getInstance();
@@ -98,9 +98,13 @@ public class RestaurantListActivity extends AppCompatActivity {
         if (!manager.isDataRead()) {
             verifyStoragePermissions(RestaurantListActivity.this);
         } else {
-            populateListView();
-            clickRestaurant();
+            setUpViews();
         }
+    }
+
+    private void setUpViews() {
+        populateListView();
+        clickRestaurant();
     }
 
     private void verifyStoragePermissions(Activity activity) {
@@ -288,6 +292,18 @@ public class RestaurantListActivity extends AppCompatActivity {
                 ) {
                     mExternalStorageLocationGranted = true;
                     initDataDownload();
+                } else {
+                    manager.clear();
+                    manager.readRestaurantDataFromInternal(this);
+
+                    manager.sort(new AlphabetComparator());
+                    for (Restaurant r : manager) {
+                        InspectionManager iManager = r.getInspections();
+                        iManager.sort(new InspectionComparator().reversed());
+                    }
+                    manager.setDataRead(true);
+
+                    setUpViews();
                 }
             }
         }
@@ -394,8 +410,8 @@ public class RestaurantListActivity extends AppCompatActivity {
                 Toast.makeText(context, "File downloaded", Toast.LENGTH_SHORT).show();
 
                 manager.clear();
-                manager.readRestaurantData();
-                manager.addInspectionsToRestaurants();
+                manager.readRestaurantDataFromExternal();
+                manager.addInspectionsToRestaurantsFromExternal();
                 manager.sort(new AlphabetComparator());
                 for (Restaurant r : manager) {
                     InspectionManager iManager = r.getInspections();
@@ -403,8 +419,7 @@ public class RestaurantListActivity extends AppCompatActivity {
                 }
                 manager.setDataRead(true);
 
-                populateListView();
-                clickRestaurant();
+                setUpViews();
             }
         }
     }

@@ -1,5 +1,7 @@
 package ca.sfu.prjCalcium.pr1.Model;
 
+import android.content.Context;
+
 /**
  * Represent a restaurant.
  */
@@ -87,6 +89,11 @@ public class Restaurant {
     public void setInspections(InspectionManager inspections) {
         this.inspections = inspections;
     }
+
+    public void setInspections(Context context) { // Set the inspection of this restaurant by its ID by reading
+        inspections.addInspectionsByTrackingNumber(context, this.getTrackingNumber());
+    }
+
 
     @Override
     public String toString() {
