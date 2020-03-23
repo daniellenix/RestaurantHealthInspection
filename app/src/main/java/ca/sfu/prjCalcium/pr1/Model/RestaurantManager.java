@@ -5,6 +5,8 @@ import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -160,8 +162,15 @@ public class RestaurantManager implements Iterable<Restaurant> {
         return null;
     }
 
-    public List<Restaurant> getRestaurantsAsLists() {
-        return restaurants;
+    public int getRestaurantIndexByLatLng(LatLng latLng) {
+        for (Restaurant r : restaurants) {
+            LatLng currentRLatLng = new LatLng(r.getLatitude(), r.getLongitude());
+            if (latLng.equals(currentRLatLng)) {
+                return restaurants.indexOf(r);
+            }
+        }
+
+        return -1;
     }
 
     public void sort(Comparator<Restaurant> c) {
