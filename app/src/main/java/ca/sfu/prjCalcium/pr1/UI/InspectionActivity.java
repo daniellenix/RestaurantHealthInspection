@@ -1,9 +1,18 @@
 package ca.sfu.prjCalcium.pr1.UI;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.PowerManager;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -16,7 +25,14 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
@@ -37,6 +53,7 @@ public class InspectionActivity extends AppCompatActivity {
 
     // Singleton
     private RestaurantManager rManager;
+    private boolean mExternalStorageLocationGranted = false;
 
     private static final String I_INSPECTION_POSITION_PASSED_IN = "i_inspection_position_passed_in";
     private static final String I_RESTAURANT_POSITION_PASSED_IN = "i_restaurant_position_passed_in";
@@ -49,6 +66,7 @@ public class InspectionActivity extends AppCompatActivity {
 
         return intent;
     }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -182,4 +200,5 @@ public class InspectionActivity extends AppCompatActivity {
             return itemView;
         }
     }
+
 }
