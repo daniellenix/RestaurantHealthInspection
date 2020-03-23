@@ -39,7 +39,6 @@ public class RestaurantDetailActivity extends AppCompatActivity {
 
     public static final String R_DETAIL_RESTAURANT_POSITION_PASSED_IN = "r_detail_restaurant_position_passed_in";
 
-
     public static Intent makeIntent(Context c, int restaurantPosition) {
         Intent intent = new Intent(c, RestaurantDetailActivity.class);
 
@@ -47,6 +46,7 @@ public class RestaurantDetailActivity extends AppCompatActivity {
 
         return intent;
     }
+
     //https://stackoverflow.com/questions/38158953/how-to-create-button-in-action-bar-in-android
     // handle button activities
     @Override
@@ -58,6 +58,13 @@ public class RestaurantDetailActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -14,4 +14,6 @@
     <string name="title_activity_maps">RestaurantMaps</string>
     <string name="main_switch_to_map">Swich To Map</string>
     <string name="map_switch_to_list">Switch To List</string>
+    <string name="maps_toast_need_update">Need Update!</string>
+    <string name="maps_toast_welcome_back">Welcome Back!</string>
 </resources>

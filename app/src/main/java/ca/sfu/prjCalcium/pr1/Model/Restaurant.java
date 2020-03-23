@@ -86,13 +86,14 @@ public class Restaurant {
         return inspections;
     }
 
+    public void setInspections(InspectionManager inspections) {
+        this.inspections = inspections;
+    }
+
     public void setInspections(Context context) { // Set the inspection of this restaurant by its ID by reading
         inspections.addInspectionsByTrackingNumber(context, this.getTrackingNumber());
     }
 
-    public void setInspections(InspectionManager inspections) {
-        this.inspections = inspections;
-    }
 
     @Override
     public String toString() {

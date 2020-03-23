@@ -8,7 +8,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -27,12 +27,20 @@ import ca.sfu.prjCalcium.pr1.R;
  */
 public class InspectionManager implements Iterable<Inspection> {
 
-    private List<Inspection> inspections = new ArrayList<>();
+    private List<Inspection> inspections;
+
+    {
+        inspections = new ArrayList<>();
+    }
+
+    public Inspection getInspection(int position) {
+        return inspections.get(position);
+    }
 
     public void addInspectionsByTrackingNumber(Context context, String restID) {
         InputStream is = context.getResources().openRawResource(R.raw.inspectionreports_itr1);
         BufferedReader reader = new BufferedReader(
-                new InputStreamReader(is, Charset.forName("utf-8"))
+                new InputStreamReader(is, StandardCharsets.UTF_8)
         );
 
         String line = "";
@@ -92,16 +100,16 @@ public class InspectionManager implements Iterable<Inspection> {
         }
     }
 
-    public Inspection getInspection(int position) {
-        return inspections.get(position);
-    }
-
     public List<Inspection> getInspections() {
         return inspections;
     }
 
     public boolean isEmpty() {
         return inspections.isEmpty();
+    }
+
+    public void add(Inspection i) {
+        inspections.add(i);
     }
 
     @Override

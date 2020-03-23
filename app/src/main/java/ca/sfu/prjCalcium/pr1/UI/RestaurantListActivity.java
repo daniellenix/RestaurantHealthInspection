@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -19,7 +18,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.text.SimpleDateFormat;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
@@ -29,11 +27,11 @@ import ca.sfu.prjCalcium.pr1.Model.Restaurant;
 import ca.sfu.prjCalcium.pr1.Model.RestaurantManager;
 import ca.sfu.prjCalcium.pr1.R;
 
-/**
+
+/*
  * Represent the initial screen's logic structure.
  */
 public class RestaurantListActivity extends AppCompatActivity {
-
     // Singleton
     private RestaurantManager manager = RestaurantManager.getInstance();
 
@@ -51,11 +49,9 @@ public class RestaurantListActivity extends AppCompatActivity {
         clickRestaurant();
     }
 
-
     //https://gist.github.com/CreatorB/99cdb013a4888453b8a0
     @Override
     public void onBackPressed() {
-
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_HOME);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -97,7 +93,7 @@ public class RestaurantListActivity extends AppCompatActivity {
     private class MyListAdapter extends ArrayAdapter<Restaurant> {
 
         public MyListAdapter() {
-            super(RestaurantListActivity.this, R.layout.restaurant_list, manager.getRestaurants());
+            super(RestaurantListActivity.this, R.layout.restaurant_list, manager.getRestaurantsAsLists());
         }
 
         @NonNull
@@ -179,9 +175,9 @@ public class RestaurantListActivity extends AppCompatActivity {
 
                 long dateDifference = TimeUnit.MILLISECONDS.toDays(currentDate.getTime() - pastDate.getTime());
 
-                if (dateDifference < 30){
+                if (dateDifference < 30) {
                     textViewTime.setText(getString(R.string.inspection_days_ago, dateDifference));
-                } else if (dateDifference > 30 && dateDifference <= 366){
+                } else if (dateDifference > 30 && dateDifference <= 366) {
                     SimpleDateFormat formatter1 = new SimpleDateFormat("MMM dd", Locale.CANADA);
                     textViewTime.setText(formatter1.format(pastDate));
                 } else {
@@ -206,21 +202,6 @@ public class RestaurantListActivity extends AppCompatActivity {
             }
 
             return itemView;
-        }
-    }
-
-    // https://stackoverflow.com/questions/2784514/sort-arraylist-of-custom-objects-by-property
-    public static class AlphabetComparator implements Comparator<Restaurant> {
-        @Override
-        public int compare(Restaurant r1, Restaurant r2) {
-            return r1.getRestaurantName().compareTo(r2.getRestaurantName());
-        }
-    }
-
-    public static class InspectionComparator implements Comparator<Inspection> {
-        @Override
-        public int compare(Inspection i1, Inspection i2) {
-            return i1.getInspectionDate().compareTo(i2.getInspectionDate());
         }
     }
 }
