@@ -112,6 +112,7 @@ public class RestaurantListActivity extends AppCompatActivity {
 
             ImageView imageViewIcon = itemView.findViewById(R.id.icon);
 
+            // images found from https://www.flaticon.com/
             if(currentRestaurant.getRestaurantName().contains("Papa John's")) {
                 imageViewIcon.setImageDrawable(getDrawable(R.drawable.papajohns));
             } else if(currentRestaurant.getRestaurantName().contains("Pizza Hut")) {
