@@ -287,4 +287,8 @@ public class RestaurantManager implements Iterable<Restaurant> {
     public Iterator<Restaurant> iterator() {
         return restaurants.iterator();
     }
+
+    public List<Restaurant> getRestaurantsAsLists() {
+        return restaurants;
+    }
 }
