@@ -24,6 +24,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
@@ -92,19 +93,177 @@ public class RestaurantListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+<<<<<<< app/src/main/java/ca/sfu/prjCalcium/pr1/UI/RestaurantListActivity.java
+        long now = System.currentTimeMillis();
+
         JsonTask restJsonTask = new JsonTask();
         restJsonTask.execute(restaurantJsonUrl, inspectionJsonUrl);
 
-        if (!manager.isDataRead()) {
-            verifyStoragePermissions(RestaurantListActivity.this);
+        checkTime(now);
+    }
+
+    private void checkTime(long now) {
+        long last = getLastStartTime();
+        // 20 hours = 72000000 milliseconds
+        if (now - last >= 72000000) {
+            Toast.makeText(getApplicationContext(), "Need Update!", Toast.LENGTH_LONG).show();
+
+            // Need to check if server has updated version of files
+            if (isUpdateNeeded()) {
+                createDialog();
+            } else {
+                Toast.makeText(getApplicationContext(), "Welcome Back!", Toast.LENGTH_LONG).show();
+            }
+
         } else {
-            setUpViews();
+            // Check user's last run choice
+            SharedPreferences pref = getSharedPreferences("Time", MODE_PRIVATE);
+            boolean choice = pref.getBoolean("UpdateRequired", false);
+            if (choice) {
+                createDialog();
+                Toast.makeText(getApplicationContext(), "Have Update!", Toast.LENGTH_LONG).show();
+            } else {
+                int permission = ActivityCompat.checkSelfPermission(RestaurantListActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+                if (permission != PackageManager.PERMISSION_GRANTED) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                    builder.setTitle("Permission Denied, Using deafault data")
+                            .setMessage("If you want to update data\n" +
+                                    "go to Setting-> Apps -> Permission -> enable");
+                    AlertDialog alertDialog = builder.create();
+                    alertDialog.show();
+                    manager.readRestaurantDataFromInternal(getApplicationContext());
+                    manager.sort(new AlphabetComparator());
+                    for (Restaurant r : manager) {
+                        InspectionManager iManager = r.getInspections();
+                        iManager.sort(new InspectionComparator().reversed());
+                    }
+                    manager.setDataRead(true);
+                } else {
+                    Toast.makeText(getApplicationContext(), "Up to date!", Toast.LENGTH_LONG).show();
+                    manager.readRestaurantDataFromExternal();
+                    manager.addInspectionsToRestaurantsFromExternal();
+                    manager.sort(new AlphabetComparator());
+                    for (Restaurant r : manager) {
+                        InspectionManager iManager = r.getInspections();
+                        iManager.sort(new InspectionComparator().reversed());
+                    }
+                    manager.setDataRead(true);
+                }
+                setUpViews();
+            }
         }
+        setSharedReferencesData("LastRun", now);
+    }
+
+    private long getLastStartTime() {
+        SharedPreferences pref = getSharedPreferences("Time", MODE_PRIVATE);
+        return pref.getLong("LastRun", 0);
+    }
+
+    private <T> void setSharedReferencesData(String name, T value) {
+        SharedPreferences pref = getSharedPreferences("Time", MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        if (value instanceof Long) {
+            editor.putLong(name, (Long)value);
+        } else { // value instanceof Boolean
+            editor.putBoolean(name, (Boolean)value);
+        }
+        editor.apply();
+    }
+
+    private void createDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Update Found").setMessage("Do you want to update now?");
+        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                //Toast.makeText(getApplicationContext(), "Updating", Toast.LENGTH_LONG).show();
+
+                // Update status of shared references
+                setSharedReferencesData("UpdateRequired", false);
+
+                // Update files
+                verifyStoragePermissions(RestaurantListActivity.this);
+                storeUpdateTimeToSharedPref();
+                setUpViews();
+            }
+        });
+        builder.setNegativeButton("Later", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                Toast.makeText(getApplicationContext(),
+                        "This message will show again on next start", Toast.LENGTH_LONG).show();
+
+                // Use old files
+                if (!manager.isDataRead()) {
+                    manager.readRestaurantDataFromInternal(getApplicationContext());
+
+                    manager.sort(new AlphabetComparator());
+                    for (Restaurant r : manager) {
+                        InspectionManager iManager = r.getInspections();
+                        iManager.sort(new InspectionComparator().reversed());
+                    }
+                    manager.setDataRead(true);
+                }
+                setUpViews();
+
+                // Save user choice
+                setSharedReferencesData("UpdateRequired", true);
+            }
+        });
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
     }
 
     private void setUpViews() {
         populateListView();
         clickRestaurant();
+=======
+
+    private void verifyStoragePermissions(Activity activity) {
+        // Check if we have write permission
+        int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            // We don't have permission so prompt the user
+            ActivityCompat.requestPermissions(
+                    activity,
+                    PERMISSIONS_STORAGE,
+                    REQUEST_EXTERNAL_STORAGE
+            );
+        } else {
+            mExternalStorageLocationGranted = true;
+            initDataDownload();
+        }
+    }
+
+    private void initDataDownload() {
+        if (mExternalStorageLocationGranted) {
+            mProgressDialog = new ProgressDialog(RestaurantListActivity.this);
+            mProgressDialog.setMessage("Currently downloading files");
+            mProgressDialog.setIndeterminate(true);
+            mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            mProgressDialog.setCancelable(true);
+
+            // execute this when the downloader must be fired
+            final DownloadTask downloadTask1 = new DownloadTask(RestaurantListActivity.this, "/restaurant.csv");
+            final DownloadTask downloadTask2 = new DownloadTask(RestaurantListActivity.this, "/inspection.csv");
+
+            mProgressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(android.R.string.cancel), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    downloadTask1.cancel(true); //cancel the task
+                    downloadTask2.cancel(true);
+
+                    // if cancel, load local data here
+                }
+            });
+
+            downloadTask1.execute(restaurantURL);
+            downloadTask2.execute(inspectionURL);
+        }
+>>>>>>> app/src/main/java/ca/sfu/prjCalcium/pr1/UI/RestaurantListActivity.java
     }
 
     private void verifyStoragePermissions(Activity activity) {
@@ -293,6 +452,10 @@ public class RestaurantListActivity extends AppCompatActivity {
                     mExternalStorageLocationGranted = true;
                     initDataDownload();
                 } else {
+<<<<<<< app/src/main/java/ca/sfu/prjCalcium/pr1/UI/RestaurantListActivity.java
+                    Toast.makeText(getApplicationContext(), "Update canceled", Toast.LENGTH_LONG).show();
+=======
+>>>>>>> app/src/main/java/ca/sfu/prjCalcium/pr1/UI/RestaurantListActivity.java
                     manager.clear();
                     manager.readRestaurantDataFromInternal(this);
 
