@@ -33,7 +33,7 @@ import ca.sfu.prjCalcium.pr1.R;
  */
 public class RestaurantListActivity extends AppCompatActivity {
     public static final int RESTAURANT_LIST_ACTIVITY_SOURCE_ACTIVITY_COND = 10056;
-    
+
     // Singleton
     private RestaurantManager manager = RestaurantManager.getInstance();
 
