@@ -196,6 +196,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             CameraUpdate location = CameraUpdateFactory.newLatLngZoom(coordinate, 15f);
             mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(this));
+            mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+                @Override
+                public void onInfoWindowClick(Marker marker) {
+                    LatLng restaurantLatLng = marker.getPosition();
+                    int r_index = manager.getRestaurantIndexByLatLng(restaurantLatLng);
+                    Intent intent = RestaurantDetailActivity.makeIntent(MapsActivity.this, r_index);
+                    startActivity(intent);
+                }
+            });
             Marker m = mMap.addMarker(new MarkerOptions()
                     .position(coordinate).title(r.getRestaurantName()).snippet(sniStr));
             mMap.moveCamera(location);
