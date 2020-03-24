@@ -28,6 +28,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -100,8 +101,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private ClusterManager<MyItem> mClusterManager;
 
+    private int check;
+    private  int index;
+
     public static Intent makeIntent(Context c) {
         return new Intent(c, MapsActivity.class);
+    }
+
+    public static Intent makeSecondIntent(Context c, int restaurantIndex, int condition) {
+        Intent intent = new Intent(c, MapsActivity.class);
+        intent.putExtra("index", restaurantIndex);
+        intent.putExtra("checkCondition", condition);
+        return intent;
     }
 
     @Override
@@ -124,6 +135,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         checkTime(now);
         initBackToListButton();
+
     }
 
     private void initBackToListButton() {
@@ -164,6 +176,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         setUpClusterer();
+
+        Intent intent = getIntent();
+        index = intent.getIntExtra("index", 0);
+        check = intent.getIntExtra("checkCondition", 0);
+        if(check == 1) {
+
+            LatLng coordinate = new LatLng(manager.getRestaurantAtIndex(index).getLatitude(),
+                                           manager.getRestaurantAtIndex(index).getLongitude());
+            CameraUpdate location = CameraUpdateFactory.newLatLngZoom(
+                    coordinate, 15);
+            mMap.animateCamera(location);
+
+        }
+
     }
 
     private void checkTime(long now) {
