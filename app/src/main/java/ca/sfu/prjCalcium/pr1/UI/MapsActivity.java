@@ -71,27 +71,30 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public static final String INSPECTION_LAST_UPDATE_TIME_ON_SERVER = "inspectionLastUpdateTimeOnServer";
 
     // Constants used to URLs
-    private static final String inspectionURL = "https://data.surrey.ca/dataset/948e994d-74f5-41a2-b3cb-33fa6a98aa96/resource/30b38b66-649f-4507-a632-d5f6f5fe87f1/download/fraserhealthrestaurantinspectionreports.csv";
-    private static final String restaurantURL = "https://data.surrey.ca/dataset/3c8cb648-0e80-4659-9078-ef4917b90ffb/resource/0e5d04a2-be9b-40fe-8de2-e88362ea916b/download/restaurants.csv";
+
     private static final String restaurantJsonUrl = "https://data.surrey.ca/api/3/action/package_show?id=restaurants";
     private static final String inspectionJsonUrl = "https://data.surrey.ca/api/3/action/package_show?id=fraser-health-restaurant-inspection-reports";
 
     // Request code for call back listener
     private static final int REQUEST_EXTERNAL_STORAGE = 1235;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1234;
-    private static String[] PERMISSIONS_STORAGE = {
+
+    private static final String[] PERMISSIONS_STORAGE = {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
-    private static String[] PERMISSIONS_LOCATION = {
+    private static final String[] PERMISSIONS_LOCATION = {
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION
     };
+
     // Progress Dialogs
     ProgressDialog mProgressDialog;
     ProgressDialog jsonProgressDialog;
+
     private boolean mLocationPermissionGranted = false;
     private boolean mExternalStorageLocationGranted = false;
+
     private String restaurantUpdateTimeOnServer;
     private String inspectionUpdateTimeOnServer;
 
@@ -102,9 +105,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private ClusterManager<MyItem> mClusterManager;
 
+    private static String inspectionURL;
+    private static String restaurantURL;
     private boolean ifLoadCluster = true;
     private int sourceActivityCond;
     private int r_index;
+
 
     public static Intent makeIntent(Context c, int sourceActivityCondCode) {
         Intent intent = new Intent(c, MapsActivity.class);
@@ -142,10 +148,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+
         if (!manager.isDataRead()) {
+            // if not read (means we probably launched the app),
+            // then check if update is available first, then it will handle the data-reading
             JsonTask restJsonTask = new JsonTask();
             restJsonTask.execute(restaurantJsonUrl, inspectionJsonUrl);
         } else {
+            // otherwise, we are called from another activity, then init map, no need to redownload the data
             verifyLocationPermission();
         }
         initBackToListButton();
@@ -238,6 +248,46 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    /*
+     * Note: This is the *only* entry point to initialize the map,
+     * because we need to double check the permission in case the user turns it off manually.
+     *
+     * https://developers.google.com/maps/documentation/android-sdk/current-place-tutorial
+     */
+    private void verifyLocationPermission() {
+        /*
+         * Request location permission, so that we can get the location of the
+         * device. The result of the permission request is handled by a callback,
+         * onRequestPermissionsResult.
+         */
+        int ifFineLocationGranted = ContextCompat.checkSelfPermission(this.getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION);
+        int ifCoarseLocationGranted = ContextCompat.checkSelfPermission(this.getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION);
+
+        if (ifCoarseLocationGranted == PackageManager.PERMISSION_GRANTED && ifFineLocationGranted == PackageManager.PERMISSION_GRANTED) {
+            mLocationPermissionGranted = true;
+            initMap();
+        } else {
+            ActivityCompat.requestPermissions(this, PERMISSIONS_LOCATION, PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+        }
+    }
+
+    private void verifyStoragePermissions(Activity activity) {
+        // Check if we have write permission
+        int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            // We don't have permission so prompt the user
+            ActivityCompat.requestPermissions(
+                    activity,
+                    PERMISSIONS_STORAGE,
+                    REQUEST_EXTERNAL_STORAGE
+            );
+        } else {
+            mExternalStorageLocationGranted = true;
+            initDataDownload();
+        }
+    }
+
     private void checkTime(long now) {
         long last = getLastStartTime();
         // 20 hours = 72000000 milliseconds
@@ -305,41 +355,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    // https://developers.google.com/maps/documentation/android-sdk/current-place-tutorial
-    private void verifyLocationPermission() {
-        /*
-         * Request location permission, so that we can get the location of the
-         * device. The result of the permission request is handled by a callback,
-         * onRequestPermissionsResult.
-         */
-        int ifFineLocationGranted = ContextCompat.checkSelfPermission(this.getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION);
-        int ifCoarseLocationGranted = ContextCompat.checkSelfPermission(this.getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION);
-
-        if (ifCoarseLocationGranted == PackageManager.PERMISSION_GRANTED && ifFineLocationGranted == PackageManager.PERMISSION_GRANTED) {
-            mLocationPermissionGranted = true;
-            initMap();
-        } else {
-            ActivityCompat.requestPermissions(this, PERMISSIONS_LOCATION, PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-        }
-    }
-
-    private void verifyStoragePermissions(Activity activity) {
-        // Check if we have write permission
-        int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-
-        if (permission != PackageManager.PERMISSION_GRANTED) {
-            // We don't have permission so prompt the user
-            ActivityCompat.requestPermissions(
-                    activity,
-                    PERMISSIONS_STORAGE,
-                    REQUEST_EXTERNAL_STORAGE
-            );
-        } else {
-            mExternalStorageLocationGranted = true;
-            initDataDownload();
-        }
-    }
-
     private void storeUpdateTimeToSharedPref() {
         SharedPreferences preferences = getSharedPreferences(LAST_UPDATE_TIME_ON_SERVER, MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
@@ -385,7 +400,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 setSharedReferencesData("UpdateRequired", false);
 
                 // Update files
-                verifyStoragePermissions(MapsActivity.this);
+                if (!manager.isDataRead()) {
+                    verifyStoragePermissions(MapsActivity.this);
+                }
                 storeUpdateTimeToSharedPref();
             }
         });
@@ -418,22 +435,43 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mProgressDialog.setCancelable(true);
 
             // execute this when the downloader must be fired
-            final DownloadTask downloadTask1 = new DownloadTask(MapsActivity.this, "/restaurant.csv");
-            final DownloadTask downloadTask2 = new DownloadTask(MapsActivity.this, "/inspection.csv");
+            final DownloadTask downloadTask = new DownloadTask(MapsActivity.this, new String[]{"/restaurant.csv", "/inspection.csv"});
 
             mProgressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(android.R.string.cancel), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    downloadTask1.cancel(true); //cancel the task
-                    downloadTask2.cancel(true);
-
-                    loadManagerFromInternal();
+                    downloadTask.cancel(true); //cancel the task
+                    if (!manager.isDataRead()) {
+                        loadManagerFromInternal();
+                    }
                 }
             });
 
-            downloadTask1.execute(restaurantURL);
-            downloadTask2.execute(inspectionURL);
+            downloadTask.execute(restaurantURL, inspectionURL);
         }
+    }
+
+    private void loadManagerFromInternal() {
+        manager.clear();
+        manager.readRestaurantDataFromInternal(this);
+        manager.sort(new AlphabetComparator());
+        for (Restaurant r : manager) {
+            InspectionManager iManager = r.getInspections();
+            iManager.sort(new InspectionComparator().reversed());
+        }
+        manager.setDataRead(true);
+    }
+
+    private void loadManagerFromExternal() {
+        manager.clear();
+        manager.readRestaurantDataFromExternal();
+        manager.addInspectionsToRestaurantsFromExternal();
+        manager.sort(new AlphabetComparator());
+        for (Restaurant r : manager) {
+            InspectionManager iManager = r.getInspections();
+            iManager.sort(new InspectionComparator().reversed());
+        }
+        manager.setDataRead(true);
     }
 
     // https://developers.google.com/maps/documentation/android-sdk/current-place-tutorial
@@ -463,7 +501,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     mExternalStorageLocationGranted = true;
                     initDataDownload();
                 } else { // if user does not give permission
-                    loadManagerFromInternal();
+                    if (!manager.isDataRead()) {
+                        loadManagerFromInternal();
+                    }
                     verifyLocationPermission();
                 }
             }
@@ -589,29 +629,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    private void loadManagerFromInternal() {
-        manager.clear();
-        manager.readRestaurantDataFromInternal(this);
-        manager.sort(new AlphabetComparator());
-        for (Restaurant r : manager) {
-            InspectionManager iManager = r.getInspections();
-            iManager.sort(new InspectionComparator().reversed());
-        }
-        manager.setDataRead(true);
-    }
-
-    private void loadManagerFromExternal() {
-        manager.clear();
-        manager.readRestaurantDataFromExternal();
-        manager.addInspectionsToRestaurantsFromExternal();
-        manager.sort(new AlphabetComparator());
-        for (Restaurant r : manager) {
-            InspectionManager iManager = r.getInspections();
-            iManager.sort(new InspectionComparator().reversed());
-        }
-        manager.setDataRead(true);
-    }
-
     // https://stackoverflow.com/questions/2784514/sort-arraylist-of-custom-objects-by-property
     public static class AlphabetComparator implements Comparator<Restaurant> {
         @Override
@@ -631,9 +648,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         private Context context;
         private PowerManager.WakeLock mWakeLock;
 
-        private String downloadLocation;
+        private String[] downloadLocation;
 
-        public DownloadTask(Context context, String downloadLocation) {
+        public DownloadTask(Context context, String[] downloadLocation) {
             this.context = context;
             this.downloadLocation = downloadLocation;
         }
@@ -643,56 +660,66 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             InputStream input = null;
             OutputStream outputRestaurant = null;
             HttpURLConnection connection = null;
-            try {
-                URL url = new URL(sUrl[0]);
-                connection = (HttpURLConnection) url.openConnection();
-                connection.connect();
 
-                // expect HTTP 200 OK, so we don't mistakenly save error report
-                // instead of the file
-                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                    return "Server returned HTTP " + connection.getResponseCode()
-                            + " " + connection.getResponseMessage();
-                }
-
-                // this will be useful to display download percentage
-                // might be -1: server did not report the length
-                int fileLength = connection.getContentLength();
-
-                // download the file
-                input = connection.getInputStream();
-                outputRestaurant = new FileOutputStream(Environment
-                        .getExternalStorageDirectory().toString()
-                        + downloadLocation);
-
-                byte[] data = new byte[4096];
-                long total = 0;
-                int count;
-                while ((count = input.read(data)) != -1) {
-                    // allow canceling with back button
-                    if (isCancelled()) {
-                        input.close();
-                        return null;
-                    }
-                    total += count;
-                    // publishing the progress....
-                    if (fileLength > 0) // only if total length is known
-                        publishProgress((int) (total * 100 / fileLength));
-                    outputRestaurant.write(data, 0, count);
-                }
-            } catch (Exception e) {
-                return e.toString();
-            } finally {
+            for (int i = 0; i < sUrl.length; i++) {
                 try {
-                    if (outputRestaurant != null)
-                        outputRestaurant.close();
-                    if (input != null)
-                        input.close();
-                } catch (IOException ignored) {
-                }
+                    URL link = new URL(sUrl[i]);
+                    connection = (HttpURLConnection) link.openConnection();
+                    connection.connect();
 
-                if (connection != null)
-                    connection.disconnect();
+                    // expect HTTP 200 OK, so we don't mistakenly save error report
+                    // instead of the file
+                    if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                        return "Server returned HTTP " + connection.getResponseCode()
+                                + " " + connection.getResponseMessage();
+                    }
+
+                    // this will be useful to display download percentage
+                    // might be -1: server did not report the length
+                    int fileLength = connection.getContentLength();
+
+                    // download the file
+                    input = connection.getInputStream();
+
+                    if (i == 0) {
+                        outputRestaurant = new FileOutputStream(Environment
+                                .getExternalStorageDirectory().toString()
+                                + downloadLocation[0]);
+                    } else {
+                        outputRestaurant = new FileOutputStream(Environment
+                                .getExternalStorageDirectory().toString()
+                                + downloadLocation[1]);
+                    }
+
+                    byte[] data = new byte[4096];
+                    long total = 0;
+                    int count;
+                    while ((count = input.read(data)) != -1) {
+                        // allow canceling with back button
+                        if (isCancelled()) {
+                            input.close();
+                            return null;
+                        }
+                        total += count;
+                        // publishing the progress....
+                        if (fileLength > 0) // only if total length is known
+                            publishProgress((int) (total * 100 / fileLength));
+                        outputRestaurant.write(data, 0, count);
+                    }
+                } catch (Exception e) {
+                    return e.toString();
+                } finally {
+                    try {
+                        if (outputRestaurant != null)
+                            outputRestaurant.close();
+                        if (input != null)
+                            input.close();
+                    } catch (IOException ignored) {
+                    }
+
+                    if (connection != null)
+                        connection.disconnect();
+                }
             }
             return null;
         }
@@ -749,12 +776,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         @Override
         protected String doInBackground(String... strings) {
-            HttpURLConnection connection = null;
-            BufferedReader reader = null;
+            HttpURLConnection connection;
+            BufferedReader reader;
 
             try {
-
-                for (int i = 0; i < 2; i++) {
+                for (int i = 0; i < strings.length; i++) {
                     URL link = new URL(strings[i]);
 
                     connection = (HttpURLConnection) link.openConnection();
@@ -776,8 +802,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     if (i == 0) {
                         restaurantUpdateTimeOnServer = result.getString("metadata_modified");
+                        restaurantURL = result.getJSONArray("resources").getJSONObject(0).getString("url");
+                        restaurantURL = restaurantURL.replace("http://", "https://");
                     } else {
                         inspectionUpdateTimeOnServer = result.getString("metadata_modified");
+                        inspectionURL = result.getJSONArray("resources").getJSONObject(0).getString("url");
+                        inspectionURL = inspectionURL.replace("http://", "https://");
                     }
 
                 }
