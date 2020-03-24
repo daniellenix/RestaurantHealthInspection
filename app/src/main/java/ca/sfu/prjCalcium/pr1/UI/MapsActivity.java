@@ -126,7 +126,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onBackPressed() {
         extractDataFromIntent();
-
+        //check source activity to make android back button work differently
         if (sourceActivityCond == RestaurantDetailActivity.RESTAURANT_DETAIL_SOURCE_ACTIVITY_COND) {
             finish();
         } else {
