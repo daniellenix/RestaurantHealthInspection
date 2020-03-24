@@ -144,12 +144,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
-    private void initMap() {
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
-    }
-
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
@@ -170,6 +164,52 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         setUpClusterer();
+    }
+
+    /*
+     * Note: This is the *only* entry point to initialize the map,
+     * because we need to double check the permission in case the user turns it off manually.
+     *
+     * https://developers.google.com/maps/documentation/android-sdk/current-place-tutorial
+     */
+    private void verifyLocationPermission() {
+        /*
+         * Request location permission, so that we can get the location of the
+         * device. The result of the permission request is handled by a callback,
+         * onRequestPermissionsResult.
+         */
+        int ifFineLocationGranted = ContextCompat.checkSelfPermission(this.getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION);
+        int ifCoarseLocationGranted = ContextCompat.checkSelfPermission(this.getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION);
+
+        if (ifCoarseLocationGranted == PackageManager.PERMISSION_GRANTED && ifFineLocationGranted == PackageManager.PERMISSION_GRANTED) {
+            mLocationPermissionGranted = true;
+            initMap();
+        } else {
+            ActivityCompat.requestPermissions(this, PERMISSIONS_LOCATION, PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+        }
+    }
+
+    private void initMap() {
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+    }
+
+    private void verifyStoragePermissions(Activity activity) {
+        // Check if we have write permission
+        int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            // We don't have permission so prompt the user
+            ActivityCompat.requestPermissions(
+                    activity,
+                    PERMISSIONS_STORAGE,
+                    REQUEST_EXTERNAL_STORAGE
+            );
+        } else {
+            mExternalStorageLocationGranted = true;
+            initDataDownload();
+        }
     }
 
     private void checkTime(long now) {
@@ -236,41 +276,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         } catch (SecurityException e) {
             Log.e("Maps", "SecurityException: " + e.getMessage());
             Toast.makeText(MapsActivity.this, "Could not determine location. ", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    // https://developers.google.com/maps/documentation/android-sdk/current-place-tutorial
-    private void verifyLocationPermission() {
-        /*
-         * Request location permission, so that we can get the location of the
-         * device. The result of the permission request is handled by a callback,
-         * onRequestPermissionsResult.
-         */
-        int ifFineLocationGranted = ContextCompat.checkSelfPermission(this.getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION);
-        int ifCoarseLocationGranted = ContextCompat.checkSelfPermission(this.getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION);
-
-        if (ifCoarseLocationGranted == PackageManager.PERMISSION_GRANTED && ifFineLocationGranted == PackageManager.PERMISSION_GRANTED) {
-            mLocationPermissionGranted = true;
-            initMap();
-        } else {
-            ActivityCompat.requestPermissions(this, PERMISSIONS_LOCATION, PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-        }
-    }
-
-    private void verifyStoragePermissions(Activity activity) {
-        // Check if we have write permission
-        int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-
-        if (permission != PackageManager.PERMISSION_GRANTED) {
-            // We don't have permission so prompt the user
-            ActivityCompat.requestPermissions(
-                    activity,
-                    PERMISSIONS_STORAGE,
-                    REQUEST_EXTERNAL_STORAGE
-            );
-        } else {
-            mExternalStorageLocationGranted = true;
-            initDataDownload();
         }
     }
 
@@ -368,6 +373,29 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             downloadTask.execute(restaurantURL, inspectionURL);
         }
+    }
+
+    private void loadManagerFromInternal() {
+        manager.clear();
+        manager.readRestaurantDataFromInternal(this);
+        manager.sort(new AlphabetComparator());
+        for (Restaurant r : manager) {
+            InspectionManager iManager = r.getInspections();
+            iManager.sort(new InspectionComparator().reversed());
+        }
+        manager.setDataRead(true);
+    }
+
+    private void loadManagerFromExternal() {
+        manager.clear();
+        manager.readRestaurantDataFromExternal();
+        manager.addInspectionsToRestaurantsFromExternal();
+        manager.sort(new AlphabetComparator());
+        for (Restaurant r : manager) {
+            InspectionManager iManager = r.getInspections();
+            iManager.sort(new InspectionComparator().reversed());
+        }
+        manager.setDataRead(true);
     }
 
     // https://developers.google.com/maps/documentation/android-sdk/current-place-tutorial
@@ -524,29 +552,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
             super.onClusterItemRendered(clusterItem, marker);
         }
-    }
-
-    private void loadManagerFromInternal() {
-        manager.clear();
-        manager.readRestaurantDataFromInternal(this);
-        manager.sort(new AlphabetComparator());
-        for (Restaurant r : manager) {
-            InspectionManager iManager = r.getInspections();
-            iManager.sort(new InspectionComparator().reversed());
-        }
-        manager.setDataRead(true);
-    }
-
-    private void loadManagerFromExternal() {
-        manager.clear();
-        manager.readRestaurantDataFromExternal();
-        manager.addInspectionsToRestaurantsFromExternal();
-        manager.sort(new AlphabetComparator());
-        for (Restaurant r : manager) {
-            InspectionManager iManager = r.getInspections();
-            iManager.sort(new InspectionComparator().reversed());
-        }
-        manager.setDataRead(true);
     }
 
     // https://stackoverflow.com/questions/2784514/sort-arraylist-of-custom-objects-by-property
