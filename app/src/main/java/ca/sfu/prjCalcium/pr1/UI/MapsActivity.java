@@ -124,9 +124,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
 
         if (!manager.isDataRead()) {
+            // if not read (means we probably launched the app),
+            // then check if update is available first, then it will handle the data-reading
             JsonTask restJsonTask = new JsonTask();
             restJsonTask.execute(restaurantJsonUrl, inspectionJsonUrl);
         } else {
+            // otherwise, we are called from another activity, then init map, no need to redownload the data
             verifyLocationPermission();
         }
         initBackToListButton();
