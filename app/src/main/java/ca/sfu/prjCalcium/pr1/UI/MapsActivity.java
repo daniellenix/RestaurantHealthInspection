@@ -123,9 +123,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setContentView(R.layout.activity_maps);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
 
-        JsonTask restJsonTask = new JsonTask();
-        restJsonTask.execute(restaurantJsonUrl, inspectionJsonUrl);
-
+        if (!manager.isDataRead()) {
+            JsonTask restJsonTask = new JsonTask();
+            restJsonTask.execute(restaurantJsonUrl, inspectionJsonUrl);
+        } else {
+            verifyLocationPermission();
+        }
         initBackToListButton();
     }
 
@@ -316,7 +319,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 setSharedReferencesData("UpdateRequired", false);
 
                 // Update files
-                verifyStoragePermissions(MapsActivity.this);
+                if (!manager.isDataRead()) {
+                    verifyStoragePermissions(MapsActivity.this);
+                }
                 storeUpdateTimeToSharedPref();
             }
         });
@@ -355,7 +360,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     downloadTask.cancel(true); //cancel the task
-                    loadManagerFromInternal();
+                    if (!manager.isDataRead()) {
+                        loadManagerFromInternal();
+                    }
                 }
             });
 
@@ -391,7 +398,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     mExternalStorageLocationGranted = true;
                     initDataDownload();
                 } else { // if user does not give permission
-                    loadManagerFromInternal();
+                    if (!manager.isDataRead()) {
+                        loadManagerFromInternal();
+                    }
                     verifyLocationPermission();
                 }
             }
@@ -687,8 +696,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         @Override
         protected String doInBackground(String... strings) {
-            HttpURLConnection connection = null;
-            BufferedReader reader = null;
+            HttpURLConnection connection;
+            BufferedReader reader;
 
             try {
                 for (int i = 0; i < strings.length; i++) {
