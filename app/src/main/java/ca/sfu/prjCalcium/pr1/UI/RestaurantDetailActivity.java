@@ -35,6 +35,7 @@ import ca.sfu.prjCalcium.pr1.R;
  */
 public class RestaurantDetailActivity extends AppCompatActivity {
 
+    public static final int RESTAURANT_DETAIL_SOURCE_ACTIVITY_COND = 9012;
     Restaurant r;
     int r_index;
     private RestaurantManager manager;
@@ -95,7 +96,7 @@ public class RestaurantDetailActivity extends AppCompatActivity {
             public void onClick(View v) {
                 // Reference: https://stackoverflow.com/questions/32161757/how-to-animate-the-camera-to-a-specified-location-in-google-maps-v2-for-android
                 int condition = 5098;
-                Intent intent = MapsActivity.makeSecondIntent(RestaurantDetailActivity.this, r_index, condition);
+                Intent intent = MapsActivity.makeIntentFromDetail(RestaurantDetailActivity.this, r_index, condition, RESTAURANT_DETAIL_SOURCE_ACTIVITY_COND);
 
                 startActivity(intent);
             }

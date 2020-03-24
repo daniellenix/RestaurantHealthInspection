@@ -103,26 +103,38 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ClusterManager<MyItem> mClusterManager;
 
     private boolean ifLoadCluster = true;
-
+    private int sourceActivityCond;
     private int r_index;
 
-    public static Intent makeIntent(Context c) {
-        return new Intent(c, MapsActivity.class);
+    public static Intent makeIntent(Context c, int sourceActivityCondCode) {
+        Intent intent = new Intent(c, MapsActivity.class);
+        intent.putExtra("sourceActivityCond", sourceActivityCondCode);
+
+        return intent;
     }
 
-    public static Intent makeSecondIntent(Context c, int restaurantIndex, int condition) {
+    public static Intent makeIntentFromDetail(Context c, int restaurantIndex, int condition, int sourceActivityCondCode) {
         Intent intent = new Intent(c, MapsActivity.class);
+
         intent.putExtra("index", restaurantIndex);
         intent.putExtra("checkCondition", condition);
+        intent.putExtra("sourceActivityCond", sourceActivityCondCode);
+
         return intent;
     }
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(Intent.ACTION_MAIN);
-        intent.addCategory(Intent.CATEGORY_HOME);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(intent);
+        extractDataFromIntent();
+
+        if (sourceActivityCond == RestaurantDetailActivity.RESTAURANT_DETAIL_SOURCE_ACTIVITY_COND) {
+            finish();
+        } else {
+            Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_HOME);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+        }
     }
 
     @Override
@@ -193,7 +205,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 sniStr = sniAdd + "\n" + "Hazard level: " + r.getInspections().getInspection(0).getHazardRating();
             }
 
-
             CameraUpdate location = CameraUpdateFactory.newLatLngZoom(coordinate, 15f);
             mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(this));
             mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
@@ -215,6 +226,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void extractDataFromIntent() {
         Intent intent = getIntent();
         r_index = intent.getIntExtra("index", -1);
+        sourceActivityCond = intent.getIntExtra("sourceActivityCond", -1);
         int check = intent.getIntExtra("checkCondition", 0);
 
         Log.e("Maps", "onMapReady: condition code is " + check);
