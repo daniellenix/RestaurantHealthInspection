@@ -36,6 +36,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.maps.android.clustering.ClusterItem;
@@ -101,8 +102,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private ClusterManager<MyItem> mClusterManager;
 
-    private int check;
-    private  int index;
+    private boolean ifLoadCluster = true;
+
+    private int r_index;
 
     public static Intent makeIntent(Context c) {
         return new Intent(c, MapsActivity.class);
@@ -128,14 +130,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        long now = System.currentTimeMillis();
-
-        JsonTask restJsonTask = new JsonTask();
-        restJsonTask.execute(restaurantJsonUrl, inspectionJsonUrl);
-
-        checkTime(now);
+        if (!manager.isDataRead()) {
+            JsonTask restJsonTask = new JsonTask();
+            restJsonTask.execute(restaurantJsonUrl, inspectionJsonUrl);
+        } else {
+            verifyLocationPermission();
+        }
         initBackToListButton();
-
     }
 
     private void initBackToListButton() {
@@ -169,27 +170,51 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        if (mLocationPermissionGranted) {
-            mMap.setMyLocationEnabled(true);
-            mMap.getUiSettings().setMyLocationButtonEnabled(true);
-            getDeviceLocation();
+        extractDataFromIntent();
+
+        mMap.setMyLocationEnabled(true);
+        mMap.getUiSettings().setMyLocationButtonEnabled(true);
+
+        if (ifLoadCluster) {
+            if (mLocationPermissionGranted) {
+                getDeviceLocation();
+            }
+            setUpClusterer();
+        } else {
+            Restaurant r = manager.getRestaurantAtIndex(r_index);
+
+            LatLng coordinate = new LatLng(r.getLatitude(), r.getLongitude());
+
+            String sniAdd = "Address:" + r.getAddress();
+            String sniStr;
+            if (r.getInspections().isEmpty()) {
+                sniStr = sniAdd + "\n" + "Hazard level undefined";
+            } else {
+                sniStr = sniAdd + "\n" + "Hazard level: " + r.getInspections().getInspection(0).getHazardRating();
+            }
+
+
+            CameraUpdate location = CameraUpdateFactory.newLatLngZoom(coordinate, 15f);
+            mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(this));
+            Marker m = mMap.addMarker(new MarkerOptions()
+                    .position(coordinate).title(r.getRestaurantName()).snippet(sniStr));
+            mMap.moveCamera(location);
+            m.showInfoWindow();
         }
+    }
 
-        setUpClusterer();
-
+    private void extractDataFromIntent() {
         Intent intent = getIntent();
-        index = intent.getIntExtra("index", 0);
-        check = intent.getIntExtra("checkCondition", 0);
-        if(check == 1) {
+        r_index = intent.getIntExtra("index", -1);
+        int check = intent.getIntExtra("checkCondition", 0);
 
-            LatLng coordinate = new LatLng(manager.getRestaurantAtIndex(index).getLatitude(),
-                                           manager.getRestaurantAtIndex(index).getLongitude());
-            CameraUpdate location = CameraUpdateFactory.newLatLngZoom(
-                    coordinate, 15);
-            mMap.animateCamera(location);
+        Log.e("Maps", "onMapReady: condition code is " + check);
+        Log.e("Maps", "onMapReady: rest index code is " + r_index);
 
+        if (check == 5098) {
+            ifLoadCluster = false;
+            initMap();
         }
-
     }
 
     private void checkTime(long now) {
@@ -405,7 +430,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED
                         && grantResults[1] == PackageManager.PERMISSION_GRANTED
                 ) {
-
                     mLocationPermissionGranted = true;
                     initMap();
                 }
@@ -428,7 +452,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void setUpClusterer() {
         // Initialize the manager with the context and the map.
         // (Activity extends context, so we can pass 'this' in the constructor.)
-        mClusterManager = new ClusterManager<MyItem>(this, mMap);
+        mClusterManager = new ClusterManager<>(this, mMap);
 
         // Point the map's listeners at the listeners implemented by the cluster
         // manager.
@@ -747,6 +771,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
             jsonProgressDialog.dismiss();
+
+            long now = System.currentTimeMillis();
+            checkTime(now);
         }
     }
 }
