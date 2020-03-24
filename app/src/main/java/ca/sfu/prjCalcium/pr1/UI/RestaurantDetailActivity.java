@@ -18,6 +18,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.maps.GoogleMap;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -33,9 +35,11 @@ import ca.sfu.prjCalcium.pr1.R;
  */
 public class RestaurantDetailActivity extends AppCompatActivity {
 
+    public static final int RESTAURANT_DETAIL_SOURCE_ACTIVITY_COND = 9012;
     Restaurant r;
     int r_index;
     private RestaurantManager manager;
+    private GoogleMap mMap;
 
     public static final String R_DETAIL_RESTAURANT_POSITION_PASSED_IN = "r_detail_restaurant_position_passed_in";
 
@@ -87,6 +91,16 @@ public class RestaurantDetailActivity extends AppCompatActivity {
 
         TextView gpsView = findViewById(R.id.detailGps);
         gpsView.setText(getString(R.string.restaurant_detail_long_lati, r.getLongitude(), r.getLatitude()));
+        gpsView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Reference: https://stackoverflow.com/questions/32161757/how-to-animate-the-camera-to-a-specified-location-in-google-maps-v2-for-android
+                int condition = 5098;
+                Intent intent = MapsActivity.makeIntentFromDetail(RestaurantDetailActivity.this, r_index, condition, RESTAURANT_DETAIL_SOURCE_ACTIVITY_COND);
+
+                startActivity(intent);
+            }
+        });
     }
 
     private void populateListView() {

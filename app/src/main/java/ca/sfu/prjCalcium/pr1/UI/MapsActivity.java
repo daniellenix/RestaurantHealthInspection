@@ -28,6 +28,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -35,6 +36,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.maps.android.clustering.ClusterItem;
@@ -104,17 +106,40 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private static String inspectionURL;
     private static String restaurantURL;
+    private boolean ifLoadCluster = true;
+    private int sourceActivityCond;
+    private int r_index;
 
-    public static Intent makeIntent(Context c) {
-        return new Intent(c, MapsActivity.class);
+
+    public static Intent makeIntent(Context c, int sourceActivityCondCode) {
+        Intent intent = new Intent(c, MapsActivity.class);
+        intent.putExtra("sourceActivityCond", sourceActivityCondCode);
+
+        return intent;
+    }
+
+    public static Intent makeIntentFromDetail(Context c, int restaurantIndex, int condition, int sourceActivityCondCode) {
+        Intent intent = new Intent(c, MapsActivity.class);
+
+        intent.putExtra("index", restaurantIndex);
+        intent.putExtra("checkCondition", condition);
+        intent.putExtra("sourceActivityCond", sourceActivityCondCode);
+
+        return intent;
     }
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(Intent.ACTION_MAIN);
-        intent.addCategory(Intent.CATEGORY_HOME);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(intent);
+        extractDataFromIntent();
+        //check source activity to make android back button work differently
+        if (sourceActivityCond == RestaurantDetailActivity.RESTAURANT_DETAIL_SOURCE_ACTIVITY_COND) {
+            finish();
+        } else {
+            Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_HOME);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+        }
     }
 
     @Override
@@ -124,9 +149,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
 
         if (!manager.isDataRead()) {
+            // if not read (means we probably launched the app),
+            // then check if update is available first, then it will handle the data-reading
             JsonTask restJsonTask = new JsonTask();
             restJsonTask.execute(restaurantJsonUrl, inspectionJsonUrl);
         } else {
+            // otherwise, we are called from another activity, then init map, no need to redownload the data
             verifyLocationPermission();
         }
         initBackToListButton();
@@ -144,6 +172,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
+    private void initMap() {
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+    }
+
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
@@ -157,13 +191,60 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        if (mLocationPermissionGranted) {
-            mMap.setMyLocationEnabled(true);
-            mMap.getUiSettings().setMyLocationButtonEnabled(true);
-            getDeviceLocation();
-        }
+        extractDataFromIntent();
 
-        setUpClusterer();
+        mMap.setMyLocationEnabled(true);
+        mMap.getUiSettings().setMyLocationButtonEnabled(true);
+
+        if (ifLoadCluster) {
+            if (mLocationPermissionGranted) {
+                getDeviceLocation();
+            }
+            setUpClusterer();
+        } else {
+            Restaurant r = manager.getRestaurantAtIndex(r_index);
+
+            LatLng coordinate = new LatLng(r.getLatitude(), r.getLongitude());
+
+            String sniAdd = "Address:" + r.getAddress();
+            String sniStr;
+            if (r.getInspections().isEmpty()) {
+                sniStr = sniAdd + "\n" + "Hazard level undefined";
+            } else {
+                sniStr = sniAdd + "\n" + "Hazard level: " + r.getInspections().getInspection(0).getHazardRating();
+            }
+
+            CameraUpdate location = CameraUpdateFactory.newLatLngZoom(coordinate, 15f);
+            mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(this));
+            mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+                @Override
+                public void onInfoWindowClick(Marker marker) {
+                    LatLng restaurantLatLng = marker.getPosition();
+                    int r_index = manager.getRestaurantIndexByLatLng(restaurantLatLng);
+                    Intent intent = RestaurantDetailActivity.makeIntent(MapsActivity.this, r_index);
+                    startActivity(intent);
+                }
+            });
+            Marker m = mMap.addMarker(new MarkerOptions()
+                    .position(coordinate).title(r.getRestaurantName()).snippet(sniStr));
+            mMap.moveCamera(location);
+            m.showInfoWindow();
+        }
+    }
+
+    private void extractDataFromIntent() {
+        Intent intent = getIntent();
+        r_index = intent.getIntExtra("index", -1);
+        sourceActivityCond = intent.getIntExtra("sourceActivityCond", -1);
+        int check = intent.getIntExtra("checkCondition", 0);
+
+        Log.e("Maps", "onMapReady: condition code is " + check);
+        Log.e("Maps", "onMapReady: rest index code is " + r_index);
+
+        if (check == 5098) {
+            ifLoadCluster = false;
+            initMap();
+        }
     }
 
     /*
@@ -187,12 +268,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         } else {
             ActivityCompat.requestPermissions(this, PERMISSIONS_LOCATION, PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
         }
-    }
-
-    private void initMap() {
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
     }
 
     private void verifyStoragePermissions(Activity activity) {
@@ -413,7 +488,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED
                         && grantResults[1] == PackageManager.PERMISSION_GRANTED
                 ) {
-
                     mLocationPermissionGranted = true;
                     initMap();
                 }
@@ -438,7 +512,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void setUpClusterer() {
         // Initialize the manager with the context and the map.
         // (Activity extends context, so we can pass 'this' in the constructor.)
-        mClusterManager = new ClusterManager<MyItem>(this, mMap);
+        mClusterManager = new ClusterManager<>(this, mMap);
 
         // Point the map's listeners at the listeners implemented by the cluster
         // manager.
