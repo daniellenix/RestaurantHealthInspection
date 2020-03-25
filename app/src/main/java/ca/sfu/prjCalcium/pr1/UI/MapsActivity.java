@@ -116,7 +116,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         return intent;
     }
-
+    //checkCondition is used for selecting spevific restaurant when we tap on GPS coordinate
     public static Intent makeIntentFromDetail(Context c, int restaurantIndex, int condition, int sourceActivityCondCode) {
         Intent intent = new Intent(c, MapsActivity.class);
 
