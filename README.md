@@ -15,8 +15,8 @@ Course Project URL: https://opencoursehub.cs.sfu.ca/bfraser/grav-cms/cmpt276/pro
 
 1. [30] Get updated data
 
-   * [ ] When the app start up, if it's been 20 hours or more since data was last updated, I want the application to check with the City of Surrey's server to see if there is more recent data to be downloaded.
-   * [ ] If there is new data on the server, I want the app to ask the user if they want to update the data so they can choose if now is a good time to do the update.
+   * [x] When the app start up, if it's been 20 hours or more since data was last updated, I want the application to check with the City of Surrey's server to see if there is more recent data to be downloaded.
+   * [x] If there is new data on the server, I want the app to ask the user if they want to update the data so they can choose if now is a good time to do the update.
         * [ ] If the user does not want the data updated, then the next time the app starts up it should ask the user again if they want to update.
         * [ ] The app must only download the data if an update is available otherwise it will waste the user's bandwidth and battery.
    * [ ] I want the application to store downloaded data locally so that it can work offline.
@@ -43,9 +43,9 @@ Course Project URL: https://opencoursehub.cs.sfu.ca/bfraser/grav-cms/cmpt276/pro
 
 3. [15] Custom images / icons
 
-   * [ ] I want the icon/image for certain restaurants to be specific to that business so that the user can quickly identify business.
-        * [ ] At least 10 restaurants must have unique icons in the restaurant list screen. Suggested that these icons be the company's logo.
-        * [ ] At least 5 of these restaurants should have 4 or more locations in Surrey so that the custom icons come up more frequently in the list.
+   * [x] I want the icon/image for certain restaurants to be specific to that business so that the user can quickly identify business.
+        * [x] At least 10 restaurants must have unique icons in the restaurant list screen. Suggested that these icons be the company's logo.
+        * [x] At least 5 of these restaurants should have 4 or more locations in Surrey so that the custom icons come up more frequently in the list.
 
 4. [15] Back-button behaviour
 
@@ -53,7 +53,7 @@ Course Project URL: https://opencoursehub.cs.sfu.ca/bfraser/grav-cms/cmpt276/pro
         * [x] If a user goes from the map screen to the restaurant list screen and then pressing Android's back button, it exits the application.
         * [x] If a user goes from the restaurant list screen to the map screen and then pressing Android's back button, it exits the application.
    * [x] Pressing a back button (either Android's or the one on the app's screen) from the single restaurant screen takes the user back to either the map screen or the restaurant list screen, whichever the user last visited.
-   * [ ] On the single restaurant screen, tapping the GPS coords on a restaurant closes the current screen and returns to the map screen, selecting that restaurant and showing the small pop-up info about the restaurant.
+   * [x] On the single restaurant screen, tapping the GPS coords on a restaurant closes the current screen and returns to the map screen, selecting that restaurant and showing the small pop-up info about the restaurant.
 ## Style Guide
 
 https://google.github.io/styleguide/javaguide.html
