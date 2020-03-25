@@ -17,14 +17,14 @@ Course Project URL: https://opencoursehub.cs.sfu.ca/bfraser/grav-cms/cmpt276/pro
 
    * [x] When the app start up, if it's been 20 hours or more since data was last updated, I want the application to check with the City of Surrey's server to see if there is more recent data to be downloaded.
    * [x] If there is new data on the server, I want the app to ask the user if they want to update the data so they can choose if now is a good time to do the update.
-        * [ ] If the user does not want the data updated, then the next time the app starts up it should ask the user again if they want to update.
-        * [ ] The app must only download the data if an update is available otherwise it will waste the user's bandwidth and battery.
-   * [ ] I want the application to store downloaded data locally so that it can work offline.
-   * [ ] I want the application to initially install with the small data set (from iteration 1).
+        * [x] If the user does not want the data updated, then the next time the app starts up it should ask the user again if they want to update.
+        * [x] The app must only download the data if an update is available otherwise it will waste the user's bandwidth and battery.
+   * [x] I want the application to store downloaded data locally so that it can work offline.
+   * [x] I want the application to initially install with the small data set (from iteration 1).
    * [x] Show a please-wait dialog, or a progress dialog, while data is downloading/updating.
         * [x] I need the dialog to have some animation showing the application is working.
         * [x] Plus it must have some way for the user to cancel the download.
-        * [ ] When the download is cancelled the previously download data should still be used by the app.
+        * [x] When the download is cancelled the previously download data should still be used by the app.
 
 2. [30] Map
 
