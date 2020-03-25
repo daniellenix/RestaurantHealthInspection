@@ -75,7 +75,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final String inspectionJsonUrl = "https://data.surrey.ca/api/3/action/package_show?id=fraser-health-restaurant-inspection-reports";
 
     // Request code for call back listener
-    private static final int REQUEST_EXTERNAL_STORAGE = 1235;
+    private static final int PERMISSION_REQUEST_EXTERNAL_STORAGE = 1235;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1234;
 
     private static final String[] PERMISSIONS_STORAGE = {
@@ -100,7 +100,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     private FusedLocationProviderClient mFLPC;
 
-    private RestaurantManager manager = RestaurantManager.getInstance();
+    private RestaurantManager rManager = RestaurantManager.getInstance();
 
     private ClusterManager<MyItem> mClusterManager;
 
@@ -109,7 +109,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private boolean ifLoadCluster = true;
     private int sourceActivityCond;
     private int r_index;
-
 
     public static Intent makeIntent(Context c, int sourceActivityCondCode) {
         Intent intent = new Intent(c, MapsActivity.class);
@@ -148,7 +147,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setContentView(R.layout.activity_maps);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
 
-        if (!manager.isDataRead()) {
+        if (!rManager.isDataRead()) {
             // if not read (means we probably launched the app),
             // then check if update is available first, then it will handle the data-reading
             JsonTask restJsonTask = new JsonTask();
@@ -202,7 +201,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
             setUpClusterer();
         } else {
-            Restaurant r = manager.getRestaurantAtIndex(r_index);
+            Restaurant r = rManager.getRestaurantAtIndex(r_index);
 
             LatLng coordinate = new LatLng(r.getLatitude(), r.getLongitude());
 
@@ -220,7 +219,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 @Override
                 public void onInfoWindowClick(Marker marker) {
                     LatLng restaurantLatLng = marker.getPosition();
-                    int r_index = manager.getRestaurantIndexByLatLng(restaurantLatLng);
+                    int r_index = rManager.getRestaurantIndexByLatLng(restaurantLatLng);
                     Intent intent = RestaurantDetailActivity.makeIntent(MapsActivity.this, r_index);
                     startActivity(intent);
                 }
@@ -243,7 +242,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         if (check == 5098) {
             ifLoadCluster = false;
-            initMap();
         }
     }
 
@@ -279,7 +277,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             ActivityCompat.requestPermissions(
                     activity,
                     PERMISSIONS_STORAGE,
-                    REQUEST_EXTERNAL_STORAGE
+                    PERMISSION_REQUEST_EXTERNAL_STORAGE
             );
         } else {
             mExternalStorageLocationGranted = true;
@@ -317,10 +315,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     "go to Setting -> Apps -> Permission -> enable");
                     AlertDialog alertDialog = builder.create();
                     alertDialog.show();
-
+                }
+                if (!rManager.isDataRead()) {
                     loadManagerFromInternal();
-                } else {
-                    loadManagerFromExternal();
                 }
                 verifyLocationPermission();
             }
@@ -399,10 +396,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 setSharedReferencesData("UpdateRequired", false);
 
                 // Update files
-                if (!manager.isDataRead()) {
+                if (!rManager.isDataRead()) {
                     verifyStoragePermissions(MapsActivity.this);
+                    storeUpdateTimeToSharedPref();
                 }
-                storeUpdateTimeToSharedPref();
             }
         });
         builder.setNegativeButton("Later", new DialogInterface.OnClickListener() {
@@ -412,7 +409,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         "This message will show again on next start", Toast.LENGTH_LONG).show();
 
                 // Use old files
-                if (!manager.isDataRead()) {
+                if (!rManager.isDataRead()) {
                     loadManagerFromInternal();
                 }
                 verifyLocationPermission();
@@ -427,50 +424,33 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void initDataDownload() {
         if (mExternalStorageLocationGranted) {
-            mProgressDialog = new ProgressDialog(MapsActivity.this);
-            mProgressDialog.setMessage("Currently downloading files");
-            mProgressDialog.setIndeterminate(true);
-            mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-            mProgressDialog.setCancelable(true);
-
             // execute this when the downloader must be fired
             final DownloadTask downloadTask = new DownloadTask(MapsActivity.this, new String[]{"/restaurant.csv", "/inspection.csv"});
-
-            mProgressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(android.R.string.cancel), new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    downloadTask.cancel(true); //cancel the task
-                    if (!manager.isDataRead()) {
-                        loadManagerFromInternal();
-                    }
-                }
-            });
-
             downloadTask.execute(restaurantURL, inspectionURL);
         }
     }
 
     private void loadManagerFromInternal() {
-        manager.clear();
-        manager.readRestaurantDataFromInternal(this);
-        manager.sort(new AlphabetComparator());
-        for (Restaurant r : manager) {
+        rManager.clear();
+        rManager.readRestaurantDataFromInternal(this);
+        rManager.sort(new AlphabetComparator());
+        for (Restaurant r : rManager) {
             InspectionManager iManager = r.getInspections();
             iManager.sort(new InspectionComparator().reversed());
         }
-        manager.setDataRead(true);
+        rManager.setDataRead(true);
     }
 
     private void loadManagerFromExternal() {
-        manager.clear();
-        manager.readRestaurantDataFromExternal();
-        manager.addInspectionsToRestaurantsFromExternal();
-        manager.sort(new AlphabetComparator());
-        for (Restaurant r : manager) {
+        rManager.clear();
+        rManager.readRestaurantDataFromExternal();
+        rManager.addInspectionsToRestaurantsFromExternal();
+        rManager.sort(new AlphabetComparator());
+        for (Restaurant r : rManager) {
             InspectionManager iManager = r.getInspections();
             iManager.sort(new InspectionComparator().reversed());
         }
-        manager.setDataRead(true);
+        rManager.setDataRead(true);
     }
 
     // https://developers.google.com/maps/documentation/android-sdk/current-place-tutorial
@@ -492,7 +472,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     initMap();
                 }
             }
-            case REQUEST_EXTERNAL_STORAGE: {
+            case PERMISSION_REQUEST_EXTERNAL_STORAGE: {
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED
                         && grantResults[1] == PackageManager.PERMISSION_GRANTED
@@ -500,7 +480,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     mExternalStorageLocationGranted = true;
                     initDataDownload();
                 } else { // if user does not give permission
-                    if (!manager.isDataRead()) {
+                    if (!rManager.isDataRead()) {
                         loadManagerFromInternal();
                     }
                     verifyLocationPermission();
@@ -519,11 +499,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.setOnCameraIdleListener(mClusterManager);
         mMap.setOnMarkerClickListener(mClusterManager);
 
+        // Add cluster items (markers) to the cluster manager.
+        addItems();
+
         mClusterManager.setOnClusterItemInfoWindowClickListener(new ClusterManager.OnClusterItemInfoWindowClickListener<MyItem>() {
             @Override
             public void onClusterItemInfoWindowClick(MyItem myItem) {
                 LatLng restaurantLatLng = myItem.getPosition();
-                int r_index = manager.getRestaurantIndexByLatLng(restaurantLatLng);
+                int r_index = rManager.getRestaurantIndexByLatLng(restaurantLatLng);
                 Intent intent = RestaurantDetailActivity.makeIntent(MapsActivity.this, r_index);
                 startActivity(intent);
             }
@@ -531,15 +514,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         CustomInfoWindowAdapter adapter = new CustomInfoWindowAdapter(MapsActivity.this);
         mClusterManager.getMarkerCollection().setInfoWindowAdapter(adapter);
 
-        // Add cluster items (markers) to the cluster manager.
-        addItems();
-
         ClusterRenderer<MyItem> clusterRenderer = new IconRenderer(MapsActivity.this, mMap, mClusterManager);
         mClusterManager.setRenderer(clusterRenderer);
     }
 
     private void addItems() {
-        for (Restaurant r : manager) {
+        for (Restaurant r : rManager) {
             MyItem i = new MyItem(r);
             mClusterManager.addItem(i);
         }
@@ -590,8 +570,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         @Override
         protected void onClusterItemRendered(MyItem clusterItem, Marker marker) {
             LatLng restaurantLatLng = clusterItem.getPosition();
-            int r_index = manager.getRestaurantIndexByLatLng(restaurantLatLng);
-            Restaurant r = manager.getRestaurantAtIndex(r_index);
+            int r_index = rManager.getRestaurantIndexByLatLng(restaurantLatLng);
+            Restaurant r = rManager.getRestaurantAtIndex(r_index);
 
             if (r.getInspections().isEmpty()) {
                 BitmapDrawable bitmapDraw = (BitmapDrawable) getResources().getDrawable(R.drawable.green);
@@ -657,7 +637,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         @Override
         protected String doInBackground(String... sUrl) {
             InputStream input = null;
-            OutputStream outputRestaurant = null;
+            OutputStream output = null;
             HttpURLConnection connection = null;
 
             for (int i = 0; i < sUrl.length; i++) {
@@ -681,11 +661,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     input = connection.getInputStream();
 
                     if (i == 0) {
-                        outputRestaurant = new FileOutputStream(Environment
+                        output = new FileOutputStream(Environment
                                 .getExternalStorageDirectory().toString()
                                 + downloadLocation[0]);
                     } else {
-                        outputRestaurant = new FileOutputStream(Environment
+                        output = new FileOutputStream(Environment
                                 .getExternalStorageDirectory().toString()
                                 + downloadLocation[1]);
                     }
@@ -703,21 +683,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         // publishing the progress....
                         if (fileLength > 0) // only if total length is known
                             publishProgress((int) (total * 100 / fileLength));
-                        outputRestaurant.write(data, 0, count);
+                        output.write(data, 0, count);
                     }
                 } catch (Exception e) {
                     return e.toString();
                 } finally {
                     try {
-                        if (outputRestaurant != null)
-                            outputRestaurant.close();
+                        if (output != null)
+                            output.close();
                         if (input != null)
                             input.close();
                     } catch (IOException ignored) {
+                    } finally {
+                        if (connection != null)
+                            connection.disconnect();
                     }
-
-                    if (connection != null)
-                        connection.disconnect();
                 }
             }
             return null;
@@ -732,6 +712,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
                     getClass().getName());
             mWakeLock.acquire(10 * 60 * 1000L /*10 minutes*/);
+
+            mProgressDialog = new ProgressDialog(MapsActivity.this);
+            mProgressDialog.setMessage(getString(R.string.maps_progress_dialog_downloading_csv));
+            mProgressDialog.setIndeterminate(false);
+            mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            mProgressDialog.setCancelable(true);
+
+            mProgressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(android.R.string.cancel), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    DownloadTask.this.cancel(true); //cancel the task
+                    if (!rManager.isDataRead()) {
+                        loadManagerFromInternal();
+                    }
+                }
+            });
+
             mProgressDialog.show();
         }
 
@@ -754,7 +751,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Toast.makeText(context, "File downloaded", Toast.LENGTH_SHORT).show();
 
                 loadManagerFromExternal();
-
                 // In case user turns off permissions manually.
                 verifyLocationPermission();
             }
@@ -790,7 +786,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     reader = new BufferedReader(new InputStreamReader(stream));
 
                     StringBuilder buffer = new StringBuilder();
-                    String line = "";
+                    String line;
 
                     while ((line = reader.readLine()) != null) {
                         buffer.append(line).append("\n");
