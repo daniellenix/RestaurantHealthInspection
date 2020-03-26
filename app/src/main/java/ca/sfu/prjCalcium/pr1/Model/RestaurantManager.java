@@ -91,7 +91,7 @@ public class RestaurantManager implements Iterable<Restaurant> {
                         restName.append(tokens[i]); // concat the string until the ending quotation mark
                         i++;
                     }
-                    sample.setRestaurantName(restName.toString());
+                    sample.setRestaurantName(restName.substring(1, restName.length() - 1)); // get rid of the quotation marks
                     sample.setAddress(tokens[i]);
                     sample.setPhysicalCity(tokens[++i]);
                     sample.setFacType(tokens[++i]);
