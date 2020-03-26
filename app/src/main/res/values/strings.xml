@@ -17,4 +17,6 @@
     <string name="maps_toast_need_update">Need Update!</string>
     <string name="maps_toast_welcome_back">Welcome Back!</string>
     <string name="maps_progress_dialog_downloading_csv">Currently downloading files. </string>
+    <string name="ask_user_if_update_title">Update Found</string>
+    <string name="ask_user_if_update_message">Do you want to update now?</string>
 </resources>

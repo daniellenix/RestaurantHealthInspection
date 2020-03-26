@@ -69,14 +69,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public static final String LAST_UPDATE_TIME_ON_SERVER = "lastUpdateTimeOnServer";
     public static final String RESTAURANT_UPDATE_TIME_ON_SERVER = "restaurantUpdateTimeOnServer";
     public static final String INSPECTION_LAST_UPDATE_TIME_ON_SERVER = "inspectionLastUpdateTimeOnServer";
+    public static final String SHARED_PREF_IS_UPDATE_REQUIRED_NEXT_TIME = "UpdateRequired";
 
     // Constants used to URLs
     private static final String restaurantJsonUrl = "https://data.surrey.ca/api/3/action/package_show?id=restaurants";
     private static final String inspectionJsonUrl = "https://data.surrey.ca/api/3/action/package_show?id=fraser-health-restaurant-inspection-reports";
 
     // Request code for call back listener
-    private static final int PERMISSION_REQUEST_EXTERNAL_STORAGE = 1235;
-    private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1234;
+    private static final int PERMISSION_REQUEST_EXTERNAL_STORAGE = 9021;
+    private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 9022;
 
     private static final String[] PERMISSIONS_STORAGE = {
             Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -300,8 +301,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         } else {
             // Check user's last run choice
-            SharedPreferences pref = getSharedPreferences("Time", MODE_PRIVATE);
-            boolean choice = pref.getBoolean("UpdateRequired", false);
+            SharedPreferences pref = getSharedPreferences(LAST_UPDATE_TIME_ON_SERVER, MODE_PRIVATE);
+            boolean choice = pref.getBoolean(SHARED_PREF_IS_UPDATE_REQUIRED_NEXT_TIME, false);
+
             if (choice) {
                 createAskUserIfUpdateDialog();
                 Toast.makeText(getApplicationContext(), "Have Update!", Toast.LENGTH_LONG).show();
@@ -315,9 +317,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     "go to Setting -> Apps -> Permission -> enable");
                     AlertDialog alertDialog = builder.create();
                     alertDialog.show();
-                }
-                if (!rManager.isDataRead()) {
-                    loadManagerFromInternal();
+
+                    if (!rManager.isDataRead()) {
+                        loadManagerFromInternal();
+                    }
+                } else {
+                    if (!rManager.isDataRead()) {
+                        loadManagerFromExternal();
+                    }
                 }
                 verifyLocationPermission();
             }
@@ -371,12 +378,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private long getLastStartTime() {
-        SharedPreferences pref = getSharedPreferences("Time", MODE_PRIVATE);
+        SharedPreferences pref = getSharedPreferences(LAST_UPDATE_TIME_ON_SERVER, MODE_PRIVATE);
         return pref.getLong("LastRun", 0);
     }
 
     private <T> void setSharedReferencesData(String name, T value) {
-        SharedPreferences pref = getSharedPreferences("Time", MODE_PRIVATE);
+        SharedPreferences pref = getSharedPreferences(LAST_UPDATE_TIME_ON_SERVER, MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
         if (value instanceof Long) {
             editor.putLong(name, (Long) value);
@@ -388,12 +395,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void createAskUserIfUpdateDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Update Found").setMessage("Do you want to update now?");
+        builder.setTitle(R.string.ask_user_if_update_title).setMessage(R.string.ask_user_if_update_message);
         builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 // Update status of shared references
-                setSharedReferencesData("UpdateRequired", false);
+                setSharedReferencesData(SHARED_PREF_IS_UPDATE_REQUIRED_NEXT_TIME, false);
 
                 // Update files
                 if (!rManager.isDataRead()) {
@@ -402,20 +409,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             }
         });
-        builder.setNegativeButton("Later", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 Toast.makeText(getApplicationContext(),
                         "This message will show again on next start", Toast.LENGTH_LONG).show();
+
+                // Save user choice
+                setSharedReferencesData(SHARED_PREF_IS_UPDATE_REQUIRED_NEXT_TIME, true);
 
                 // Use old files
                 if (!rManager.isDataRead()) {
                     loadManagerFromInternal();
                 }
                 verifyLocationPermission();
-
-                // Save user choice
-                setSharedReferencesData("UpdateRequired", true);
             }
         });
         AlertDialog alertDialog = builder.create();
@@ -462,7 +469,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mExternalStorageLocationGranted = false;
 
         switch (requestCode) {
-            case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
+            case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION:
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED
@@ -471,8 +478,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     mLocationPermissionGranted = true;
                     initMap();
                 }
-            }
-            case PERMISSION_REQUEST_EXTERNAL_STORAGE: {
+                break;
+
+            case PERMISSION_REQUEST_EXTERNAL_STORAGE:
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED
                         && grantResults[1] == PackageManager.PERMISSION_GRANTED
@@ -485,7 +493,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                     verifyLocationPermission();
                 }
-            }
+                break;
         }
     }
 
@@ -582,26 +590,33 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             } else {
                 Inspection recentInspection = r.getInspections().getInspection(0);
 
-                if (recentInspection.getHazardRating().equals("Low")) {
-                    BitmapDrawable bitmapDraw = (BitmapDrawable) getResources().getDrawable(R.drawable.green);
-                    Bitmap b = bitmapDraw.getBitmap();
-                    Bitmap smallMarker = Bitmap.createScaledBitmap(b, 50, 50, false);
+                switch (recentInspection.getHazardRating()) {
+                    case "Low": {
+                        BitmapDrawable bitmapDraw = (BitmapDrawable) getResources().getDrawable(R.drawable.green);
+                        Bitmap b = bitmapDraw.getBitmap();
+                        Bitmap smallMarker = Bitmap.createScaledBitmap(b, 50, 50, false);
 
-                    marker.setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
-                } else if (recentInspection.getHazardRating().equals("Moderate")) {
-                    BitmapDrawable bitmapDraw = (BitmapDrawable) getResources().getDrawable(R.drawable.yellow);
+                        marker.setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
+                        break;
+                    }
+                    case "Moderate": {
+                        BitmapDrawable bitmapDraw = (BitmapDrawable) getResources().getDrawable(R.drawable.yellow);
 
-                    Bitmap b = bitmapDraw.getBitmap();
-                    Bitmap smallMarker = Bitmap.createScaledBitmap(b, 50, 50, false);
+                        Bitmap b = bitmapDraw.getBitmap();
+                        Bitmap smallMarker = Bitmap.createScaledBitmap(b, 50, 50, false);
 
-                    marker.setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
-                } else if (recentInspection.getHazardRating().equals("High")) {
-                    BitmapDrawable bitmapDraw = (BitmapDrawable) getResources().getDrawable(R.drawable.red);
+                        marker.setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
+                        break;
+                    }
+                    case "High": {
+                        BitmapDrawable bitmapDraw = (BitmapDrawable) getResources().getDrawable(R.drawable.red);
 
-                    Bitmap b = bitmapDraw.getBitmap();
-                    Bitmap smallMarker = Bitmap.createScaledBitmap(b, 50, 50, false);
+                        Bitmap b = bitmapDraw.getBitmap();
+                        Bitmap smallMarker = Bitmap.createScaledBitmap(b, 50, 50, false);
 
-                    marker.setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
+                        marker.setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
+                        break;
+                    }
                 }
             }
             super.onClusterItemRendered(clusterItem, marker);
