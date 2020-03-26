@@ -191,7 +191,7 @@ public class RestaurantListActivity extends AppCompatActivity {
 
             if (currentRestaurant.getInspections().isEmpty()) {
                 textViewTime.setText(R.string.no_recent_inspections);
-                textViewIssues.setText(R.string.zero_number_of_issues);
+                textViewIssues.setText(getString(R.string.restaurant_list_num_issues, 0));
                 textViewIssues.setTextColor(getResources().getColor(R.color.green));
                 imageViewHazard.setImageDrawable(getDrawable(R.drawable.green));
             } else {

@@ -1,7 +1,6 @@
 <resources>
     <string name="app_name">Restaurant Inspection Viewer</string>
     <string name="no_inspections">No Inspections</string>
-    <string name="zero_number_of_issues">Number of Issues: 0</string>
     <string name="no_recent_inspections">N/A</string>
     <string name="restaurant_list_num_issues">Number of Issues: %1$d</string>
     <string name="inspection_days_ago">%1$d day(s) ago</string>
@@ -16,7 +15,17 @@
     <string name="map_switch_to_list">Switch To List</string>
     <string name="maps_toast_need_update">Need Update!</string>
     <string name="maps_toast_welcome_back">Welcome Back!</string>
-    <string name="maps_progress_dialog_downloading_csv">Currently downloading files. </string>
+    <string name="maps_progress_dialog_downloading_csv">Currently downloading files…</string>
     <string name="ask_user_if_update_title">Update Found</string>
     <string name="ask_user_if_update_message">Do you want to update now?</string>
+    <string name="ask_user_if_update_permission_denied_title">Permission Denied, Using default data</string>
+    <string name="ask_user_if_update_permission_denied_message">If you want to update data \nGo to Setting > Apps > Permission and enable permissions. </string>
+    <string name="ask_user_if_update_toast_message_will_show_again">This message will show again on next start</string>
+    <string name="device_location_toast_cannot_get_location">Could not determine location. </string>
+    <string name="toast_have_update">Have Update!</string>
+    <string name="info_window_info_no_inspection">Address: %1$s \nHazard level undefined</string>
+    <string name="info_window_info">Address: %1$s \nHazard level: %2$s</string>
+    <string name="toast_file_downloaded">File downloaded</string>
+    <string name="json_task_dialog_title">Please wait</string>
+    <string name="download_task_download_error">Download error: %1$s</string>
 </resources>

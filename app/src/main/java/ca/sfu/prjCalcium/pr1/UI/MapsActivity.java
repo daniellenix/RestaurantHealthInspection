@@ -70,6 +70,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public static final String RESTAURANT_UPDATE_TIME_ON_SERVER = "restaurantUpdateTimeOnServer";
     public static final String INSPECTION_LAST_UPDATE_TIME_ON_SERVER = "inspectionLastUpdateTimeOnServer";
     public static final String SHARED_PREF_IS_UPDATE_REQUIRED_NEXT_TIME = "UpdateRequired";
+    public static final String SHARED_PREF_LAST_RUN_TIME = "LastRun";
 
     // Constants used to URLs
     private static final String restaurantJsonUrl = "https://data.surrey.ca/api/3/action/package_show?id=restaurants";
@@ -87,6 +88,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION
     };
+
+    // Intent constants
+    public static final String INTENT_EXTRA_RESTAURANT_INDEX = "index";
+    public static final String INTENT_EXTRA_SOURCE_ACTIVITY_COND = "sourceActivityCond";
 
     // Progress Dialogs
     ProgressDialog mProgressDialog;
@@ -107,23 +112,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private static String inspectionURL;
     private static String restaurantURL;
+
     private boolean ifLoadCluster = true;
     private int sourceActivityCond;
     private int r_index;
 
     public static Intent makeIntent(Context c, int sourceActivityCondCode) {
         Intent intent = new Intent(c, MapsActivity.class);
-        intent.putExtra("sourceActivityCond", sourceActivityCondCode);
+        intent.putExtra(INTENT_EXTRA_SOURCE_ACTIVITY_COND, sourceActivityCondCode);
 
         return intent;
     }
-    //checkCondition is used for selecting spevific restaurant when we tap on GPS coordinate
-    public static Intent makeIntentFromDetail(Context c, int restaurantIndex, int condition, int sourceActivityCondCode) {
+
+    // checkCondition is used for selecting specific restaurant when we tap on GPS coordinate
+    public static Intent makeIntentFromDetail(Context c, int restaurantIndex, int sourceActivityCondCode) {
         Intent intent = new Intent(c, MapsActivity.class);
 
-        intent.putExtra("index", restaurantIndex);
-        intent.putExtra("checkCondition", condition);
-        intent.putExtra("sourceActivityCond", sourceActivityCondCode);
+        intent.putExtra(INTENT_EXTRA_RESTAURANT_INDEX, restaurantIndex);
+        intent.putExtra(INTENT_EXTRA_SOURCE_ACTIVITY_COND, sourceActivityCondCode);
 
         return intent;
     }
@@ -206,27 +212,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             LatLng coordinate = new LatLng(r.getLatitude(), r.getLongitude());
 
-            String sniAdd = "Address:" + r.getAddress();
-            String sniStr;
-            if (r.getInspections().isEmpty()) {
-                sniStr = sniAdd + "\n" + "Hazard level undefined";
-            } else {
-                sniStr = sniAdd + "\n" + "Hazard level: " + r.getInspections().getInspection(0).getHazardRating();
-            }
-
             CameraUpdate location = CameraUpdateFactory.newLatLngZoom(coordinate, 15f);
             mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(this));
-            mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-                @Override
-                public void onInfoWindowClick(Marker marker) {
-                    LatLng restaurantLatLng = marker.getPosition();
-                    int r_index = rManager.getRestaurantIndexByLatLng(restaurantLatLng);
-                    Intent intent = RestaurantDetailActivity.makeIntent(MapsActivity.this, r_index);
-                    startActivity(intent);
-                }
-            });
+
             Marker m = mMap.addMarker(new MarkerOptions()
-                    .position(coordinate).title(r.getRestaurantName()).snippet(sniStr));
+                    .position(coordinate)
+                    .title(r.getRestaurantName()));
+            if (r.getInspections().isEmpty()) {
+                m.setSnippet(getString(R.string.info_window_info_no_inspection, r.getAddress()));
+            } else {
+                m.setSnippet(getString(R.string.info_window_info, r.getAddress(), r.getInspections().getInspection(0).getHazardRating()));
+            }
+
             mMap.moveCamera(location);
             m.showInfoWindow();
         }
@@ -234,14 +231,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void extractDataFromIntent() {
         Intent intent = getIntent();
-        r_index = intent.getIntExtra("index", -1);
-        sourceActivityCond = intent.getIntExtra("sourceActivityCond", -1);
-        int check = intent.getIntExtra("checkCondition", 0);
+        r_index = intent.getIntExtra(INTENT_EXTRA_RESTAURANT_INDEX, -1);
+        sourceActivityCond = intent.getIntExtra(INTENT_EXTRA_SOURCE_ACTIVITY_COND, -1);
 
-        Log.e("Maps", "onMapReady: condition code is " + check);
-        Log.e("Maps", "onMapReady: rest index code is " + r_index);
-
-        if (check == 5098) {
+        if (sourceActivityCond == RestaurantDetailActivity.RESTAURANT_DETAIL_SOURCE_ACTIVITY_COND) {
+            // if we come from detail activity, then wen don't need to load the clusters.
             ifLoadCluster = false;
         }
     }
@@ -306,15 +300,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             if (choice) {
                 createAskUserIfUpdateDialog();
-                Toast.makeText(getApplicationContext(), "Have Update!", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), R.string.toast_have_update, Toast.LENGTH_LONG).show();
             } else {
                 int permission = ActivityCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
                 if (permission != PackageManager.PERMISSION_GRANTED) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                    builder.setTitle("Permission Denied, Using deafault data")
-                            .setMessage("If you want to update data\n" +
-                                    "go to Setting -> Apps -> Permission -> enable");
+                    builder.setTitle(R.string.ask_user_if_update_permission_denied_title)
+                            .setMessage(getString(R.string.ask_user_if_update_permission_denied_message));
                     AlertDialog alertDialog = builder.create();
                     alertDialog.show();
 
@@ -329,7 +322,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 verifyLocationPermission();
             }
         }
-        setSharedReferencesData("LastRun", now);
+        setSharedReferencesData(SHARED_PREF_LAST_RUN_TIME, now);
     }
 
     // https://www.youtube.com/watch?v=fPFr0So1LmI&list=PLgCYzUzKIBE-vInwQhGSdnbyJ62nixHCt&index=5
@@ -347,14 +340,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             Location currentLocation = (Location) task.getResult();
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), 10f));
                         } else {
-                            Toast.makeText(MapsActivity.this, "Could not determine location. ", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MapsActivity.this, getString(R.string.device_location_toast_cannot_get_location), Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
             }
         } catch (SecurityException e) {
             Log.e("Maps", "SecurityException: " + e.getMessage());
-            Toast.makeText(MapsActivity.this, "Could not determine location. ", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MapsActivity.this, getString(R.string.device_location_toast_cannot_get_location), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -379,7 +372,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private long getLastStartTime() {
         SharedPreferences pref = getSharedPreferences(LAST_UPDATE_TIME_ON_SERVER, MODE_PRIVATE);
-        return pref.getLong("LastRun", 0);
+        return pref.getLong(SHARED_PREF_LAST_RUN_TIME, 0);
     }
 
     private <T> void setSharedReferencesData(String name, T value) {
@@ -413,7 +406,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 Toast.makeText(getApplicationContext(),
-                        "This message will show again on next start", Toast.LENGTH_LONG).show();
+                        R.string.ask_user_if_update_toast_message_will_show_again, Toast.LENGTH_LONG).show();
 
                 // Save user choice
                 setSharedReferencesData(SHARED_PREF_IS_UPDATE_REQUIRED_NEXT_TIME, true);
@@ -541,17 +534,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         public MyItem(Restaurant r) {
             mPosition = new LatLng(r.getLatitude(), r.getLongitude());
             mTitle = r.getRestaurantName();
-            String sniAdd = "Address:" + r.getAddress();
-            String sniStr;
 
             if (r.getInspections().isEmpty()) {
-                sniStr = sniAdd + "\n" + "Hazard level undefined";
+                mSnippet = getString(R.string.info_window_info_no_inspection, r.getAddress());
             } else {
-                Inspection recentInspection = r.getInspections().getInspection(0);
-                sniStr = sniAdd + "\n" + "Hazard level: " + recentInspection.getHazardRating();
+                mSnippet = getString(R.string.info_window_info, r.getAddress(), r.getInspections().getInspection(0).getHazardRating());
             }
-
-            mSnippet = sniStr;
         }
 
         @Override
@@ -761,9 +749,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mWakeLock.release();
             mProgressDialog.dismiss();
             if (result != null) {
-                Toast.makeText(context, "Download error: " + result, Toast.LENGTH_LONG).show();
+                Toast.makeText(context, getString(R.string.download_task_download_error, result), Toast.LENGTH_LONG).show();
             } else {
-                Toast.makeText(context, "File downloaded", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, R.string.toast_file_downloaded, Toast.LENGTH_SHORT).show();
 
                 loadManagerFromExternal();
                 // In case user turns off permissions manually.
@@ -778,7 +766,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             super.onPreExecute();
 
             jsonProgressDialog = new ProgressDialog(MapsActivity.this);
-            jsonProgressDialog.setMessage("Please wait");
+            jsonProgressDialog.setMessage(getString(R.string.json_task_dialog_title));
             jsonProgressDialog.setProgressStyle(android.app.ProgressDialog.STYLE_SPINNER);
             jsonProgressDialog.setCancelable(false);
             jsonProgressDialog.show();
