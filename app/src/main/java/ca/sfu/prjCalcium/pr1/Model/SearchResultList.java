@@ -109,6 +109,18 @@ public class SearchResultList {
         }
     }
 
+    public void getFavedRestaurants() {
+        RestaurantManager rManager = RestaurantManager.getInstance();
+
+        for (Restaurant r : rManager) {
+            if (r.isFaved()) {
+                if (!searchResult.contains(r)) {
+                    searchResult.add(r);
+                }
+            }
+        }
+    }
+
     public void clear() {
         searchResult.clear();
     }
