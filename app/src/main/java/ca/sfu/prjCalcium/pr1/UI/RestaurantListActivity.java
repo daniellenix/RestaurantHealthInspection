@@ -47,8 +47,21 @@ public class RestaurantListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mapViewBtn();
+        searchBtn();
         populateListView();
         clickRestaurant();
+    }
+
+    private void searchBtn() {
+        Button searchBtn = findViewById(R.id.listSearchBtn);
+
+        searchBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = SearchActivity.makeIntent(RestaurantListActivity.this, RESTAURANT_LIST_ACTIVITY_SOURCE_ACTIVITY_COND);
+                startActivity(intent);
+            }
+        });
     }
 
     //https://gist.github.com/CreatorB/99cdb013a4888453b8a0

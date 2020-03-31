@@ -117,6 +117,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private int sourceActivityCond;
     private int r_index;
 
+    public static final int MAPS_ACTIVITY_SOURCE_ACTIVITY_COND = 10157;
+
     public static Intent makeIntent(Context c, int sourceActivityCondCode) {
         Intent intent = new Intent(c, MapsActivity.class);
         intent.putExtra(INTENT_EXTRA_SOURCE_ACTIVITY_COND, sourceActivityCondCode);
@@ -164,6 +166,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             verifyLocationPermission();
         }
         initBackToListButton();
+        searchBtn();
     }
 
     private void initBackToListButton() {
@@ -173,6 +176,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View v) {
                 Intent intent = RestaurantListActivity.makeIntent(MapsActivity.this);
+                startActivity(intent);
+            }
+        });
+    }
+
+    private void searchBtn() {
+        Button searchBtn = findViewById(R.id.mapSearchBtn);
+
+        searchBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = SearchActivity.makeIntent(MapsActivity.this, MAPS_ACTIVITY_SOURCE_ACTIVITY_COND);
                 startActivity(intent);
             }
         });
