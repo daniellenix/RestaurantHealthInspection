@@ -108,4 +108,8 @@ public class SearchResultList {
             }
         }
     }
+
+    public void clear() {
+        searchResult.clear();
+    }
 }
