@@ -14,6 +14,7 @@ public class Restaurant {
     private double latitude;
     private double longitude;
     private InspectionManager inspections;
+    private boolean faved;
 
     public Restaurant() {
         this.trackingNumber = "";
@@ -24,6 +25,7 @@ public class Restaurant {
         this.latitude = 0;
         this.longitude = 0;
         this.inspections = new InspectionManager();
+        this.faved = false;
     }
 
     public String getTrackingNumber() {
@@ -94,6 +96,17 @@ public class Restaurant {
         inspections.addInspectionsByTrackingNumber(context, this.getTrackingNumber());
     }
 
+    public boolean isFaved() {
+        return faved;
+    }
+
+    public void setFaved(boolean faved) {
+        this.faved = faved;
+    }
+
+    public void toggleFaved() {
+        this.faved = !this.isFaved();
+    }
 
     @Override
     public String toString() {
