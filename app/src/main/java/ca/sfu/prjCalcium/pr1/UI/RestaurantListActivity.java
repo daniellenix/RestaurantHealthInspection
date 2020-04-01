@@ -195,7 +195,7 @@ public class RestaurantListActivity extends AppCompatActivity {
             }
 
             // fill the name
-            TextView textViewName = itemView.findViewById(R.id.name_box);
+            TextView textViewName = itemView.findViewById(R.id.name);
             textViewName.setText(currentRestaurant.getRestaurantName());
 
             TextView textViewTime = itemView.findViewById(R.id.time);
