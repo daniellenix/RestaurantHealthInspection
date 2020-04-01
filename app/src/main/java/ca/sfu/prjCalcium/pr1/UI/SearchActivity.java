@@ -21,7 +21,9 @@ import static ca.sfu.prjCalcium.pr1.UI.MapsActivity.INTENT_EXTRA_SOURCE_ACTIVITY
 
 public class SearchActivity extends AppCompatActivity {
 
-    SearchResultList list;
+    public static final int SEARCH_ACTIVITY_SOURCE_ACTIVITY_COND = 101;
+
+    private SearchResultList list = SearchResultList.getInstance();
     private String spinnerText;
 
     public static Intent makeIntent(Context c, int sourceActivityCondCode) {
@@ -45,16 +47,34 @@ public class SearchActivity extends AppCompatActivity {
                 String textName = nameBox.getText().toString();
 
                 EditText violationBox = (EditText) findViewById(R.id.violations);
-                int textViolations = Integer.parseInt(violationBox.getText().toString());
+                String textViolations = violationBox.getText().toString();
+                int numberInput = Integer.parseInt(textViolations);
 
-                //list.getRestaurantsByName(textName);
-                if (spinnerText == "less than") {
-                    //list.getRestaurantsWithLessThanNCriticalViolationsWithinLastYear(textViolations);
+                //save criteria to our restaurant list
+                if ((textName.length() != 0) && (textViolations.length() != 0)){
+                    list.getRestaurantsByName(textName);
+                    if (spinnerText == "less than") {
+                        list.getRestaurantsWithLessThanNCriticalViolationsWithinLastYear(numberInput);
+                    }
+                    else if (spinnerText == "greater than"){
+                        list.getRestaurantsWithMoreThanNCriticalViolationsWithinLastYear(numberInput);
+                    }
                 }
-                else if (spinnerText == "greater than"){
-                    //list.getRestaurantsWithMoreThanNCriticalViolationsWithinLastYear(textViolations);
+                else{
+                    //do nothing
                 }
-                //list.getRestaurantsWithLessThanNCriticalViolationsWithinLastYear(textViolations);
+                //after we submit our search criteria, go back to the previous screen
+                Intent i = getIntent();
+                int code = i.getIntExtra(INTENT_EXTRA_SOURCE_ACTIVITY_COND, -1);
+                if (code == 10157){
+                    Intent intent = MapsActivity.makeIntent(SearchActivity.this, SEARCH_ACTIVITY_SOURCE_ACTIVITY_COND);
+                    startActivity(intent);
+                }
+                else if(code == 10056){
+                    Intent intent = RestaurantListActivity.makeIntentForSearch(SearchActivity.this, SEARCH_ACTIVITY_SOURCE_ACTIVITY_COND);
+                    startActivity(intent);
+                }
+
             }
         });
         createRadioButtons();
@@ -92,7 +112,7 @@ public class SearchActivity extends AppCompatActivity {
                     RadioButton radioButton = (RadioButton) findViewById(idOfSelected);
                     String choice = radioButton.getText().toString();
                     // send users hazar level input
-                    // list.getRestaurantByMostRecentInspectionHazardLevel(" ");
+                    list.getRestaurantByMostRecentInspectionHazardLevel(choice);
 
                 }
             });

@@ -4,7 +4,7 @@
         <item>Low</item>
         <item>Moderate</item>
         <item>High</item>
-        <item>Cancel</item>
+        <item>None</item>
     </string-array>
 
     <string-array name="favorite_list">
