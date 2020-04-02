@@ -27,6 +27,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import ca.sfu.prjCalcium.pr1.Model.Inspection;
+import ca.sfu.prjCalcium.pr1.Model.InspectionManager;
 import ca.sfu.prjCalcium.pr1.Model.Restaurant;
 import ca.sfu.prjCalcium.pr1.Model.RestaurantManager;
 import ca.sfu.prjCalcium.pr1.R;
@@ -60,16 +61,30 @@ public class RestaurantDetailActivity extends AppCompatActivity {
             finish();
         }
         if (id == R.id.fav) {
-            Set<String> favedRestaurants = new HashSet<>(getFavedFromSharedPref());
+            Set<String> favedRestaurants = new HashSet<>(getFavedRestaurantFromSharedPref(this));
+            Set<String> favedInspections = new HashSet<>(getFavedInspectionFromSharedPref(this));
+
             r.toggleFaved();
             if (r.isFaved()) {
                 item.setIcon(R.drawable.ic_star_white_filled_24dp);
                 favedRestaurants.add(r.getTrackingNumber());
+                InspectionManager inspectionManager = r.getInspections();
+                if (!inspectionManager.isEmpty()) {
+                    favedInspections.add(r.getTrackingNumber() + inspectionManager.getInspection(0).getInspectionDate().toString());
+                } else {
+                    favedInspections.add(r.getTrackingNumber() + "");
+                }
             } else {
                 item.setIcon(R.drawable.ic_star_border_white_24dp);
                 favedRestaurants.remove(r.getTrackingNumber());
+                InspectionManager inspectionManager = r.getInspections();
+                if (!inspectionManager.isEmpty()) {
+                    favedInspections.remove(r.getTrackingNumber() + inspectionManager.getInspection(0).getInspectionDate().toString());
+                } else {
+                    favedInspections.remove(r.getTrackingNumber() + "");
+                }
             }
-            saveFavedToSharedPref(favedRestaurants);
+            saveFavedToSharedPref(favedRestaurants, favedInspections);
         }
 
         return super.onOptionsItemSelected(item);
@@ -146,20 +161,29 @@ public class RestaurantDetailActivity extends AppCompatActivity {
         r = manager.getRestaurantAtIndex(intent.getIntExtra(R_DETAIL_RESTAURANT_POSITION_PASSED_IN, 0));
     }
 
-    private void saveFavedToSharedPref(Set<String> favedRestaurantList) {
+    private void saveFavedToSharedPref(Set<String> favedRestaurantList, Set<String> favedRestaurantLatestInspection) {
         SharedPreferences preferences = getSharedPreferences("favourite", MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
 
         Set<String> newFavedList = new HashSet<>(favedRestaurantList);
+        Set<String> newLatestInspection = new HashSet<>(favedRestaurantLatestInspection);
 
         editor.putStringSet("listOfFaved", newFavedList);
+        editor.putStringSet("listOfInspection", newLatestInspection);
+
         editor.apply();
     }
 
-    private Set<String> getFavedFromSharedPref() {
-        SharedPreferences preferences = getSharedPreferences("favourite", MODE_PRIVATE);
+    public static Set<String> getFavedRestaurantFromSharedPref(Context context) {
+        SharedPreferences preferences = context.getSharedPreferences("favourite", MODE_PRIVATE);
 
         return preferences.getStringSet("listOfFaved", new HashSet<String>());
+    }
+
+    public static Set<String> getFavedInspectionFromSharedPref(Context context) {
+        SharedPreferences preferences = context.getSharedPreferences("favourite", MODE_PRIVATE);
+
+        return preferences.getStringSet("listOfInspection", new HashSet<String>());
     }
 
     private class MyListAdapter extends ArrayAdapter<Inspection> {
