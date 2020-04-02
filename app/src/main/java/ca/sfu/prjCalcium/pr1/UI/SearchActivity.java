@@ -41,6 +41,7 @@ public class SearchActivity extends AppCompatActivity {
         Button submitButton = findViewById(R.id.submit_button);
         submitButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+
                 //https://developer.android.com/training/keyboard-input/style
                 //textName and textViolation are the input from users
                 EditText nameBox = (EditText) findViewById(R.id.name_box);
@@ -48,15 +49,16 @@ public class SearchActivity extends AppCompatActivity {
 
                 EditText violationBox = (EditText) findViewById(R.id.violations);
                 String textViolations = violationBox.getText().toString();
-                int numberInput = Integer.parseInt(textViolations);
 
                 //save criteria to our restaurant list
                 if ((textName.length() != 0) && (textViolations.length() != 0)){
                     list.getRestaurantsByName(textName);
-                    if (spinnerText == "less than") {
+                    int numberInput = Integer.parseInt(textViolations);
+
+                    if (spinnerText.equals("less than")) {
                         list.getRestaurantsWithLessThanNCriticalViolationsWithinLastYear(numberInput);
                     }
-                    else if (spinnerText == "greater than"){
+                    else if (spinnerText.equals("greater than")){
                         list.getRestaurantsWithMoreThanNCriticalViolationsWithinLastYear(numberInput);
                     }
                 }
