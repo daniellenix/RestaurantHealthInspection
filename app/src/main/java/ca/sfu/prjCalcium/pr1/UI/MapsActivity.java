@@ -56,6 +56,8 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Set;
 
 import ca.sfu.prjCalcium.pr1.Model.CustomInfoWindowAdapter;
 import ca.sfu.prjCalcium.pr1.Model.Inspection;
@@ -306,6 +308,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 createAskUserIfUpdateDialog();
             } else {
                 Toast.makeText(getApplicationContext(), R.string.maps_toast_welcome_back, Toast.LENGTH_LONG).show();
+                if (!rManager.isDataRead()) {
+                    loadManagerFromExternal();
+                }
+
+                verifyLocationPermission();
             }
 
         } else {
@@ -454,6 +461,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             iManager.sort(new InspectionComparator().reversed());
         }
         rManager.setDataRead(true);
+        Set<String> favedRestaurants = new HashSet<>(getFavedFromSharedPref());
+        for (String number : favedRestaurants) {
+            Restaurant r = rManager.getRestaurantByTrackingNumber(number);
+            if (r != null) {
+                r.setFaved(true);
+            }
+        }
     }
 
     private void loadManagerFromExternal() {
@@ -466,6 +480,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             iManager.sort(new InspectionComparator().reversed());
         }
         rManager.setDataRead(true);
+        Set<String> favedRestaurants = new HashSet<>(getFavedFromSharedPref());
+        for (String number : favedRestaurants) {
+            Restaurant r = rManager.getRestaurantByTrackingNumber(number);
+            if (r != null) {
+                r.setFaved(true);
+            }
+        }
+    }
+
+    private Set<String> getFavedFromSharedPref() {
+        SharedPreferences preferences = getSharedPreferences("favourite", MODE_PRIVATE);
+
+        return preferences.getStringSet("listOfFaved", new HashSet<String>());
     }
 
     // https://developers.google.com/maps/documentation/android-sdk/current-place-tutorial

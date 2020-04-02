@@ -2,6 +2,7 @@ package ca.sfu.prjCalcium.pr1.UI;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Menu;
@@ -20,7 +21,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import ca.sfu.prjCalcium.pr1.Model.Inspection;
@@ -53,15 +56,34 @@ public class RestaurantDetailActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.mybutton) {
+        if (id == R.id.backBtn) {
             finish();
         }
+        if (id == R.id.fav) {
+            Set<String> favedRestaurants = new HashSet<>(getFavedFromSharedPref());
+            r.toggleFaved();
+            if (r.isFaved()) {
+                item.setIcon(R.drawable.ic_star_white_filled_24dp);
+                favedRestaurants.add(r.getTrackingNumber());
+            } else {
+                item.setIcon(R.drawable.ic_star_border_white_24dp);
+                favedRestaurants.remove(r.getTrackingNumber());
+            }
+            saveFavedToSharedPref(favedRestaurants);
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu, menu);
+        getMenuInflater().inflate(R.menu.restaurant_detail_menu, menu);
+        MenuItem favBtn = menu.findItem(R.id.fav);
+        if (r.isFaved()) {
+            favBtn.setIcon(R.drawable.ic_star_white_filled_24dp);
+        } else {
+            favBtn.setIcon(R.drawable.ic_star_border_white_24dp);
+        }
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -122,6 +144,22 @@ public class RestaurantDetailActivity extends AppCompatActivity {
         r_index = intent.getIntExtra(R_DETAIL_RESTAURANT_POSITION_PASSED_IN, 0);
 
         r = manager.getRestaurantAtIndex(intent.getIntExtra(R_DETAIL_RESTAURANT_POSITION_PASSED_IN, 0));
+    }
+
+    private void saveFavedToSharedPref(Set<String> favedRestaurantList) {
+        SharedPreferences preferences = getSharedPreferences("favourite", MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+
+        Set<String> newFavedList = new HashSet<>(favedRestaurantList);
+
+        editor.putStringSet("listOfFaved", newFavedList);
+        editor.apply();
+    }
+
+    private Set<String> getFavedFromSharedPref() {
+        SharedPreferences preferences = getSharedPreferences("favourite", MODE_PRIVATE);
+
+        return preferences.getStringSet("listOfFaved", new HashSet<String>());
     }
 
     private class MyListAdapter extends ArrayAdapter<Inspection> {
