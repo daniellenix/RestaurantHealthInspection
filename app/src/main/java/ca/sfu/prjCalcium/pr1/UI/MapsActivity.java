@@ -522,17 +522,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     info.append("\n");
                 }
             }
-
-            new AlertDialog.Builder(this)
-                    .setTitle("These restaurants have new inspections. ")
-                    .setMessage(info)
-                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    })
-                    .show();
+            if (!info.toString().equals("")) {
+                new AlertDialog.Builder(this)
+                        .setTitle("These restaurants have new inspections. ")
+                        .setMessage(info)
+                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        })
+                        .show();
+            }
         }
     }
 
