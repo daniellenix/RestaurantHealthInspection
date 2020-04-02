@@ -23,12 +23,17 @@ public class SearchResultList {
     public void getRestaurantsByName(String name) {
         RestaurantManager rManager = RestaurantManager.getInstance();
 
-        for (Restaurant r : rManager) {
-            if (r.getRestaurantName().toLowerCase().contains(name.toLowerCase())) {
-                if (!searchResult.contains(r)) {
-                    searchResult.add(r);
+        if(name != "") {
+            for (Restaurant r : rManager) {
+                if (r.getRestaurantName().toLowerCase().contains(name.toLowerCase())) {
+                    if (!searchResult.contains(r)) {
+                        searchResult.add(r);
+                    }
                 }
             }
+        }
+        else{
+            return;
         }
     }
 
@@ -73,10 +78,15 @@ public class SearchResultList {
                 }
             }
 
-            if (number <= numCriticalVio) {
-                if (!searchResult.contains(r)) {
-                    searchResult.add(r);
+            if(number != 0) {
+                if (number <= numCriticalVio) {
+                    if (!searchResult.contains(r)) {
+                        searchResult.add(r);
+                    }
                 }
+            }
+            else{
+                return;
             }
         }
     }
@@ -101,10 +111,15 @@ public class SearchResultList {
                 }
             }
 
-            if (number >= numCriticalVio) {
-                if (!searchResult.contains(r)) {
-                    searchResult.add(r);
+            if (number != 0) {
+                if (number >= numCriticalVio) {
+                    if (!searchResult.contains(r)) {
+                        searchResult.add(r);
+                    }
                 }
+            }
+            else{
+                return;
             }
         }
     }

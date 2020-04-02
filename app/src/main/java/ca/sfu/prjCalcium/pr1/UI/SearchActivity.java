@@ -60,9 +60,17 @@ public class SearchActivity extends AppCompatActivity {
                         list.getRestaurantsWithMoreThanNCriticalViolationsWithinLastYear(numberInput);
                     }
                 }
-                else{
-                    //do nothing
+                else if (textName.length() == 0){
+                    list.getRestaurantsByName("");
                 }
+                else if (textViolations.length() == 0){
+                    list.getRestaurantsWithLessThanNCriticalViolationsWithinLastYear(0);
+                }
+                else{
+                    list.getRestaurantsByName("");
+                    list.getRestaurantsWithLessThanNCriticalViolationsWithinLastYear(0);
+                }
+
                 //after we submit our search criteria, go back to the previous screen
                 Intent i = getIntent();
                 int code = i.getIntExtra(INTENT_EXTRA_SOURCE_ACTIVITY_COND, -1);
@@ -75,6 +83,24 @@ public class SearchActivity extends AppCompatActivity {
                     startActivity(intent);
                 }
 
+            }
+        });
+
+        Button cancelButton = findViewById(R.id.cancel_button);
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                list.clear();
+                Intent i = getIntent();
+                int code = i.getIntExtra(INTENT_EXTRA_SOURCE_ACTIVITY_COND, -1);
+                if (code == 10157){
+                    Intent intent = MapsActivity.makeIntent(SearchActivity.this, SEARCH_ACTIVITY_SOURCE_ACTIVITY_COND);
+                    startActivity(intent);
+                }
+                else if(code == 10056){
+                    Intent intent = RestaurantListActivity.makeIntentForSearch(SearchActivity.this, SEARCH_ACTIVITY_SOURCE_ACTIVITY_COND);
+                    startActivity(intent);
+                }
             }
         });
         createRadioButtons();

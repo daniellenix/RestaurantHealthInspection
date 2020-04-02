@@ -116,13 +116,29 @@
         app:layout_constraintTop_toBottomOf="@+id/title_favorite"
         app:layout_constraintVertical_bias="0.143" />
 
-    <Button
-        android:id="@+id/submit_button"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginRight="20dp"
-        android:text="Submit"
-        tools:layout_editor_absoluteX="212dp"
-        tools:layout_editor_absoluteY="499dp" />
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/cancel_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cancel Search"
+            android:layout_marginRight="80dp"/>
+
+
+        <Button
+            android:id="@+id/submit_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="80dp"
+            android:text="Submit" />
+
+
+    </LinearLayout>
+
+
 
 </LinearLayout>
