@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/backBtn"
+        android:icon="@drawable/ic_arrow_back_black_24dp"
+        android:title=""
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/fav"
+        android:checkable="false"
+        android:enabled="true"
+        android:icon="@drawable/ic_star_border_white_24dp"
+        android:title="@string/favourite"
+        app:showAsAction="always" />
+</menu>
