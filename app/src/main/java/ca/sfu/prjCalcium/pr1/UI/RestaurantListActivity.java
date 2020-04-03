@@ -109,7 +109,7 @@ public class RestaurantListActivity extends AppCompatActivity {
     private boolean extractDataFromIntent() {
         Intent intent = getIntent();
         sourceActivityCond = intent.getIntExtra(INTENT_EXTRA_SOURCE_ACTIVITY_COND, -1);
-        return sourceActivityCond == SearchActivity.SEARCH_ACTIVITY_SOURCE_ACTIVITY_COND_SUMBIT;
+        return sourceActivityCond == SearchActivity.SEARCH_ACTIVITY_SOURCE_ACTIVITY_COND_SUBMIT;
     }
 
     private void populateListView() {
