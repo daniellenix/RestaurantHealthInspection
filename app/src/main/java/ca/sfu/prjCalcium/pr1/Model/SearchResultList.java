@@ -211,7 +211,7 @@ public class SearchResultList implements Iterable<Restaurant> {
         }
     }
 
-    private boolean isEmpty() {
+    public boolean isEmpty() {
         return searchResult.isEmpty();
     }
 
