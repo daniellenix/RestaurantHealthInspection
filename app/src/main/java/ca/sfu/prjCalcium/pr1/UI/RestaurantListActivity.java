@@ -59,6 +59,12 @@ public class RestaurantListActivity extends AppCompatActivity {
         clickRestaurant();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        populateListView();
+    }
+
     private void searchBtn() {
         Button searchBtn = findViewById(R.id.listSearchBtn);
 
@@ -208,6 +214,13 @@ public class RestaurantListActivity extends AppCompatActivity {
             TextView textViewTime = itemView.findViewById(R.id.time);
             TextView textViewIssues = itemView.findViewById(R.id.numOfIssues);
             ImageView imageViewHazard = itemView.findViewById(R.id.hazard);
+
+            ImageView star = itemView.findViewById(R.id.listIfFavStar);
+            if (currentRestaurant.isFaved()) {
+                star.setImageDrawable(getDrawable(R.drawable.ic_star_black_filled_24dp));
+            } else {
+                star.setImageDrawable(getDrawable(R.drawable.ic_star_border_black_24dp));
+            }
 
             if (currentRestaurant.getInspections().isEmpty()) {
                 textViewTime.setText(R.string.no_recent_inspections);

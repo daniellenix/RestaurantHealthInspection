@@ -28,4 +28,6 @@
     <string name="toast_file_downloaded">File downloaded</string>
     <string name="json_task_dialog_title">Please wait</string>
     <string name="download_task_download_error">Download error: %1$s</string>
+    <string name="favourite">Favourite</string>
+    <string name="new_inspection_alert_dialog_message_entry_line">Restaurant: %1$s, Date of Inspection: %2$s, Hazard level: %3$s. </string>
 </resources>

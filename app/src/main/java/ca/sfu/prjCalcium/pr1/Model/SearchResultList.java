@@ -32,6 +32,14 @@ public class SearchResultList implements Iterable<Restaurant> {
                     }
                 }
             }
+        } else { // if not empty, then user put more than one criteria, must filter the result list
+            List<Restaurant> toRemove = new ArrayList<>();
+            for (Restaurant r : searchResult) {
+                if (!r.getRestaurantName().equals(name)) {
+                    toRemove.add(r);
+                }
+            }
+            searchResult.removeAll(toRemove);
         }
         else { // if not empty, then user put more than one criteria, must filter the result list
             List<Restaurant> toRemove = new ArrayList<>();
@@ -65,8 +73,7 @@ public class SearchResultList implements Iterable<Restaurant> {
                     }
                 }
             }
-        }
-        else {
+        } else {
             List<Restaurant> toRemove = new ArrayList<>();
             for (Restaurant r : searchResult) {
                 if (r.getInspections().isEmpty()) {
@@ -109,8 +116,7 @@ public class SearchResultList implements Iterable<Restaurant> {
                     }
                 }
             }
-        }
-        else {
+        } else {
             List<Restaurant> toRemove = new ArrayList<>();
             for (Restaurant r : searchResult) {
                 if (r.getInspections().isEmpty()) {
@@ -164,8 +170,7 @@ public class SearchResultList implements Iterable<Restaurant> {
                     }
                 }
             }
-        }
-        else {
+        } else {
             List<Restaurant> toRemove = new ArrayList<>();
             for (Restaurant r : searchResult) {
                 if (r.getInspections().isEmpty()) {
@@ -204,8 +209,7 @@ public class SearchResultList implements Iterable<Restaurant> {
                     }
                 }
             }
-        }
-        else {
+        } else {
             List<Restaurant> toRemove = new ArrayList<>();
             for (Restaurant r : searchResult) {
                 if (!r.isFaved()) {

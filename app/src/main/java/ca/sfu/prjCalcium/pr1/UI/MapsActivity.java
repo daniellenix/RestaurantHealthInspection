@@ -2,6 +2,7 @@ package ca.sfu.prjCalcium.pr1.UI;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -55,7 +56,11 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import ca.sfu.prjCalcium.pr1.Model.CustomInfoWindowAdapter;
 import ca.sfu.prjCalcium.pr1.Model.Inspection;
@@ -119,6 +124,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private boolean loadSearchList = false;
     private int sourceActivityCond;
     private int r_index;
+
+    private boolean newDataDownloaded = false;
 
     public static final int MAPS_ACTIVITY_SOURCE_ACTIVITY_COND = 10157;
 
@@ -313,6 +320,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 createAskUserIfUpdateDialog();
             } else {
                 Toast.makeText(getApplicationContext(), R.string.maps_toast_welcome_back, Toast.LENGTH_LONG).show();
+                if (!rManager.isDataRead()) {
+                    loadManagerFromExternal();
+                }
+
+                verifyLocationPermission();
             }
 
         } else {
@@ -461,6 +473,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             iManager.sort(new InspectionComparator().reversed());
         }
         rManager.setDataRead(true);
+        Set<String> favedRestaurants = new HashSet<>(RestaurantDetailActivity.getFavedRestaurantFromSharedPref(this));
+        for (String number : favedRestaurants) {
+            Restaurant r = rManager.getRestaurantByTrackingNumber(number);
+            if (r != null) {
+                r.setFaved(true);
+            }
+        }
     }
 
     private void loadManagerFromExternal() {
@@ -473,6 +492,56 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             iManager.sort(new InspectionComparator().reversed());
         }
         rManager.setDataRead(true);
+
+        ArrayList<String> favedRestaurants = new ArrayList<>(new HashSet<>(RestaurantDetailActivity.getFavedRestaurantFromSharedPref(this)));
+        ArrayList<String> favedInspections = new ArrayList<>(new HashSet<>(RestaurantDetailActivity.getFavedInspectionFromSharedPref(this)));
+
+        List<Restaurant> changedRestaurants = new ArrayList<>();
+
+        for (int i = 0; i < favedRestaurants.size(); i++) {
+            Restaurant r = rManager.getRestaurantByTrackingNumber(favedRestaurants.get(i));
+            if (r != null) {
+                r.setFaved(true);
+
+                if (newDataDownloaded) {
+                    String latestInspectionString = favedInspections.get(i).substring(r.getTrackingNumber().length() + 1);
+                    InspectionManager inspectionManager = r.getInspections();
+                    if (!inspectionManager.isEmpty()) {
+                        String currentLatestInspectionString = inspectionManager.getInspection(0).getInspectionDate().toString();
+
+                        if (!currentLatestInspectionString.equals(latestInspectionString)) {
+                            changedRestaurants.add(r);
+                        }
+                    }
+                }
+            }
+        }
+
+        if (newDataDownloaded) {
+            StringBuilder info = new StringBuilder();
+            for (Restaurant r : changedRestaurants) {
+                InspectionManager inspectionManager = r.getInspections();
+
+                if (!inspectionManager.isEmpty()) {
+                    info.append(getString(R.string.new_inspection_alert_dialog_message_entry_line, r.getRestaurantName(),
+                            r.getInspections().getInspection(0).getInspectionDate().toString(),
+                            r.getInspections().getInspection(0).getHazardRating()));
+                    info.append("\n");
+                }
+            }
+            if (!info.toString().equals("")) {
+                new AlertDialog.Builder(this)
+                        .setTitle("These restaurants have new inspections. ")
+                        .setMessage(info)
+                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        })
+                        .show();
+            }
+        }
     }
 
     // https://developers.google.com/maps/documentation/android-sdk/current-place-tutorial
@@ -785,6 +854,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Toast.makeText(context, getString(R.string.download_task_download_error, result), Toast.LENGTH_LONG).show();
             } else {
                 Toast.makeText(context, R.string.toast_file_downloaded, Toast.LENGTH_SHORT).show();
+
+                newDataDownloaded = true;
 
                 loadManagerFromExternal();
                 // In case user turns off permissions manually.
