@@ -32,11 +32,13 @@ public class SearchResultList {
                 }
             }
         } else { // if not empty, then user put more than one criteria, must filter the result list
+            List<Restaurant> toRemove = new ArrayList<>();
             for (Restaurant r : searchResult) {
                 if (!r.getRestaurantName().equals(name)) {
-                    searchResult.remove(r);
+                    toRemove.add(r);
                 }
             }
+            searchResult.removeAll(toRemove);
         }
     }
 
@@ -61,14 +63,16 @@ public class SearchResultList {
                 }
             }
         } else {
+            List<Restaurant> toRemove = new ArrayList<>();
             for (Restaurant r : searchResult) {
                 if (r.getInspections().isEmpty()) {
-                    searchResult.remove(r);
+                    toRemove.add(r);
                 }
                 if (!r.getInspections().getInspection(0).getHazardRating().equals(hazardLevel)) {
-                    searchResult.remove(r);
+                    toRemove.add(r);
                 }
             }
+            searchResult.removeAll(toRemove);
         }
     }
 
@@ -100,6 +104,7 @@ public class SearchResultList {
                 }
             }
         } else {
+            List<Restaurant> toRemove = new ArrayList<>();
             for (Restaurant r : searchResult) {
                 if (r.getInspections().isEmpty()) {
                     continue;
@@ -118,9 +123,10 @@ public class SearchResultList {
                 }
 
                 if (!(number <= numCriticalVio)) {
-                    searchResult.remove(r);
+                    toRemove.add(r);
                 }
             }
+            searchResult.removeAll(toRemove);
         }
     }
 
@@ -152,9 +158,10 @@ public class SearchResultList {
                 }
             }
         } else {
+            List<Restaurant> toRemove = new ArrayList<>();
             for (Restaurant r : searchResult) {
                 if (r.getInspections().isEmpty()) {
-                    searchResult.remove(r);
+                    toRemove.add(r);
                 }
 
                 int numCriticalVio = 0;
@@ -169,10 +176,11 @@ public class SearchResultList {
                     }
                 }
 
-                if (!(number <= numCriticalVio)) {
-                    searchResult.remove(r);
+                if (!(number >= numCriticalVio)) {
+                    toRemove.add(r);
                 }
             }
+            searchResult.removeAll(toRemove);
         }
     }
 
@@ -188,11 +196,13 @@ public class SearchResultList {
                 }
             }
         } else {
+            List<Restaurant> toRemove = new ArrayList<>();
             for (Restaurant r : searchResult) {
                 if (!r.isFaved()) {
-                    searchResult.remove(r);
+                    toRemove.add(r);
                 }
             }
+            searchResult.removeAll(toRemove);
         }
     }
 
