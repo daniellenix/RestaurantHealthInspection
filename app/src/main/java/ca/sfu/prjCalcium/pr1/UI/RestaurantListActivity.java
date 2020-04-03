@@ -19,12 +19,14 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import ca.sfu.prjCalcium.pr1.Model.Inspection;
 import ca.sfu.prjCalcium.pr1.Model.Restaurant;
 import ca.sfu.prjCalcium.pr1.Model.RestaurantManager;
+import ca.sfu.prjCalcium.pr1.Model.SearchResultList;
 import ca.sfu.prjCalcium.pr1.R;
 
 
@@ -37,6 +39,9 @@ public class RestaurantListActivity extends AppCompatActivity {
 
     // Singleton
     private RestaurantManager manager = RestaurantManager.getInstance();
+    private SearchResultList searchResultList = SearchResultList.getInstance();
+
+    private int sourceActivityCond;
 
     public static Intent makeIntent(Context c) {
         return new Intent(c, RestaurantListActivity.class);
@@ -48,6 +53,7 @@ public class RestaurantListActivity extends AppCompatActivity {
 
         return intent;
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -100,10 +106,27 @@ public class RestaurantListActivity extends AppCompatActivity {
         });
     }
 
+    private boolean extractDataFromIntent() {
+        Intent intent = getIntent();
+        sourceActivityCond = intent.getIntExtra(INTENT_EXTRA_SOURCE_ACTIVITY_COND, -1);
+        return sourceActivityCond == SearchActivity.SEARCH_ACTIVITY_SOURCE_ACTIVITY_COND_SUMBIT;
+    }
+
     private void populateListView() {
-        ArrayAdapter<Restaurant> adapter = new MyListAdapter();
-        ListView list = findViewById(R.id.restaurantListView);
-        list.setAdapter(adapter);
+
+        // if coming from search page, load search results
+        if(extractDataFromIntent()) {
+            ArrayAdapter<Restaurant> adapter = new MyListAdapter(searchResultList.getSearchResult());
+            ListView list = findViewById(R.id.restaurantListView);
+            list.setAdapter(adapter);
+
+            // otherwise load normal restaurants
+        } else if (!extractDataFromIntent()) {
+            ArrayAdapter<Restaurant> adapter = new MyListAdapter(manager.getRestaurantsAsLists());
+            ListView list = findViewById(R.id.restaurantListView);
+            list.setAdapter(adapter);
+        }
+
     }
 
     private void clickRestaurant() {
@@ -120,8 +143,8 @@ public class RestaurantListActivity extends AppCompatActivity {
 
     private class MyListAdapter extends ArrayAdapter<Restaurant> {
 
-        public MyListAdapter() {
-            super(RestaurantListActivity.this, R.layout.restaurant_list, manager.getRestaurantsAsLists());
+        public MyListAdapter(List<Restaurant> restaurantList) {
+            super(RestaurantListActivity.this, R.layout.restaurant_list, restaurantList);
         }
 
         @NonNull

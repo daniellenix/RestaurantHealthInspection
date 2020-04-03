@@ -154,7 +154,7 @@ public class SearchActivity extends AppCompatActivity {
                     RadioButton radioButton = (RadioButton) findViewById(idOfSelected);
                     String choice = radioButton.getText().toString();
                     // send users choice of displaying favorite restaurant or not
-                    if (choice == "Yes") {
+                    if (choice.equals("Yes")) {
                         list.getFavedRestaurants();
                     }
                 }

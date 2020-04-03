@@ -21,6 +21,10 @@ public class SearchResultList implements Iterable<Restaurant> {
         return instance;
     }
 
+    public List<Restaurant> getSearchResult() {
+        return searchResult;
+    }
+
     public void getRestaurantsByName(String name) {
         RestaurantManager rManager = RestaurantManager.getInstance();
 
