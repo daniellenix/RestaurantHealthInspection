@@ -64,16 +64,6 @@ public class SearchActivity extends AppCompatActivity {
                         list.getRestaurantsWithMoreThanNCriticalViolationsWithinLastYear(numberInput);
                     }
                 }
-                else if (textName.length() == 0){
-                    list.getRestaurantsByName("");
-                }
-                else if (textViolations.length() == 0){
-                    list.getRestaurantsWithLessThanNCriticalViolationsWithinLastYear(0);
-                }
-                else{
-                    list.getRestaurantsByName("");
-                    list.getRestaurantsWithLessThanNCriticalViolationsWithinLastYear(0);
-                }
 
                 //after we submit our search criteria, go back to the previous screen
                 Intent i = getIntent();

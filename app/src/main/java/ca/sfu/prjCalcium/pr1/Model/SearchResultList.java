@@ -3,9 +3,10 @@ package ca.sfu.prjCalcium.pr1.Model;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
-public class SearchResultList {
+public class SearchResultList implements Iterable<Restaurant> {
     private static SearchResultList instance;
     private List<Restaurant> searchResult = new ArrayList<>();
 
@@ -23,17 +24,12 @@ public class SearchResultList {
     public void getRestaurantsByName(String name) {
         RestaurantManager rManager = RestaurantManager.getInstance();
 
-        if(name != "") {
-            for (Restaurant r : rManager) {
-                if (r.getRestaurantName().toLowerCase().contains(name.toLowerCase())) {
-                    if (!searchResult.contains(r)) {
-                        searchResult.add(r);
-                    }
+        for (Restaurant r : rManager) {
+            if (r.getRestaurantName().toLowerCase().contains(name.toLowerCase())) {
+                if (!searchResult.contains(r)) {
+                    searchResult.add(r);
                 }
             }
-        }
-        else{
-            return;
         }
     }
 
@@ -78,15 +74,11 @@ public class SearchResultList {
                 }
             }
 
-            if(number != 0) {
-                if (number <= numCriticalVio) {
-                    if (!searchResult.contains(r)) {
-                        searchResult.add(r);
-                    }
+
+            if (number <= numCriticalVio) {
+                if (!searchResult.contains(r)) {
+                    searchResult.add(r);
                 }
-            }
-            else{
-                return;
             }
         }
     }
@@ -111,16 +103,12 @@ public class SearchResultList {
                 }
             }
 
-            if (number != 0) {
-                if (number >= numCriticalVio) {
-                    if (!searchResult.contains(r)) {
-                        searchResult.add(r);
-                    }
+            if (number >= numCriticalVio) {
+                if (!searchResult.contains(r)) {
+                    searchResult.add(r);
                 }
             }
-            else{
-                return;
-            }
+
         }
     }
 
@@ -138,5 +126,10 @@ public class SearchResultList {
 
     public void clear() {
         searchResult.clear();
+    }
+
+    @Override
+    public Iterator<Restaurant> iterator() {
+        return searchResult.iterator();
     }
 }
