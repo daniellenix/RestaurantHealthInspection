@@ -18,6 +18,8 @@ import ca.sfu.prjCalcium.pr1.Model.SearchResultList;
 import ca.sfu.prjCalcium.pr1.R;
 
 import static ca.sfu.prjCalcium.pr1.UI.MapsActivity.INTENT_EXTRA_SOURCE_ACTIVITY_COND;
+import static ca.sfu.prjCalcium.pr1.UI.MapsActivity.MAPS_ACTIVITY_SOURCE_ACTIVITY_COND;
+import static ca.sfu.prjCalcium.pr1.UI.RestaurantListActivity.RESTAURANT_LIST_ACTIVITY_SOURCE_ACTIVITY_COND;
 
 public class SearchActivity extends AppCompatActivity {
 
@@ -95,11 +97,11 @@ public class SearchActivity extends AppCompatActivity {
                 list.clear();
                 Intent i = getIntent();
                 int code = i.getIntExtra(INTENT_EXTRA_SOURCE_ACTIVITY_COND, -1);
-                if (code == 10157){
+                if (code == MAPS_ACTIVITY_SOURCE_ACTIVITY_COND){
                     Intent intent = MapsActivity.makeIntent(SearchActivity.this, SEARCH_ACTIVITY_SOURCE_ACTIVITY_COND);
                     startActivity(intent);
                 }
-                else if(code == 10056){
+                else if(code == RESTAURANT_LIST_ACTIVITY_SOURCE_ACTIVITY_COND){
                     Intent intent = RestaurantListActivity.makeIntentForSearch(SearchActivity.this, SEARCH_ACTIVITY_SOURCE_ACTIVITY_COND);
                     startActivity(intent);
                 }
