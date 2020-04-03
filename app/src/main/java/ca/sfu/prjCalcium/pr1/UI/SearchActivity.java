@@ -3,6 +3,8 @@ package ca.sfu.prjCalcium.pr1.UI;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -10,7 +12,6 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -24,7 +25,7 @@ import static ca.sfu.prjCalcium.pr1.UI.RestaurantListActivity.RESTAURANT_LIST_AC
 public class SearchActivity extends AppCompatActivity {
 
     public static final int SEARCH_ACTIVITY_SOURCE_ACTIVITY_COND_Cancel = 101;
-    public static final int SEARCH_ACTIVITY_SOURCE_ACTIVITY_COND_SUMBIT = 102;
+    public static final int SEARCH_ACTIVITY_SOURCE_ACTIVITY_COND_SUBMIT = 102;
 
     private SearchResultList list = SearchResultList.getInstance();
     private String spinnerText;
@@ -36,6 +37,23 @@ public class SearchActivity extends AppCompatActivity {
         return intent;
     }
 
+    //https://stackoverflow.com/questions/38158953/how-to-create-button-in-action-bar-in-android
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    // handle button activities
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.mybutton) {
+            finish();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,6 +62,10 @@ public class SearchActivity extends AppCompatActivity {
         Button submitButton = findViewById(R.id.submit_button);
         submitButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+
+                if(!list.isEmpty()){
+                    list.clear();
+                }
 
                 //https://developer.android.com/training/keyboard-input/style
                 //textName and textViolation are the input from users
@@ -64,17 +86,29 @@ public class SearchActivity extends AppCompatActivity {
                     else if (spinnerText.equals("greater than")){
                         list.getRestaurantsWithMoreThanNCriticalViolationsWithinLastYear(numberInput);
                     }
+                } else if(textName.length() != 0){
+                    list.getRestaurantsByName(textName);
+                } else if(textViolations.length() != 0){
+                    int numberInput = Integer.parseInt(textViolations);
+
+                    if (spinnerText.equals("less than")) {
+                        list.getRestaurantsWithLessThanNCriticalViolationsWithinLastYear(numberInput);
+                    }
+                    else if (spinnerText.equals("greater than")){
+                        list.getRestaurantsWithMoreThanNCriticalViolationsWithinLastYear(numberInput);
+                    }
                 }
+
 
                 //after we submit our search criteria, go back to the previous screen
                 Intent i = getIntent();
                 int code = i.getIntExtra(INTENT_EXTRA_SOURCE_ACTIVITY_COND, -1);
                 if (code == 10157){
-                    Intent intent = MapsActivity.makeIntent(SearchActivity.this, SEARCH_ACTIVITY_SOURCE_ACTIVITY_COND_SUMBIT);
+                    Intent intent = MapsActivity.makeIntent(SearchActivity.this, SEARCH_ACTIVITY_SOURCE_ACTIVITY_COND_SUBMIT);
                     startActivity(intent);
                 }
                 else if(code == 10056){
-                    Intent intent = RestaurantListActivity.makeIntentForSearch(SearchActivity.this, SEARCH_ACTIVITY_SOURCE_ACTIVITY_COND_SUMBIT);
+                    Intent intent = RestaurantListActivity.makeIntentForSearch(SearchActivity.this, SEARCH_ACTIVITY_SOURCE_ACTIVITY_COND_SUBMIT);
                     startActivity(intent);
                 }
 

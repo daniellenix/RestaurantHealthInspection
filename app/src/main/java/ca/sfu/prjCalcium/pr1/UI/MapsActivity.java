@@ -2,7 +2,6 @@ package ca.sfu.prjCalcium.pr1.UI;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -263,7 +262,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             // if we come from detail activity, then wen don't need to load the clusters.
             ifLoadCluster = false;
         }
-        else if (sourceActivityCond == SearchActivity.SEARCH_ACTIVITY_SOURCE_ACTIVITY_COND_SUMBIT){
+        else if (sourceActivityCond == SearchActivity.SEARCH_ACTIVITY_SOURCE_ACTIVITY_COND_SUBMIT){
             // if we come from search activity, we have to limit our markers
             loadSearchList = true;
         }
@@ -612,7 +611,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void addItems() {
 
-        if(loadSearchList){
+        if(loadSearchList & (!listManager.isEmpty())){
             for (Restaurant r : listManager){
                 MyItem i = new MyItem(r);
                 mClusterManager.addItem(i);
