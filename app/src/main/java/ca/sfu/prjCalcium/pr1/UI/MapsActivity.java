@@ -256,7 +256,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             // if we come from detail activity, then wen don't need to load the clusters.
             ifLoadCluster = false;
         }
-        else if (sourceActivityCond == SearchActivity.SEARCH_ACTIVITY_SOURCE_ACTIVITY_COND_SUMBIT){
+        else if (sourceActivityCond == SearchActivity.SEARCH_ACTIVITY_SOURCE_ACTIVITY_COND_SUBMIT){
             // if we come from search activity, we have to limit our markers
             loadSearchList = true;
         }
@@ -542,8 +542,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void addItems() {
-
-        if(loadSearchList){
+        //if users click submit button without inputing anything, should return to the original map
+        if(loadSearchList & (!listManager.isEmpty())){
             for (Restaurant r : listManager){
                 MyItem i = new MyItem(r);
                 mClusterManager.addItem(i);
@@ -556,7 +556,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 mClusterManager.addItem(i);
             }
         }
-
     }
 
     public class MyItem implements ClusterItem {
