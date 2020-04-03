@@ -23,10 +23,18 @@ public class SearchResultList {
     public void getRestaurantsByName(String name) {
         RestaurantManager rManager = RestaurantManager.getInstance();
 
-        for (Restaurant r : rManager) {
-            if (r.getRestaurantName().toLowerCase().contains(name.toLowerCase())) {
-                if (!searchResult.contains(r)) {
-                    searchResult.add(r);
+        if (isEmpty()) { // if result list empty, get all that satisfy the criteria, since this is either the only criteria or the first criteria
+            for (Restaurant r : rManager) {
+                if (r.getRestaurantName().toLowerCase().contains(name.toLowerCase())) {
+                    if (!searchResult.contains(r)) {
+                        searchResult.add(r);
+                    }
+                }
+            }
+        } else { // if not empty, then user put more than one criteria, must filter the result list
+            for (Restaurant r : searchResult) {
+                if (!r.getRestaurantName().equals(name)) {
+                    searchResult.remove(r);
                 }
             }
         }
@@ -41,13 +49,24 @@ public class SearchResultList {
 
         RestaurantManager rManager = RestaurantManager.getInstance();
 
-        for (Restaurant r : rManager) {
-            if (r.getInspections().isEmpty()) {
-                continue;
+        if (isEmpty()) {
+            for (Restaurant r : rManager) {
+                if (r.getInspections().isEmpty()) {
+                    continue;
+                }
+                if (r.getInspections().getInspection(0).getHazardRating().equals(hazardLevel)) {
+                    if (!searchResult.contains(r)) {
+                        searchResult.add(r);
+                    }
+                }
             }
-            if (r.getInspections().getInspection(0).getHazardRating().equals(hazardLevel)) {
-                if (!searchResult.contains(r)) {
-                    searchResult.add(r);
+        } else {
+            for (Restaurant r : searchResult) {
+                if (r.getInspections().isEmpty()) {
+                    searchResult.remove(r);
+                }
+                if (!r.getInspections().getInspection(0).getHazardRating().equals(hazardLevel)) {
+                    searchResult.remove(r);
                 }
             }
         }
@@ -56,26 +75,50 @@ public class SearchResultList {
     public void getRestaurantsWithLessThanNCriticalViolationsWithinLastYear(int number) {
         RestaurantManager rManager = RestaurantManager.getInstance();
 
-        for (Restaurant r : rManager) {
-            if (r.getInspections().isEmpty()) {
-                continue;
-            }
+        if (isEmpty()) {
+            for (Restaurant r : rManager) {
+                if (r.getInspections().isEmpty()) {
+                    continue;
+                }
 
-            int numCriticalVio = 0;
-            InspectionManager iManager = r.getInspections();
-            long currentTime = System.currentTimeMillis();
+                int numCriticalVio = 0;
+                InspectionManager iManager = r.getInspections();
+                long currentTime = System.currentTimeMillis();
 
-            for (Inspection i : iManager) {
-                Date d = i.getInspectionDate();
-                long dInEpoch = d.getTime();
-                if (currentTime - dInEpoch <= 31556926) {
-                    numCriticalVio += i.getNumCritical();
+                for (Inspection i : iManager) {
+                    Date d = i.getInspectionDate();
+                    long dInEpoch = d.getTime();
+                    if (currentTime - dInEpoch <= 31556926) {
+                        numCriticalVio += i.getNumCritical();
+                    }
+                }
+
+                if (number <= numCriticalVio) {
+                    if (!searchResult.contains(r)) {
+                        searchResult.add(r);
+                    }
                 }
             }
+        } else {
+            for (Restaurant r : searchResult) {
+                if (r.getInspections().isEmpty()) {
+                    continue;
+                }
 
-            if (number <= numCriticalVio) {
-                if (!searchResult.contains(r)) {
-                    searchResult.add(r);
+                int numCriticalVio = 0;
+                InspectionManager iManager = r.getInspections();
+                long currentTime = System.currentTimeMillis();
+
+                for (Inspection i : iManager) {
+                    Date d = i.getInspectionDate();
+                    long dInEpoch = d.getTime();
+                    if (currentTime - dInEpoch <= 31556926) {
+                        numCriticalVio += i.getNumCritical();
+                    }
+                }
+
+                if (!(number <= numCriticalVio)) {
+                    searchResult.remove(r);
                 }
             }
         }
@@ -84,26 +127,50 @@ public class SearchResultList {
     public void getRestaurantsWithMoreThanNCriticalViolationsWithinLastYear(int number) {
         RestaurantManager rManager = RestaurantManager.getInstance();
 
-        for (Restaurant r : rManager) {
-            if (r.getInspections().isEmpty()) {
-                continue;
-            }
+        if (isEmpty()) {
+            for (Restaurant r : rManager) {
+                if (r.getInspections().isEmpty()) {
+                    continue;
+                }
 
-            int numCriticalVio = 0;
-            InspectionManager iManager = r.getInspections();
-            long currentTime = System.currentTimeMillis();
+                int numCriticalVio = 0;
+                InspectionManager iManager = r.getInspections();
+                long currentTime = System.currentTimeMillis();
 
-            for (Inspection i : iManager) {
-                Date d = i.getInspectionDate();
-                long dInEpoch = d.getTime();
-                if (currentTime - dInEpoch <= 31556926) {
-                    numCriticalVio += i.getNumCritical();
+                for (Inspection i : iManager) {
+                    Date d = i.getInspectionDate();
+                    long dInEpoch = d.getTime();
+                    if (currentTime - dInEpoch <= 31556926) {
+                        numCriticalVio += i.getNumCritical();
+                    }
+                }
+
+                if (number >= numCriticalVio) {
+                    if (!searchResult.contains(r)) {
+                        searchResult.add(r);
+                    }
                 }
             }
+        } else {
+            for (Restaurant r : searchResult) {
+                if (r.getInspections().isEmpty()) {
+                    searchResult.remove(r);
+                }
 
-            if (number >= numCriticalVio) {
-                if (!searchResult.contains(r)) {
-                    searchResult.add(r);
+                int numCriticalVio = 0;
+                InspectionManager iManager = r.getInspections();
+                long currentTime = System.currentTimeMillis();
+
+                for (Inspection i : iManager) {
+                    Date d = i.getInspectionDate();
+                    long dInEpoch = d.getTime();
+                    if (currentTime - dInEpoch <= 31556926) {
+                        numCriticalVio += i.getNumCritical();
+                    }
+                }
+
+                if (!(number <= numCriticalVio)) {
+                    searchResult.remove(r);
                 }
             }
         }
@@ -112,13 +179,25 @@ public class SearchResultList {
     public void getFavedRestaurants() {
         RestaurantManager rManager = RestaurantManager.getInstance();
 
-        for (Restaurant r : rManager) {
-            if (r.isFaved()) {
-                if (!searchResult.contains(r)) {
-                    searchResult.add(r);
+        if (isEmpty()) {
+            for (Restaurant r : rManager) {
+                if (r.isFaved()) {
+                    if (!searchResult.contains(r)) {
+                        searchResult.add(r);
+                    }
+                }
+            }
+        } else {
+            for (Restaurant r : searchResult) {
+                if (!r.isFaved()) {
+                    searchResult.remove(r);
                 }
             }
         }
+    }
+
+    private boolean isEmpty() {
+        return searchResult.isEmpty();
     }
 
     public void clear() {
