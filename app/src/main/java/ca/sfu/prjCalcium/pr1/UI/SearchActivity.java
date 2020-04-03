@@ -23,7 +23,8 @@ import static ca.sfu.prjCalcium.pr1.UI.RestaurantListActivity.RESTAURANT_LIST_AC
 
 public class SearchActivity extends AppCompatActivity {
 
-    public static final int SEARCH_ACTIVITY_SOURCE_ACTIVITY_COND = 101;
+    public static final int SEARCH_ACTIVITY_SOURCE_ACTIVITY_COND_Cancel = 101;
+    public static final int SEARCH_ACTIVITY_SOURCE_ACTIVITY_COND_SUMBIT = 102;
 
     private SearchResultList list = SearchResultList.getInstance();
     private String spinnerText;
@@ -69,11 +70,11 @@ public class SearchActivity extends AppCompatActivity {
                 Intent i = getIntent();
                 int code = i.getIntExtra(INTENT_EXTRA_SOURCE_ACTIVITY_COND, -1);
                 if (code == 10157){
-                    Intent intent = MapsActivity.makeIntent(SearchActivity.this, SEARCH_ACTIVITY_SOURCE_ACTIVITY_COND);
+                    Intent intent = MapsActivity.makeIntent(SearchActivity.this, SEARCH_ACTIVITY_SOURCE_ACTIVITY_COND_SUMBIT);
                     startActivity(intent);
                 }
                 else if(code == 10056){
-                    Intent intent = RestaurantListActivity.makeIntentForSearch(SearchActivity.this, SEARCH_ACTIVITY_SOURCE_ACTIVITY_COND);
+                    Intent intent = RestaurantListActivity.makeIntentForSearch(SearchActivity.this, SEARCH_ACTIVITY_SOURCE_ACTIVITY_COND_SUMBIT);
                     startActivity(intent);
                 }
 
@@ -88,11 +89,11 @@ public class SearchActivity extends AppCompatActivity {
                 Intent i = getIntent();
                 int code = i.getIntExtra(INTENT_EXTRA_SOURCE_ACTIVITY_COND, -1);
                 if (code == MAPS_ACTIVITY_SOURCE_ACTIVITY_COND){
-                    Intent intent = MapsActivity.makeIntent(SearchActivity.this, SEARCH_ACTIVITY_SOURCE_ACTIVITY_COND);
+                    Intent intent = MapsActivity.makeIntent(SearchActivity.this, SEARCH_ACTIVITY_SOURCE_ACTIVITY_COND_Cancel);
                     startActivity(intent);
                 }
                 else if(code == RESTAURANT_LIST_ACTIVITY_SOURCE_ACTIVITY_COND){
-                    Intent intent = RestaurantListActivity.makeIntentForSearch(SearchActivity.this, SEARCH_ACTIVITY_SOURCE_ACTIVITY_COND);
+                    Intent intent = RestaurantListActivity.makeIntentForSearch(SearchActivity.this, SEARCH_ACTIVITY_SOURCE_ACTIVITY_COND_Cancel);
                     startActivity(intent);
                 }
             }
