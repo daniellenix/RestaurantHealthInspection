@@ -67,6 +67,7 @@ import ca.sfu.prjCalcium.pr1.Model.Inspection;
 import ca.sfu.prjCalcium.pr1.Model.InspectionManager;
 import ca.sfu.prjCalcium.pr1.Model.Restaurant;
 import ca.sfu.prjCalcium.pr1.Model.RestaurantManager;
+import ca.sfu.prjCalcium.pr1.Model.SearchResultList;
 import ca.sfu.prjCalcium.pr1.R;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
@@ -112,6 +113,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private FusedLocationProviderClient mFLPC;
 
     private RestaurantManager rManager = RestaurantManager.getInstance();
+    private SearchResultList listManager = SearchResultList.getInstance();
 
     private ClusterManager<MyItem> mClusterManager;
 
@@ -119,6 +121,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static String restaurantURL;
 
     private boolean ifLoadCluster = true;
+    private boolean loadSearchList = false;
     private int sourceActivityCond;
     private int r_index;
 
@@ -259,6 +262,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (sourceActivityCond == RestaurantDetailActivity.RESTAURANT_DETAIL_SOURCE_ACTIVITY_COND) {
             // if we come from detail activity, then wen don't need to load the clusters.
             ifLoadCluster = false;
+        }
+        else if (sourceActivityCond == SearchActivity.SEARCH_ACTIVITY_SOURCE_ACTIVITY_COND_SUMBIT){
+            // if we come from search activity, we have to limit our markers
+            loadSearchList = true;
         }
     }
 
@@ -604,10 +611,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void addItems() {
-        for (Restaurant r : rManager) {
-            MyItem i = new MyItem(r);
-            mClusterManager.addItem(i);
+
+        if(loadSearchList){
+            for (Restaurant r : listManager){
+                MyItem i = new MyItem(r);
+                mClusterManager.addItem(i);
+            }
+            loadSearchList = false;
         }
+        else {
+            for (Restaurant r : rManager) {
+                MyItem i = new MyItem(r);
+                mClusterManager.addItem(i);
+            }
+        }
+
     }
 
     public class MyItem implements ClusterItem {

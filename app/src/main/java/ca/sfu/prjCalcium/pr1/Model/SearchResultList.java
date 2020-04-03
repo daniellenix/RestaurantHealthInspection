@@ -3,9 +3,10 @@ package ca.sfu.prjCalcium.pr1.Model;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
-public class SearchResultList {
+public class SearchResultList implements Iterable<Restaurant> {
     private static SearchResultList instance;
     private List<Restaurant> searchResult = new ArrayList<>();
 
@@ -23,7 +24,7 @@ public class SearchResultList {
     public void getRestaurantsByName(String name) {
         RestaurantManager rManager = RestaurantManager.getInstance();
 
-        if (isEmpty()) { // if result list empty, get all that satisfy the criteria, since this is either the only criteria or the first criteria
+        if (isEmpty()) { // if result list empty, get all that satisfy the criteria, since this is either the only criteria or the first criteria{
             for (Restaurant r : rManager) {
                 if (r.getRestaurantName().toLowerCase().contains(name.toLowerCase())) {
                     if (!searchResult.contains(r)) {
@@ -40,6 +41,7 @@ public class SearchResultList {
             }
             searchResult.removeAll(toRemove);
         }
+
     }
 
     public void getRestaurantByMostRecentInspectionHazardLevel(String hazardLevel) {
@@ -74,6 +76,7 @@ public class SearchResultList {
             }
             searchResult.removeAll(toRemove);
         }
+
     }
 
     public void getRestaurantsWithLessThanNCriticalViolationsWithinLastYear(int number) {
@@ -96,6 +99,7 @@ public class SearchResultList {
                         numCriticalVio += i.getNumCritical();
                     }
                 }
+
 
                 if (number <= numCriticalVio) {
                     if (!searchResult.contains(r)) {
@@ -176,12 +180,13 @@ public class SearchResultList {
                     }
                 }
 
-                if (!(number >= numCriticalVio)) {
+                if (!(number <= numCriticalVio)) {
                     toRemove.add(r);
                 }
             }
             searchResult.removeAll(toRemove);
         }
+
     }
 
     public void getFavedRestaurants() {
@@ -212,5 +217,10 @@ public class SearchResultList {
 
     public void clear() {
         searchResult.clear();
+    }
+
+    @Override
+    public Iterator<Restaurant> iterator() {
+        return searchResult.iterator();
     }
 }
