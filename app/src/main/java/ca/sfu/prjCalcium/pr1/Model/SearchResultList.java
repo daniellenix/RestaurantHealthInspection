@@ -41,15 +41,6 @@ public class SearchResultList implements Iterable<Restaurant> {
             }
             searchResult.removeAll(toRemove);
         }
-        else { // if not empty, then user put more than one criteria, must filter the result list
-            List<Restaurant> toRemove = new ArrayList<>();
-            for (Restaurant r : searchResult) {
-                if (!r.getRestaurantName().equals(name)) {
-                    toRemove.add(r);
-                }
-            }
-            searchResult.removeAll(toRemove);
-        }
 
     }
 
