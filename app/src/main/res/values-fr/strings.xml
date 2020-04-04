@@ -1,0 +1,41 @@
+<resources>
+    <string name="app_name">Inspection du Restaurant</string>
+    <string name="no_inspections">Pas d\'inspections</string>
+    <string name="no_recent_inspections">N/D</string>
+    <string name="restaurant_list_num_issues"># de problèmes: %1$d</string>
+    <string name="inspection_days_ago">il y a %1$d jour(s)</string>
+    <string name="restaurant_detail_long_lati">Longitude: %1$f \n Latitude: %2$f</string>
+    <string name="restaurant_detail_hazard_level">Niveau de danger: %1$s</string>
+    <string name="restaurant_detail_num_critical_issue">Problèmes critiques: %1$d</string>
+    <string name="restaurant_detail_num_non_critical_issue">Problèmes non critiques: %1$d</string>
+    <string name="inspection_inspection_type">Type d\'inspection: %1$s</string>
+    <string name="inspection_date">Date: %1$s</string>
+    <string name="title_activity_maps">Cartes des restaurants</string>
+    <string name="main_switch_to_map">Passer à la carte</string>
+    <string name="map_switch_to_list">Passer à la liste</string>
+    <string name="maps_toast_need_update">Besoin d\'une mise à jour!</string>
+    <string name="maps_toast_welcome_back">Bienvenue!</string>
+    <string name="maps_progress_dialog_downloading_csv">Téléchargement de fichiers en cours… </string>
+    <string name="ask_user_if_update_title">Mise à jour trouvée</string>
+    <string name="ask_user_if_update_message">Voulez-vous mettre à jour maintenant?</string>
+    <string name="ask_user_if_update_permission_denied_title">Autorisation refusée, en utilisant les données par défaut </string>
+    <string name="ask_user_if_update_permission_denied_message">Si vous souhaitez mettre à jour les données \ nAller à Paramètres > Applications > Autorisation et activer les autorisations</string>
+    <string name="ask_user_if_update_toast_message_will_show_again">Ce message réapparaîtra au prochain démarrage </string>
+    <string name="device_location_toast_cannot_get_location">Impossible de déterminer l\'emplacement. </string>
+    <string name="toast_have_update">Il y a une mise à jour!</string>
+    <string name="info_window_info_no_inspection">Adresse:%1$s \n Niveau de danger non défini </string>
+    <string name="info_window_info">Adresse:%1$s \n Niveau de danger:%2$s </string>
+    <string name="toast_file_downloaded">Fichier téléchargé</string>
+    <string name="json_task_dialog_title">Attendez un moment</string>
+    <string name="download_task_download_error">Erreur de téléchargement: %1$s</string>
+    <string name="favourite">Préféré</string>
+    <string name="new_inspection_alert_dialog_message_entry_line">Restaurant: %1$s, Date d\'inspection: %2$s, Niveau de danger: %3$s.  </string>
+    <string name = "restaurant_name"> Nom du restaurant </string>
+    <string name = "of_critical_violations"> # de violations critiques </string>
+    <string name = "hazard_level"> Niveau de danger </string>
+    <string name = "show_favourite"> Afficher le favori </string>
+    <string name = "cancel_search"> Annuler la recherche </string>
+    <string name = "submit"> Soumettre </string>
+
+</resources>
+

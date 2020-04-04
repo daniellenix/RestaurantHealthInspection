@@ -16,7 +16,7 @@
         android:layout_marginTop="15dp"
         android:layout_marginLeft="10dp"
         android:layout_marginBottom="10dp"
-        android:text="Restuarant Name"
+        android:text="@string/restaurant_name"
         android:textSize="20dp"
         android:textColor="#000000"
         tools:layout_editor_absoluteX="100dp"
@@ -40,7 +40,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginLeft="10dp"
         android:layout_marginBottom="10dp"
-        android:text="# of Critical Violations"
+        android:text="@string/of_critical_violations"
         android:textColor="#000000"
         android:textSize="20dp"
         tools:layout_editor_absoluteX="28dp"
@@ -78,7 +78,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginLeft="10dp"
         android:layout_marginBottom="10dp"
-        android:text="Hazard Level"
+        android:text="@string/hazard_level"
         android:textColor="#000000"
         android:textSize="20dp"
         tools:layout_editor_absoluteX="28dp"
@@ -99,7 +99,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginLeft="10dp"
         android:layout_marginBottom="10dp"
-        android:text="Show Favorite"
+        android:text="@string/show_favourite"
         android:textColor="#000000"
         android:textSize="20dp"
         tools:layout_editor_absoluteX="28dp"
@@ -125,7 +125,7 @@
             android:id="@+id/cancel_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Cancel Search"
+            android:text="@string/cancel_search"
             android:layout_marginRight="80dp"/>
 
 
@@ -134,7 +134,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="80dp"
-            android:text="Submit" />
+            android:text="@string/submit" />
 
 
     </LinearLayout>

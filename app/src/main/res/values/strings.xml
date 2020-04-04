@@ -30,4 +30,10 @@
     <string name="download_task_download_error">Download error: %1$s</string>
     <string name="favourite">Favourite</string>
     <string name="new_inspection_alert_dialog_message_entry_line">Restaurant: %1$s, Date of Inspection: %2$s, Hazard level: %3$s. </string>
+    <string name="restaurant_name">Restaurant Name</string>
+    <string name="of_critical_violations"># of Critical Violations</string>
+    <string name="hazard_level">Hazard Level</string>
+    <string name="show_favourite">Show Favourite</string>
+    <string name="cancel_search">Cancel Search</string>
+    <string name="submit">Submit</string>
 </resources>
