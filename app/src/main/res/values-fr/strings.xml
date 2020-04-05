@@ -36,6 +36,15 @@
     <string name = "show_favourite"> Afficher le favori </string>
     <string name = "cancel_search"> Annuler la recherche </string>
     <string name = "submit"> Soumettre </string>
+    <string name="regulation">: Violation de regulation</string>
+    <string name="food">: Violation de nourriture</string>
+    <string name="equipments">: Violation d\'équipement</string>
+    <string name="employee">: Violation de travailleur</string>
+    <string name="restaurants">Restaurants</string>
+    <string name="restaurantDetail">Détail de Restaurant</string>
+    <string name="inspection">Inspection</string>
+    <string name="search">Chercher</string>
+    <string name="operator">: Violation d\'opérateur</string>
 
 </resources>
 

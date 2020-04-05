@@ -36,4 +36,13 @@
     <string name="show_favourite">Show Favourite</string>
     <string name="cancel_search">Cancel Search</string>
     <string name="submit">Submit</string>
+    <string name="regulation">: Regulation Violation</string>
+    <string name="food">: Food Violation</string>
+    <string name="equipments">: Equipments Violation</string>
+    <string name="employee">: Employees Violation</string>
+    <string name="operator">: Operator Violation</string>
+    <string name="restaurants">Restaurants</string>
+    <string name="restaurantDetail">Restaurant Detail</string>
+    <string name="inspection">Inspection</string>
+    <string name="search">Search</string>
 </resources>

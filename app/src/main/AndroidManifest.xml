@@ -25,7 +25,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".UI.SearchActivity"
-            android:label="Search"></activity>
+            android:label="@string/search" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -52,13 +52,13 @@
         </activity>
         <activity
             android:name=".UI.InspectionActivity"
-            android:label="Inspection" />
+            android:label="@string/inspection" />
         <activity
             android:name=".UI.RestaurantDetailActivity"
-            android:label="Restaurant Detail" />
+            android:label="@string/restaurantDetail" />
         <activity
             android:name=".UI.RestaurantListActivity"
-            android:label="Restaurants"></activity>
+            android:label="@string/restaurants" />
     </application>
 
 </manifest>
