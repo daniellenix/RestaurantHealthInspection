@@ -66,7 +66,6 @@ public class SearchActivity extends AppCompatActivity {
                 if(!list.isEmpty()){
                     list.clear();
                 }
-
                 //https://developer.android.com/training/keyboard-input/style
                 //textName and textViolation are the input from users
                 EditText nameBox = (EditText) findViewById(R.id.name_box);
@@ -86,9 +85,11 @@ public class SearchActivity extends AppCompatActivity {
                     else if (spinnerText.equals("greater than")){
                         list.getRestaurantsWithMoreThanNCriticalViolationsWithinLastYear(numberInput);
                     }
-                } else if(textName.length() != 0){
+                }
+                else if(textName.length() != 0){
                     list.getRestaurantsByName(textName);
-                } else if(textViolations.length() != 0){
+                }
+                else if(textViolations.length() != 0){
                     int numberInput = Integer.parseInt(textViolations);
 
                     if (spinnerText.equals("less than")) {
@@ -98,7 +99,6 @@ public class SearchActivity extends AppCompatActivity {
                         list.getRestaurantsWithMoreThanNCriticalViolationsWithinLastYear(numberInput);
                     }
                 }
-
 
                 //after we submit our search criteria, go back to the previous screen
                 Intent i = getIntent();
