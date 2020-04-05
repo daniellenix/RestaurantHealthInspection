@@ -42,6 +42,7 @@ public class RestaurantListActivity extends AppCompatActivity {
     private SearchResultList searchResultList = SearchResultList.getInstance();
 
     private int sourceActivityCond;
+    private boolean loadSearch = false;
 
     public static Intent makeIntent(Context c) {
         return new Intent(c, RestaurantListActivity.class);
@@ -106,22 +107,31 @@ public class RestaurantListActivity extends AppCompatActivity {
         });
     }
 
-    private boolean extractDataFromIntent() {
+    private void extractDataFromIntent() {
         Intent intent = getIntent();
         sourceActivityCond = intent.getIntExtra(INTENT_EXTRA_SOURCE_ACTIVITY_COND, -1);
-        return sourceActivityCond == SearchActivity.SEARCH_ACTIVITY_SOURCE_ACTIVITY_COND_SUBMIT;
+
+        // if we came from cancel button on search activity
+        if (sourceActivityCond == SearchActivity.SEARCH_ACTIVITY_SOURCE_ACTIVITY_COND_Cancel) {
+            loadSearch = false;
+            // if we came from submit button on search activity
+        } else if (sourceActivityCond == SearchActivity.SEARCH_ACTIVITY_SOURCE_ACTIVITY_COND_SUBMIT){
+            loadSearch = true;
+        }
     }
 
     private void populateListView() {
 
+        extractDataFromIntent();
+
         // if coming from search page, load search results
-        if(extractDataFromIntent()) {
+        if(loadSearch) {
             ArrayAdapter<Restaurant> adapter = new MyListAdapter(searchResultList.getSearchResult());
             ListView list = findViewById(R.id.restaurantListView);
             list.setAdapter(adapter);
 
             // otherwise load normal restaurants
-        } else if (!extractDataFromIntent()) {
+        } else {
             ArrayAdapter<Restaurant> adapter = new MyListAdapter(manager.getRestaurantsAsLists());
             ListView list = findViewById(R.id.restaurantListView);
             list.setAdapter(adapter);
@@ -159,7 +169,14 @@ public class RestaurantListActivity extends AppCompatActivity {
             }
 
             // find the restaurant to work with
-            Restaurant currentRestaurant = manager.getRestaurantAtIndex(position);
+            Restaurant currentRestaurant;
+
+            // load specific list based on where it came from
+            if(loadSearch) {
+                currentRestaurant = searchResultList.getRestaurantAtIndex(position);
+            } else {
+                currentRestaurant = manager.getRestaurantAtIndex(position);
+            }
 
             ImageView imageViewIcon = itemView.findViewById(R.id.icon);
 

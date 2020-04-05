@@ -21,8 +21,8 @@ public class SearchResultList implements Iterable<Restaurant> {
         return instance;
     }
 
-    public List<Restaurant> getSearchResult() {
-        return searchResult;
+    public Restaurant getRestaurantAtIndex(int position) {
+        return searchResult.get(position);
     }
 
     public void getRestaurantsByName(String name) {
@@ -221,6 +221,10 @@ public class SearchResultList implements Iterable<Restaurant> {
 
     public void clear() {
         searchResult.clear();
+    }
+
+    public List<Restaurant> getSearchResult() {
+        return searchResult;
     }
 
     @Override
