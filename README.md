@@ -30,8 +30,8 @@ French and English
         * [x] whose most recent inspection had a specific hazard level
         * [x] which has had <= (or >=) N critical violations within the last year
         * [x] which have been tagged as a favourite (see below)
-    * [ ] I want to be able to combine the above criteria, such as: Show me all my favourite restaurants which have "bar" in the name, with a most recent inspection hazard level of low, and which had 5 or less critical violations within the last year.
-        * [ ] When combining multiple criteria, I want to only see restaurants which satisfy all criteria.
+    * [x] I want to be able to combine the above criteria, such as: Show me all my favourite restaurants which have "bar" in the name, with a most recent inspection hazard level of low, and which had 5 or less critical violations within the last year.
+        * [x] When combining multiple criteria, I want to only see restaurants which satisfy all criteria.
         * [x] I don't need search to support boolean operators.
         * [x] I am OK with it searching for the full text which I type in. For example, if I search of "pub bar" I want to see "Pub barnacle" and not "The bar-none best pub"
 
