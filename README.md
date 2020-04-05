@@ -11,6 +11,10 @@ Course Project URL: https://opencoursehub.cs.sfu.ca/bfraser/grav-cms/cmpt276/pro
 * Product Manager: Danielle - @dnix
 * Team Member: Haoyi - @haoyia
 
+## Languages
+
+French and English
+
 ## User story overview
 
 1. [40] Search / Filter
