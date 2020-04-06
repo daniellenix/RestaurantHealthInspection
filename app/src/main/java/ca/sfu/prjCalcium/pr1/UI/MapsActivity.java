@@ -610,7 +610,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void addItems() {
-
+        //if users click submit button without inputing anything, should return to the original map
         if(loadSearchList & (!listManager.isEmpty())){
             for (Restaurant r : listManager){
                 MyItem i = new MyItem(r);
@@ -853,8 +853,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Toast.makeText(context, getString(R.string.download_task_download_error, result), Toast.LENGTH_LONG).show();
             } else {
                 Toast.makeText(context, R.string.toast_file_downloaded, Toast.LENGTH_SHORT).show();
-
-                newDataDownloaded = true;
 
                 loadManagerFromExternal();
                 // In case user turns off permissions manually.

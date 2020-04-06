@@ -66,13 +66,12 @@ public class SearchActivity extends AppCompatActivity {
                 if(!list.isEmpty()){
                     list.clear();
                 }
-
                 //https://developer.android.com/training/keyboard-input/style
                 //textName and textViolation are the input from users
-                EditText nameBox = (EditText) findViewById(R.id.name_box);
+                EditText nameBox = findViewById(R.id.name_box);
                 String textName = nameBox.getText().toString();
 
-                EditText violationBox = (EditText) findViewById(R.id.violations);
+                EditText violationBox = findViewById(R.id.violations);
                 String textViolations = violationBox.getText().toString();
 
                 //save criteria to our restaurant list
@@ -86,9 +85,11 @@ public class SearchActivity extends AppCompatActivity {
                     else if (spinnerText.equals("greater than")){
                         list.getRestaurantsWithMoreThanNCriticalViolationsWithinLastYear(numberInput);
                     }
-                } else if(textName.length() != 0){
+                }
+                else if(textName.length() != 0){
                     list.getRestaurantsByName(textName);
-                } else if(textViolations.length() != 0){
+                }
+                else if(textViolations.length() != 0){
                     int numberInput = Integer.parseInt(textViolations);
 
                     if (spinnerText.equals("less than")) {
@@ -98,7 +99,6 @@ public class SearchActivity extends AppCompatActivity {
                         list.getRestaurantsWithMoreThanNCriticalViolationsWithinLastYear(numberInput);
                     }
                 }
-
 
                 //after we submit our search criteria, go back to the previous screen
                 Intent i = getIntent();
@@ -139,7 +139,7 @@ public class SearchActivity extends AppCompatActivity {
 
     //https://developer.android.com/guide/topics/ui/controls/spinner
     private void setUpSpinners() {
-        Spinner spinner = (Spinner) findViewById(R.id.spinner);
+        Spinner spinner = findViewById(R.id.spinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.range_list, android.R.layout.simple_spinner_item);
 
@@ -153,7 +153,7 @@ public class SearchActivity extends AppCompatActivity {
 
     //Reference:https://www.youtube.com/watch?v=_yaP4etGKlU&feature=youtu.be
     private void createRadioButtons() {
-        final RadioGroup hazardGroup = (RadioGroup) findViewById(R.id.hazardLevel);
+        final RadioGroup hazardGroup = findViewById(R.id.hazardLevel);
         String[] hazardList= getResources().getStringArray(R.array.hazard_list);
         //create button for hazard level list
         for(int i = 0; i < hazardList.length; i++){
@@ -164,9 +164,9 @@ public class SearchActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     int idOfSelected = hazardGroup.getCheckedRadioButtonId();
-                    RadioButton radioButton = (RadioButton) findViewById(idOfSelected);
+                    RadioButton radioButton = findViewById(idOfSelected);
                     String choice = radioButton.getText().toString();
-                    // send users hazar level input
+                    // send users hazard level input
                     list.getRestaurantByMostRecentInspectionHazardLevel(choice);
 
                 }
@@ -174,7 +174,7 @@ public class SearchActivity extends AppCompatActivity {
             hazardGroup.addView(button1);
         }
 
-        final RadioGroup favoriteGroup = (RadioGroup) findViewById(R.id.favorite);
+        final RadioGroup favoriteGroup = findViewById(R.id.favorite);
         String[] favorList = getResources().getStringArray(R.array.favorite_list);
         //create button for displaying favorite restaurant or not
         for (int j = 0; j < favorList.length; j++){
@@ -188,7 +188,7 @@ public class SearchActivity extends AppCompatActivity {
                     RadioButton radioButton = (RadioButton) findViewById(idOfSelected);
                     String choice = radioButton.getText().toString();
                     // send users choice of displaying favorite restaurant or not
-                    if (choice == "Yes") {
+                    if (choice.equals("Yes")) {
                         list.getFavedRestaurants();
                     }
                 }
