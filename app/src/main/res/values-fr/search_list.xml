@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="hazard_list">
+        <item>Faible</item>
+        <item>Modéré</item>
+        <item>Haut</item>
+        <item>Aucun</item>
+    </string-array>
+
+    <string-array name="favorite_list">
+        <item>Oui</item>
+        <item>Non</item>
+    </string-array>
+
+    <string-array name="range_list">
+        <item>Moins que</item>
+        <item>Plus que</item>
+    </string-array>
+
+
+</resources>

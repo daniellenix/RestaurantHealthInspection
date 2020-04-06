@@ -1,5 +1,10 @@
 package ca.sfu.prjCalcium.pr1.Model;
 
+import android.content.Context;
+import android.content.res.Resources;
+
+import ca.sfu.prjCalcium.pr1.R;
+
 /**
  * Represent a violation in an inspection.
  */
@@ -33,30 +38,30 @@ public class Violation {
     }
 
     //For Brief Information of Violation
-    public String convertDetailsToCategories() {
+    public String convertDetailsToCategories(Context context) {
         // code 100s = Regulations
         // code 200s = Food
         // code 300s = Equipments
         // code 400s = Employees
         // code 500s = Operator
         if (100 <= this.code && this.code <= 199) {
-            return code + ": Regulation Violation";
+            return code + context.getString(R.string.regulation);
         }
 
         if (200 <= this.code && this.code <= 299) {
-            return code + ": Food Violation";
+            return code + context.getString(R.string.food);
         }
 
         if (300 <= this.code && this.code <= 399) {
-            return code + ": Equipments Violation";
+            return code + context.getString(R.string.equipments);
         }
 
         if (400 <= this.code && this.code <= 499) {
-            return code + ": Employees Violation";
+            return code + context.getString(R.string.employee);
         }
 
         if (500 <= this.code && this.code <= 599) {
-            return code + ": Operator Violation";
+            return code + context.getString(R.string.operator);
         }
 
         return "";
