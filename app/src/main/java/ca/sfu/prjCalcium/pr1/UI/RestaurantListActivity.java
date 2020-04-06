@@ -41,9 +41,6 @@ public class RestaurantListActivity extends AppCompatActivity {
     private RestaurantManager manager = RestaurantManager.getInstance();
     private SearchResultList searchResultList = SearchResultList.getInstance();
 
-    private int sourceActivityCond;
-    private boolean loadSearch = false;
-
     public static Intent makeIntent(Context c) {
         return new Intent(c, RestaurantListActivity.class);
     }
@@ -107,25 +104,10 @@ public class RestaurantListActivity extends AppCompatActivity {
         });
     }
 
-    private void extractDataFromIntent() {
-        Intent intent = getIntent();
-        sourceActivityCond = intent.getIntExtra(INTENT_EXTRA_SOURCE_ACTIVITY_COND, -1);
-
-        // if we came from cancel button on search activity
-        if (sourceActivityCond == SearchActivity.SEARCH_ACTIVITY_SOURCE_ACTIVITY_COND_Cancel) {
-            loadSearch = false;
-            // if we came from submit button on search activity
-        } else if (sourceActivityCond == SearchActivity.SEARCH_ACTIVITY_SOURCE_ACTIVITY_COND_SUBMIT){
-            loadSearch = true;
-        }
-    }
-
     private void populateListView() {
 
-        extractDataFromIntent();
-
-        // if coming from search page, load search results
-        if(loadSearch) {
+        // if search list is not empty load search results
+        if(!searchResultList.isEmpty()) {
             ArrayAdapter<Restaurant> adapter = new MyListAdapter(searchResultList.getSearchResult());
             ListView list = findViewById(R.id.restaurantListView);
             list.setAdapter(adapter);
@@ -171,8 +153,7 @@ public class RestaurantListActivity extends AppCompatActivity {
             // find the restaurant to work with
             Restaurant currentRestaurant;
 
-            // load specific list based on where it came from
-            if(loadSearch) {
+            if(!searchResultList.isEmpty()) {
                 currentRestaurant = searchResultList.getRestaurantAtIndex(position);
             } else {
                 currentRestaurant = manager.getRestaurantAtIndex(position);
