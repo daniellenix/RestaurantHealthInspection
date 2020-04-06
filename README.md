@@ -21,10 +21,10 @@ French and English
 
     * [x] I want to be able to search on the map screen for restaurants of interest so I can limit the markers I see on the map.
     * [x] I want to be able to search on the restaurants list page for restaurants of interest so I can limit the restaurants I see in the list.
-    * [ ] Searching details
+    * [x] Searching details
         * [x] I want to be able to clear the current search to resume seeing all restaurants.
-        * [ ] I want to preserve the current search while switching between the map and restaurants list. For example, if I searched for "pizza" on the map, when I switch to the restaurant list I want to still be seeing search results for "pizza".
-        * [ ] If I search for "pizza" and then tap on a restaurant to view that restaurant's details screen (from either the map or the restaurant list), when I select back on the restaurant details screen I want to return to the previous screen with the search results intact.
+        * [x] I want to preserve the current search while switching between the map and restaurants list. For example, if I searched for "pizza" on the map, when I switch to the restaurant list I want to still be seeing search results for "pizza".
+        * [x] If I search for "pizza" and then tap on a restaurant to view that restaurant's details screen (from either the map or the restaurant list), when I select back on the restaurant details screen I want to return to the previous screen with the search results intact.
     * [x] When I search, I want to be able to see only restaurants...
         * [x] whose name matches something I type in (so if searching for "pizza" I get "Boston Pizza #425", "MrPizzas", etc)
         * [x] whose most recent inspection had a specific hazard level
