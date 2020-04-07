@@ -57,9 +57,8 @@ public class SearchActivity extends AppCompatActivity {
         submitButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
-                if (!list.isEmpty()) {
-                    list.clear();
-                }
+                list.clear();
+
                 // https://developer.android.com/training/keyboard-input/style
                 // textName and textViolation are the input from users
                 EditText nameBox = findViewById(R.id.name_box);
@@ -69,17 +68,17 @@ public class SearchActivity extends AppCompatActivity {
                 String textViolations = violationBox.getText().toString();
 
                 Spinner spinner = findViewById(R.id.spinner);
-                String spinnerText = spinner.getSelectedItem().toString();
+                int spinnerSelectedPos = spinner.getSelectedItemPosition();
 
                 //save criteria to our restaurant list
                 if ((textName.length() != 0) && (textViolations.length() != 0)) {
                     list.getRestaurantsByName(textName);
                     int numberInput = Integer.parseInt(textViolations);
 
-                    if (spinnerText.equals("less than")) {
+                    if (spinnerSelectedPos == 0) {
                         list.getRestaurantsWithLessThanNCriticalViolationsWithinLastYear(numberInput);
                     }
-                    else if (spinnerText.equals("greater than")) {
+                    else if (spinnerSelectedPos == 1) {
                         list.getRestaurantsWithMoreThanNCriticalViolationsWithinLastYear(numberInput);
                     }
                 }
@@ -89,17 +88,37 @@ public class SearchActivity extends AppCompatActivity {
                 else if (textViolations.length() != 0) {
                     int numberInput = Integer.parseInt(textViolations);
 
-                    if (spinnerText.equals("less than")) {
+                    if (spinnerSelectedPos == 0) {
                         list.getRestaurantsWithLessThanNCriticalViolationsWithinLastYear(numberInput);
                     }
-                    else if (spinnerText.equals("greater than")) {
+                    else if (spinnerSelectedPos == 1) {
                         list.getRestaurantsWithMoreThanNCriticalViolationsWithinLastYear(numberInput);
                     }
+                }
+
+                RadioGroup hazardGroup = findViewById(R.id.hazardLevel);
+
+                int hazardGroupCheckedID = hazardGroup.getCheckedRadioButtonId();
+                RadioButton hazardGroupRadioButton = findViewById(hazardGroupCheckedID);
+                if (hazardGroupRadioButton != null) {
+                    String choice = hazardGroupRadioButton.getText().toString();
+                    // send users hazard level input
+                    list.getRestaurantByMostRecentInspectionHazardLevel(choice);
+                }
+
+                RadioGroup favoriteGroup = findViewById(R.id.favorite);
+                int favGroupCheckedID = favoriteGroup.getCheckedRadioButtonId();
+                RadioButton FavGroupRadioButton = findViewById(favGroupCheckedID);
+                int radioButtonNumber = favoriteGroup.indexOfChild(FavGroupRadioButton);
+                // send users choice of displaying favorite restaurant or not
+                if (radioButtonNumber == 0) {
+                    list.getFavedRestaurants();
                 }
 
                 // after we submit our search criteria, go back to the previous screen
                 Intent i = getIntent();
                 int code = i.getIntExtra(SEARCH_INTENT_EXTRA_SOURCE_ACTIVITY_COND, -1);
+
                 if (code == MapsActivity.MAPS_ACTIVITY_SOURCE_ACTIVITY_COND) {
                     Intent intent = MapsActivity.makeIntent(SearchActivity.this);
                     startActivity(intent);
@@ -146,45 +165,24 @@ public class SearchActivity extends AppCompatActivity {
 
     //Reference:https://www.youtube.com/watch?v=_yaP4etGKlU&feature=youtu.be
     private void createRadioButtons() {
-        final RadioGroup hazardGroup = findViewById(R.id.hazardLevel);
+        RadioGroup hazardGroup = findViewById(R.id.hazardLevel);
         String[] hazardList= getResources().getStringArray(R.array.hazard_list);
         //create button for hazard level list
         for (String level : hazardList) {
             RadioButton radioButton = new RadioButton(this);
             radioButton.setText(level);
-            radioButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    int idOfSelected = hazardGroup.getCheckedRadioButtonId();
-                    RadioButton radioButton = findViewById(idOfSelected);
-                    String choice = radioButton.getText().toString();
-                    // send users hazard level input
-                    list.getRestaurantByMostRecentInspectionHazardLevel(choice);
-
-                }
-            });
             hazardGroup.addView(radioButton);
         }
+        hazardGroup.check(hazardGroup.getChildAt(3).getId());
 
-        final RadioGroup favoriteGroup = findViewById(R.id.favorite);
+        RadioGroup favoriteGroup = findViewById(R.id.favorite);
         String[] favorList = getResources().getStringArray(R.array.favorite_list);
         //create button for displaying favorite restaurant or not
         for (String favor : favorList) {
             RadioButton radioButton = new RadioButton(this);
             radioButton.setText(favor);
-            radioButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    int idOfSelected = favoriteGroup.getCheckedRadioButtonId();
-                    RadioButton radioButton = findViewById(idOfSelected);
-                    String choice = radioButton.getText().toString();
-                    // send users choice of displaying favorite restaurant or not
-                    if (choice.equals("Yes")) {
-                        list.getFavedRestaurants();
-                    }
-                }
-            });
             favoriteGroup.addView(radioButton);
         }
+        favoriteGroup.check(favoriteGroup.getChildAt(1).getId());
     }
 }

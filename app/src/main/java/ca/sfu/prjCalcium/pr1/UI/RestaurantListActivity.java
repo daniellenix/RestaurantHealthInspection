@@ -35,7 +35,6 @@ import ca.sfu.prjCalcium.pr1.R;
  */
 public class RestaurantListActivity extends AppCompatActivity {
     public static final int RESTAURANT_LIST_ACTIVITY_SOURCE_ACTIVITY_COND = 10056;
-    public static final String RESTAURANT_LIST_INTENT_EXTRA_SOURCE_ACTIVITY_COND = "RestaurantListSourceActivityCond";
 
     // Singleton
     private RestaurantManager manager = RestaurantManager.getInstance();
@@ -43,13 +42,6 @@ public class RestaurantListActivity extends AppCompatActivity {
 
     public static Intent makeIntent(Context c) {
         return new Intent(c, RestaurantListActivity.class);
-    }
-
-    public static Intent makeIntentForSearch(Context c, int sourceActivityCondCode) {
-        Intent intent = new Intent(c, RestaurantListActivity.class);
-        intent.putExtra(RESTAURANT_LIST_INTENT_EXTRA_SOURCE_ACTIVITY_COND, sourceActivityCondCode);
-
-        return intent;
     }
 
     @Override

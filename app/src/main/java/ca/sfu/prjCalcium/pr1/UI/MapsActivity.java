@@ -609,13 +609,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void addItems() {
         // if users click submit button without inputting anything, should return to the original map
-        if (searchResultList.isSearched() && (!searchResultList.isEmpty())){
-            for (Restaurant r : searchResultList){
+        if (searchResultList.isSearched()) {
+            for (Restaurant r : searchResultList) {
                 MyItem i = new MyItem(r);
                 mClusterManager.addItem(i);
             }
-        }
-        else {
+        } else {
             for (Restaurant r : rManager) {
                 MyItem i = new MyItem(r);
                 mClusterManager.addItem(i);

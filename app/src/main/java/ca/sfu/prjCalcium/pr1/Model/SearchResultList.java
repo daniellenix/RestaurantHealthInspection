@@ -69,6 +69,7 @@ public class SearchResultList implements Iterable<Restaurant> {
                 if (r.getInspections().isEmpty()) {
                     continue;
                 }
+
                 if (r.getInspections().getInspection(0).getHazardRating().equals(hazardLevel)) {
                     if (!searchResult.contains(r)) {
                         searchResult.add(r);
@@ -80,8 +81,7 @@ public class SearchResultList implements Iterable<Restaurant> {
             for (Restaurant r : searchResult) {
                 if (r.getInspections().isEmpty()) {
                     toRemove.add(r);
-                }
-                if (!r.getInspections().getInspection(0).getHazardRating().equals(hazardLevel)) {
+                } else if (!r.getInspections().getInspection(0).getHazardRating().equals(hazardLevel)) {
                     toRemove.add(r);
                 }
             }
@@ -110,7 +110,6 @@ public class SearchResultList implements Iterable<Restaurant> {
                         numCriticalVio += i.getNumCritical();
                     }
                 }
-
 
                 if (number <= numCriticalVio) {
                     if (!searchResult.contains(r)) {
