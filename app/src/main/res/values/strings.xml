@@ -45,4 +45,5 @@
     <string name="restaurantDetail">Restaurant Detail</string>
     <string name="inspection">Inspection</string>
     <string name="search">Search</string>
+    <string name="restaurant_new_inspections_dialog_title">These restaurants have new inspections</string>
 </resources>

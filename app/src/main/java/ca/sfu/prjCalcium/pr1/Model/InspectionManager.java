@@ -69,7 +69,7 @@ public class InspectionManager implements Iterable<Inspection> {
                         String vioLumpStr = TextUtils.join(",", vioLumpStrArray);
                         vioLumpStr = vioLumpStr.substring(1, vioLumpStr.length() - 1);
 
-                        List<String> tokens_for_violations = new ArrayList<String>();
+                        List<String> tokens_for_violations = new ArrayList<>();
 
                         if (!vioLumpStr.contains("|")) {
                             tokens_for_violations.add(vioLumpStr);

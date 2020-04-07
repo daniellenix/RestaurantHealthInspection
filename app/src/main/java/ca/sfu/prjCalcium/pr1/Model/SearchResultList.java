@@ -8,7 +8,14 @@ import java.util.List;
 
 public class SearchResultList implements Iterable<Restaurant> {
     private static SearchResultList instance;
+
     private List<Restaurant> searchResult = new ArrayList<>();
+
+    public boolean isSearched() {
+        return isSearched;
+    }
+
+    private boolean isSearched = false;
 
     private SearchResultList() {
     }
@@ -45,7 +52,7 @@ public class SearchResultList implements Iterable<Restaurant> {
             }
             searchResult.removeAll(toRemove);
         }
-
+        isSearched = true;
     }
 
     public void getRestaurantByMostRecentInspectionHazardLevel(String hazardLevel) {
@@ -80,7 +87,7 @@ public class SearchResultList implements Iterable<Restaurant> {
             }
             searchResult.removeAll(toRemove);
         }
-
+        isSearched = true;
     }
 
     public void getRestaurantsWithLessThanNCriticalViolationsWithinLastYear(int number) {
@@ -136,6 +143,7 @@ public class SearchResultList implements Iterable<Restaurant> {
             }
             searchResult.removeAll(toRemove);
         }
+        isSearched = true;
     }
 
     public void getRestaurantsWithMoreThanNCriticalViolationsWithinLastYear(int number) {
@@ -190,7 +198,7 @@ public class SearchResultList implements Iterable<Restaurant> {
             }
             searchResult.removeAll(toRemove);
         }
-
+        isSearched = true;
     }
 
     public void getFavedRestaurants() {
@@ -213,6 +221,7 @@ public class SearchResultList implements Iterable<Restaurant> {
             }
             searchResult.removeAll(toRemove);
         }
+        isSearched = true;
     }
 
     public boolean isEmpty() {
@@ -221,6 +230,7 @@ public class SearchResultList implements Iterable<Restaurant> {
 
     public void clear() {
         searchResult.clear();
+        isSearched = false;
     }
 
     public List<Restaurant> getSearchResult() {

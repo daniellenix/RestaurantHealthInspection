@@ -35,7 +35,7 @@ import ca.sfu.prjCalcium.pr1.R;
  */
 public class RestaurantListActivity extends AppCompatActivity {
     public static final int RESTAURANT_LIST_ACTIVITY_SOURCE_ACTIVITY_COND = 10056;
-    public static final String INTENT_EXTRA_SOURCE_ACTIVITY_COND = "sourceActivityCond";
+    public static final String RESTAURANT_LIST_INTENT_EXTRA_SOURCE_ACTIVITY_COND = "RestaurantListSourceActivityCond";
 
     // Singleton
     private RestaurantManager manager = RestaurantManager.getInstance();
@@ -50,7 +50,7 @@ public class RestaurantListActivity extends AppCompatActivity {
 
     public static Intent makeIntentForSearch(Context c, int sourceActivityCondCode) {
         Intent intent = new Intent(c, RestaurantListActivity.class);
-        intent.putExtra(INTENT_EXTRA_SOURCE_ACTIVITY_COND, sourceActivityCondCode);
+        intent.putExtra(RESTAURANT_LIST_INTENT_EXTRA_SOURCE_ACTIVITY_COND, sourceActivityCondCode);
 
         return intent;
     }
@@ -109,10 +109,10 @@ public class RestaurantListActivity extends AppCompatActivity {
 
     private void extractDataFromIntent() {
         Intent intent = getIntent();
-        sourceActivityCond = intent.getIntExtra(INTENT_EXTRA_SOURCE_ACTIVITY_COND, -1);
+        sourceActivityCond = intent.getIntExtra(RESTAURANT_LIST_INTENT_EXTRA_SOURCE_ACTIVITY_COND, -1);
 
         // if we came from cancel button on search activity
-        if (sourceActivityCond == SearchActivity.SEARCH_ACTIVITY_SOURCE_ACTIVITY_COND_Cancel) {
+        if (sourceActivityCond == SearchActivity.SEARCH_ACTIVITY_SOURCE_ACTIVITY_COND_CANCEL) {
             loadSearch = false;
             // if we came from submit button on search activity
         } else if (sourceActivityCond == SearchActivity.SEARCH_ACTIVITY_SOURCE_ACTIVITY_COND_SUBMIT){
@@ -121,15 +121,13 @@ public class RestaurantListActivity extends AppCompatActivity {
     }
 
     private void populateListView() {
-
         extractDataFromIntent();
 
         // if coming from search page, load search results
-        if(loadSearch) {
+        if (loadSearch) {
             ArrayAdapter<Restaurant> adapter = new MyListAdapter(searchResultList.getSearchResult());
             ListView list = findViewById(R.id.restaurantListView);
             list.setAdapter(adapter);
-
             // otherwise load normal restaurants
         } else {
             ArrayAdapter<Restaurant> adapter = new MyListAdapter(manager.getRestaurantsAsLists());
@@ -172,7 +170,7 @@ public class RestaurantListActivity extends AppCompatActivity {
             Restaurant currentRestaurant;
 
             // load specific list based on where it came from
-            if(loadSearch) {
+            if (searchResultList.isSearched()) {
                 currentRestaurant = searchResultList.getRestaurantAtIndex(position);
             } else {
                 currentRestaurant = manager.getRestaurantAtIndex(position);

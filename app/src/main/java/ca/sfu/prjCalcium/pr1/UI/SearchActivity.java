@@ -3,6 +3,7 @@ package ca.sfu.prjCalcium.pr1.UI;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,21 +19,19 @@ import androidx.appcompat.app.AppCompatActivity;
 import ca.sfu.prjCalcium.pr1.Model.SearchResultList;
 import ca.sfu.prjCalcium.pr1.R;
 
-import static ca.sfu.prjCalcium.pr1.UI.MapsActivity.INTENT_EXTRA_SOURCE_ACTIVITY_COND;
-import static ca.sfu.prjCalcium.pr1.UI.MapsActivity.MAPS_ACTIVITY_SOURCE_ACTIVITY_COND;
-import static ca.sfu.prjCalcium.pr1.UI.RestaurantListActivity.RESTAURANT_LIST_ACTIVITY_SOURCE_ACTIVITY_COND;
-
 public class SearchActivity extends AppCompatActivity {
 
-    public static final int SEARCH_ACTIVITY_SOURCE_ACTIVITY_COND_Cancel = 101;
+    public static final int SEARCH_ACTIVITY_SOURCE_ACTIVITY_COND_CANCEL = 101;
     public static final int SEARCH_ACTIVITY_SOURCE_ACTIVITY_COND_SUBMIT = 102;
+
+    public static final String SEARCH_INTENT_EXTRA_SOURCE_ACTIVITY_COND = "searchActivitySourceActivityCondition";
 
     private SearchResultList list = SearchResultList.getInstance();
     private String spinnerText;
 
     public static Intent makeIntent(Context c, int sourceActivityCondCode) {
         Intent intent = new Intent(c, SearchActivity.class);
-        intent.putExtra(INTENT_EXTRA_SOURCE_ACTIVITY_COND, sourceActivityCondCode);
+        intent.putExtra(SEARCH_INTENT_EXTRA_SOURCE_ACTIVITY_COND, sourceActivityCondCode);
 
         return intent;
     }
@@ -63,11 +62,11 @@ public class SearchActivity extends AppCompatActivity {
         submitButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
-                if(!list.isEmpty()){
+                if (!list.isEmpty()) {
                     list.clear();
                 }
-                //https://developer.android.com/training/keyboard-input/style
-                //textName and textViolation are the input from users
+                // https://developer.android.com/training/keyboard-input/style
+                // textName and textViolation are the input from users
                 EditText nameBox = findViewById(R.id.name_box);
                 String textName = nameBox.getText().toString();
 
@@ -75,43 +74,44 @@ public class SearchActivity extends AppCompatActivity {
                 String textViolations = violationBox.getText().toString();
 
                 //save criteria to our restaurant list
-                if ((textName.length() != 0) && (textViolations.length() != 0)){
+                if ((textName.length() != 0) && (textViolations.length() != 0)) {
                     list.getRestaurantsByName(textName);
                     int numberInput = Integer.parseInt(textViolations);
 
                     if (spinnerText.equals("less than")) {
                         list.getRestaurantsWithLessThanNCriticalViolationsWithinLastYear(numberInput);
                     }
-                    else if (spinnerText.equals("greater than")){
+                    else if (spinnerText.equals("greater than")) {
                         list.getRestaurantsWithMoreThanNCriticalViolationsWithinLastYear(numberInput);
                     }
                 }
-                else if(textName.length() != 0){
+                else if (textName.length() != 0) {
                     list.getRestaurantsByName(textName);
                 }
-                else if(textViolations.length() != 0){
+                else if (textViolations.length() != 0) {
                     int numberInput = Integer.parseInt(textViolations);
 
                     if (spinnerText.equals("less than")) {
                         list.getRestaurantsWithLessThanNCriticalViolationsWithinLastYear(numberInput);
                     }
-                    else if (spinnerText.equals("greater than")){
+                    else if (spinnerText.equals("greater than")) {
                         list.getRestaurantsWithMoreThanNCriticalViolationsWithinLastYear(numberInput);
                     }
                 }
 
                 //after we submit our search criteria, go back to the previous screen
                 Intent i = getIntent();
-                int code = i.getIntExtra(INTENT_EXTRA_SOURCE_ACTIVITY_COND, -1);
-                if (code == 10157){
+                int code = i.getIntExtra(SEARCH_INTENT_EXTRA_SOURCE_ACTIVITY_COND, -1);
+                if (code == MapsActivity.MAPS_ACTIVITY_SOURCE_ACTIVITY_COND) {
                     Intent intent = MapsActivity.makeIntent(SearchActivity.this, SEARCH_ACTIVITY_SOURCE_ACTIVITY_COND_SUBMIT);
                     startActivity(intent);
                 }
-                else if(code == 10056){
+                else if (code == RestaurantListActivity.RESTAURANT_LIST_ACTIVITY_SOURCE_ACTIVITY_COND) {
                     Intent intent = RestaurantListActivity.makeIntentForSearch(SearchActivity.this, SEARCH_ACTIVITY_SOURCE_ACTIVITY_COND_SUBMIT);
                     startActivity(intent);
+                } else {
+                    Log.e("SearchActivity", "onClick: source activity condition code unexpected. ");
                 }
-
             }
         });
 
@@ -121,20 +121,19 @@ public class SearchActivity extends AppCompatActivity {
             public void onClick(View v) {
                 list.clear();
                 Intent i = getIntent();
-                int code = i.getIntExtra(INTENT_EXTRA_SOURCE_ACTIVITY_COND, -1);
-                if (code == MAPS_ACTIVITY_SOURCE_ACTIVITY_COND){
-                    Intent intent = MapsActivity.makeIntent(SearchActivity.this, SEARCH_ACTIVITY_SOURCE_ACTIVITY_COND_Cancel);
+                int code = i.getIntExtra(SEARCH_INTENT_EXTRA_SOURCE_ACTIVITY_COND, -1);
+                if (code == MapsActivity.MAPS_ACTIVITY_SOURCE_ACTIVITY_COND){
+                    Intent intent = MapsActivity.makeIntent(SearchActivity.this, SEARCH_ACTIVITY_SOURCE_ACTIVITY_COND_CANCEL);
                     startActivity(intent);
                 }
-                else if(code == RESTAURANT_LIST_ACTIVITY_SOURCE_ACTIVITY_COND){
-                    Intent intent = RestaurantListActivity.makeIntentForSearch(SearchActivity.this, SEARCH_ACTIVITY_SOURCE_ACTIVITY_COND_Cancel);
+                else if (code == RestaurantListActivity.RESTAURANT_LIST_ACTIVITY_SOURCE_ACTIVITY_COND){
+                    Intent intent = RestaurantListActivity.makeIntentForSearch(SearchActivity.this, SEARCH_ACTIVITY_SOURCE_ACTIVITY_COND_CANCEL);
                     startActivity(intent);
                 }
             }
         });
         createRadioButtons();
         setUpSpinners();
-
     }
 
     //https://developer.android.com/guide/topics/ui/controls/spinner
@@ -156,8 +155,7 @@ public class SearchActivity extends AppCompatActivity {
         final RadioGroup hazardGroup = findViewById(R.id.hazardLevel);
         String[] hazardList= getResources().getStringArray(R.array.hazard_list);
         //create button for hazard level list
-        for(int i = 0; i < hazardList.length; i++){
-            String level = hazardList[i];
+        for (String level : hazardList) {
             RadioButton button1 = new RadioButton(this);
             button1.setText(level);
             button1.setOnClickListener(new View.OnClickListener() {
@@ -177,15 +175,14 @@ public class SearchActivity extends AppCompatActivity {
         final RadioGroup favoriteGroup = findViewById(R.id.favorite);
         String[] favorList = getResources().getStringArray(R.array.favorite_list);
         //create button for displaying favorite restaurant or not
-        for (int j = 0; j < favorList.length; j++){
-            String favor = favorList[j];
+        for (String favor : favorList) {
             RadioButton button2 = new RadioButton(this);
             button2.setText(favor);
             button2.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     int idOfSelected = favoriteGroup.getCheckedRadioButtonId();
-                    RadioButton radioButton = (RadioButton) findViewById(idOfSelected);
+                    RadioButton radioButton = findViewById(idOfSelected);
                     String choice = radioButton.getText().toString();
                     // send users choice of displaying favorite restaurant or not
                     if (choice.equals("Yes")) {
