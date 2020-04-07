@@ -20,14 +20,9 @@ import ca.sfu.prjCalcium.pr1.Model.SearchResultList;
 import ca.sfu.prjCalcium.pr1.R;
 
 public class SearchActivity extends AppCompatActivity {
-
-    public static final int SEARCH_ACTIVITY_SOURCE_ACTIVITY_COND_CANCEL = 101;
-    public static final int SEARCH_ACTIVITY_SOURCE_ACTIVITY_COND_SUBMIT = 102;
-
     public static final String SEARCH_INTENT_EXTRA_SOURCE_ACTIVITY_COND = "searchActivitySourceActivityCondition";
 
     private SearchResultList list = SearchResultList.getInstance();
-    private String spinnerText;
 
     public static Intent makeIntent(Context c, int sourceActivityCondCode) {
         Intent intent = new Intent(c, SearchActivity.class);
@@ -36,7 +31,7 @@ public class SearchActivity extends AppCompatActivity {
         return intent;
     }
 
-    //https://stackoverflow.com/questions/38158953/how-to-create-button-in-action-bar-in-android
+    // https://stackoverflow.com/questions/38158953/how-to-create-button-in-action-bar-in-android
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);
@@ -73,6 +68,9 @@ public class SearchActivity extends AppCompatActivity {
                 EditText violationBox = findViewById(R.id.violations);
                 String textViolations = violationBox.getText().toString();
 
+                Spinner spinner = findViewById(R.id.spinner);
+                String spinnerText = spinner.getSelectedItem().toString();
+
                 //save criteria to our restaurant list
                 if ((textName.length() != 0) && (textViolations.length() != 0)) {
                     list.getRestaurantsByName(textName);
@@ -99,15 +97,15 @@ public class SearchActivity extends AppCompatActivity {
                     }
                 }
 
-                //after we submit our search criteria, go back to the previous screen
+                // after we submit our search criteria, go back to the previous screen
                 Intent i = getIntent();
                 int code = i.getIntExtra(SEARCH_INTENT_EXTRA_SOURCE_ACTIVITY_COND, -1);
                 if (code == MapsActivity.MAPS_ACTIVITY_SOURCE_ACTIVITY_COND) {
-                    Intent intent = MapsActivity.makeIntent(SearchActivity.this, SEARCH_ACTIVITY_SOURCE_ACTIVITY_COND_SUBMIT);
+                    Intent intent = MapsActivity.makeIntent(SearchActivity.this);
                     startActivity(intent);
                 }
                 else if (code == RestaurantListActivity.RESTAURANT_LIST_ACTIVITY_SOURCE_ACTIVITY_COND) {
-                    Intent intent = RestaurantListActivity.makeIntentForSearch(SearchActivity.this, SEARCH_ACTIVITY_SOURCE_ACTIVITY_COND_SUBMIT);
+                    Intent intent = RestaurantListActivity.makeIntent(SearchActivity.this);
                     startActivity(intent);
                 } else {
                     Log.e("SearchActivity", "onClick: source activity condition code unexpected. ");
@@ -123,11 +121,10 @@ public class SearchActivity extends AppCompatActivity {
                 Intent i = getIntent();
                 int code = i.getIntExtra(SEARCH_INTENT_EXTRA_SOURCE_ACTIVITY_COND, -1);
                 if (code == MapsActivity.MAPS_ACTIVITY_SOURCE_ACTIVITY_COND){
-                    Intent intent = MapsActivity.makeIntent(SearchActivity.this, SEARCH_ACTIVITY_SOURCE_ACTIVITY_COND_CANCEL);
+                    Intent intent = MapsActivity.makeIntent(SearchActivity.this);
                     startActivity(intent);
-                }
-                else if (code == RestaurantListActivity.RESTAURANT_LIST_ACTIVITY_SOURCE_ACTIVITY_COND){
-                    Intent intent = RestaurantListActivity.makeIntentForSearch(SearchActivity.this, SEARCH_ACTIVITY_SOURCE_ACTIVITY_COND_CANCEL);
+                } else if (code == RestaurantListActivity.RESTAURANT_LIST_ACTIVITY_SOURCE_ACTIVITY_COND){
+                    Intent intent = RestaurantListActivity.makeIntent(SearchActivity.this);
                     startActivity(intent);
                 }
             }
@@ -145,9 +142,6 @@ public class SearchActivity extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         spinner.setAdapter(adapter);
-        //get spinner value
-        spinnerText = spinner.getSelectedItem().toString();
-
     }
 
     //Reference:https://www.youtube.com/watch?v=_yaP4etGKlU&feature=youtu.be
@@ -156,9 +150,9 @@ public class SearchActivity extends AppCompatActivity {
         String[] hazardList= getResources().getStringArray(R.array.hazard_list);
         //create button for hazard level list
         for (String level : hazardList) {
-            RadioButton button1 = new RadioButton(this);
-            button1.setText(level);
-            button1.setOnClickListener(new View.OnClickListener() {
+            RadioButton radioButton = new RadioButton(this);
+            radioButton.setText(level);
+            radioButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     int idOfSelected = hazardGroup.getCheckedRadioButtonId();
@@ -169,16 +163,16 @@ public class SearchActivity extends AppCompatActivity {
 
                 }
             });
-            hazardGroup.addView(button1);
+            hazardGroup.addView(radioButton);
         }
 
         final RadioGroup favoriteGroup = findViewById(R.id.favorite);
         String[] favorList = getResources().getStringArray(R.array.favorite_list);
         //create button for displaying favorite restaurant or not
         for (String favor : favorList) {
-            RadioButton button2 = new RadioButton(this);
-            button2.setText(favor);
-            button2.setOnClickListener(new View.OnClickListener() {
+            RadioButton radioButton = new RadioButton(this);
+            radioButton.setText(favor);
+            radioButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     int idOfSelected = favoriteGroup.getCheckedRadioButtonId();
@@ -190,7 +184,7 @@ public class SearchActivity extends AppCompatActivity {
                     }
                 }
             });
-            favoriteGroup.addView(button2);
+            favoriteGroup.addView(radioButton);
         }
     }
 }

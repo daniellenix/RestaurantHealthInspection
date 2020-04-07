@@ -41,9 +41,6 @@ public class RestaurantListActivity extends AppCompatActivity {
     private RestaurantManager manager = RestaurantManager.getInstance();
     private SearchResultList searchResultList = SearchResultList.getInstance();
 
-    private int sourceActivityCond;
-    private boolean loadSearch = false;
-
     public static Intent makeIntent(Context c) {
         return new Intent(c, RestaurantListActivity.class);
     }
@@ -101,34 +98,18 @@ public class RestaurantListActivity extends AppCompatActivity {
         mapBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = MapsActivity.makeIntent(RestaurantListActivity.this, RESTAURANT_LIST_ACTIVITY_SOURCE_ACTIVITY_COND);
+                Intent intent = MapsActivity.makeIntentWithSourceActivity(RestaurantListActivity.this, RESTAURANT_LIST_ACTIVITY_SOURCE_ACTIVITY_COND);
                 startActivity(intent);
             }
         });
     }
 
-    private void extractDataFromIntent() {
-        Intent intent = getIntent();
-        sourceActivityCond = intent.getIntExtra(RESTAURANT_LIST_INTENT_EXTRA_SOURCE_ACTIVITY_COND, -1);
-
-        // if we came from cancel button on search activity
-        if (sourceActivityCond == SearchActivity.SEARCH_ACTIVITY_SOURCE_ACTIVITY_COND_CANCEL) {
-            loadSearch = false;
-            // if we came from submit button on search activity
-        } else if (sourceActivityCond == SearchActivity.SEARCH_ACTIVITY_SOURCE_ACTIVITY_COND_SUBMIT){
-            loadSearch = true;
-        }
-    }
-
     private void populateListView() {
-        extractDataFromIntent();
-
         // if coming from search page, load search results
-        if (loadSearch) {
+        if (searchResultList.isSearched()) {
             ArrayAdapter<Restaurant> adapter = new MyListAdapter(searchResultList.getSearchResult());
             ListView list = findViewById(R.id.restaurantListView);
             list.setAdapter(adapter);
-            // otherwise load normal restaurants
         } else {
             ArrayAdapter<Restaurant> adapter = new MyListAdapter(manager.getRestaurantsAsLists());
             ListView list = findViewById(R.id.restaurantListView);
@@ -142,7 +123,6 @@ public class RestaurantListActivity extends AppCompatActivity {
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
                 Intent intent = RestaurantDetailActivity.makeIntent(RestaurantListActivity.this, position);
                 startActivity(intent);
             }
@@ -181,67 +161,67 @@ public class RestaurantListActivity extends AppCompatActivity {
             // images found from https://www.flaticon.com/
             if(currentRestaurant.getRestaurantName().contains("Papa John's")) {
                 imageViewIcon.setImageDrawable(getDrawable(R.drawable.papajohns));
-            } else if(currentRestaurant.getRestaurantName().contains("Pizza Hut")) {
+            } else if (currentRestaurant.getRestaurantName().contains("Pizza Hut")) {
                 imageViewIcon.setImageDrawable(getDrawable(R.drawable.pizzahut));
-            } else if(currentRestaurant.getRestaurantName().contains("Pizza") ||
+            } else if (currentRestaurant.getRestaurantName().contains("Pizza") ||
                     currentRestaurant.getRestaurantName().contains("Panago")) {
                 imageViewIcon.setImageDrawable(getDrawable(R.drawable.pizza));
-            } else if(currentRestaurant.getRestaurantName().contains("7-Eleven")) {
+            } else if (currentRestaurant.getRestaurantName().contains("7-Eleven")) {
                 imageViewIcon.setImageDrawable(getDrawable(R.drawable.seveneleven));
-            } else if(currentRestaurant.getRestaurantName().contains("Pearl") ||
+            } else if (currentRestaurant.getRestaurantName().contains("Pearl") ||
                     currentRestaurant.getRestaurantName().contains("Chatime") ||
                     currentRestaurant.getRestaurantName().contains("Bubble")) {
                 imageViewIcon.setImageDrawable(getDrawable(R.drawable.bubbletea));
-            } else if(currentRestaurant.getRestaurantName().contains("McDonald's")) {
+            } else if (currentRestaurant.getRestaurantName().contains("McDonald's")) {
                 imageViewIcon.setImageDrawable(getDrawable(R.drawable.brand));
-            } else if(currentRestaurant.getRestaurantName().contains("Starbucks")) {
+            } else if (currentRestaurant.getRestaurantName().contains("Starbucks")) {
                 imageViewIcon.setImageDrawable(getDrawable(R.drawable.starbucks));
-            } else if(currentRestaurant.getRestaurantName().contains("Coffee") ||
+            } else if (currentRestaurant.getRestaurantName().contains("Coffee") ||
                     currentRestaurant.getRestaurantName().contains("Cafe") ||
                     currentRestaurant.getRestaurantName().contains("Blenz")) {
                 imageViewIcon.setImageDrawable(getDrawable(R.drawable.coffee));
-            } else if(currentRestaurant.getRestaurantName().contains("Tim Hortons") ||
+            } else if (currentRestaurant.getRestaurantName().contains("Tim Hortons") ||
                     currentRestaurant.getRestaurantName().contains("Tim Horton's")) {
                 imageViewIcon.setImageDrawable(getDrawable(R.drawable.timhortons));
-            } else if(currentRestaurant.getRestaurantName().contains("Sushi") ||
+            } else if (currentRestaurant.getRestaurantName().contains("Sushi") ||
                     currentRestaurant.getRestaurantName().contains("Japanese")) {
                 imageViewIcon.setImageDrawable(getDrawable(R.drawable.sushi));
-            } else if(currentRestaurant.getRestaurantName().contains("Pho")) {
+            } else if (currentRestaurant.getRestaurantName().contains("Pho")) {
                 imageViewIcon.setImageDrawable(getDrawable(R.drawable.noodles));
-            } else if(currentRestaurant.getRestaurantName().contains("Subway")) {
+            } else if (currentRestaurant.getRestaurantName().contains("Subway")) {
                 imageViewIcon.setImageDrawable(getDrawable(R.drawable.subway));
-            } else if(currentRestaurant.getRestaurantName().contains("Sub") ||
+            } else if (currentRestaurant.getRestaurantName().contains("Sub") ||
                     currentRestaurant.getRestaurantName().contains("Sandwich") ||
                     currentRestaurant.getRestaurantName().contains("Quizno's")) {
                 imageViewIcon.setImageDrawable(getDrawable(R.drawable.sandwich));
-            }   else if(currentRestaurant.getRestaurantName().contains("Burger")) {
+            } else if (currentRestaurant.getRestaurantName().contains("Burger")) {
                 imageViewIcon.setImageDrawable(getDrawable(R.drawable.burger));
-            } else if(currentRestaurant.getRestaurantName().contains("A&W") ||
+            } else if (currentRestaurant.getRestaurantName().contains("A&W") ||
                     currentRestaurant.getRestaurantName().contains("A & W")) {
                 imageViewIcon.setImageDrawable(getDrawable(R.drawable.aw));
             } else if (currentRestaurant.getRestaurantName().contains("Dairy Queen")) {
                 imageViewIcon.setImageDrawable(getDrawable(R.drawable.dairyqueen));
-            } else if(currentRestaurant.getRestaurantName().contains("Ice Cream")) {
+            } else if (currentRestaurant.getRestaurantName().contains("Ice Cream")) {
                 imageViewIcon.setImageDrawable(getDrawable(R.drawable.icecream));
-            } else if(currentRestaurant.getRestaurantName().contains("Grill")) {
+            } else if (currentRestaurant.getRestaurantName().contains("Grill")) {
                 imageViewIcon.setImageDrawable(getDrawable(R.drawable.bbq));
-            } else if(currentRestaurant.getRestaurantName().contains("Noodle") ||
+            } else if (currentRestaurant.getRestaurantName().contains("Noodle") ||
                     currentRestaurant.getRestaurantName().contains("Ramen")) {
                 imageViewIcon.setImageDrawable(getDrawable(R.drawable.japan));
-            } else if(currentRestaurant.getRestaurantName().contains("Juice")) {
+            } else if (currentRestaurant.getRestaurantName().contains("Juice")) {
                 imageViewIcon.setImageDrawable(getDrawable(R.drawable.juice));
-            } else if(currentRestaurant.getRestaurantName().contains("Chicken") ||
+            } else if (currentRestaurant.getRestaurantName().contains("Chicken") ||
                     currentRestaurant.getRestaurantName().contains("KFC") ||
                     currentRestaurant.getRestaurantName().contains("Meats") ||
                     currentRestaurant.getRestaurantName().contains("BBQ") ||
                     currentRestaurant.getRestaurantName().contains("Meat")){
                 imageViewIcon.setImageDrawable(getDrawable(R.drawable.chicken));
-            } else if(currentRestaurant.getRestaurantName().contains("Sweets") ||
+            } else if (currentRestaurant.getRestaurantName().contains("Sweets") ||
                     currentRestaurant.getRestaurantName().contains("Sweet")) {
                 imageViewIcon.setImageDrawable(getDrawable(R.drawable.candy));
-            } else if(currentRestaurant.getRestaurantName().contains("Pub")) {
+            } else if (currentRestaurant.getRestaurantName().contains("Pub")) {
                 imageViewIcon.setImageDrawable(getDrawable(R.drawable.beer));
-            } else{
+            } else {
                 imageViewIcon.setImageDrawable(getDrawable(R.drawable.fork));
             }
 
@@ -281,11 +261,11 @@ public class RestaurantListActivity extends AppCompatActivity {
                 if (dateDifference < 30) {
                     textViewTime.setText(getString(R.string.inspection_days_ago, dateDifference));
                 } else if (dateDifference > 30 && dateDifference <= 366) {
-                    SimpleDateFormat formatter1 = new SimpleDateFormat("MMM dd", Locale.CANADA);
-                    textViewTime.setText(formatter1.format(pastDate));
+                    SimpleDateFormat mmmDdFormatter = new SimpleDateFormat("MMM dd", Locale.CANADA);
+                    textViewTime.setText(mmmDdFormatter.format(pastDate));
                 } else {
-                    SimpleDateFormat formatter2 = new SimpleDateFormat("MMM yyyy", Locale.CANADA);
-                    textViewTime.setText(formatter2.format(pastDate));
+                    SimpleDateFormat mmmYYYYFormatter = new SimpleDateFormat("MMM yyyy", Locale.CANADA);
+                    textViewTime.setText(mmmYYYYFormatter.format(pastDate));
                 }
 
                 if (firstInspection.getHazardRating().equals("Low")) {

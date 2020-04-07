@@ -126,7 +126,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public static final int MAPS_ACTIVITY_SOURCE_ACTIVITY_COND = 10157;
 
-    public static Intent makeIntent(Context c, int sourceActivityCondCode) {
+    public static Intent makeIntent(Context c) {
+        return new Intent(c, MapsActivity.class);
+    }
+
+    public static Intent makeIntentWithSourceActivity(Context c, int sourceActivityCondCode) {
         Intent intent = new Intent(c, MapsActivity.class);
         intent.putExtra(MAPS_INTENT_EXTRA_SOURCE_ACTIVITY_COND, sourceActivityCondCode);
 
