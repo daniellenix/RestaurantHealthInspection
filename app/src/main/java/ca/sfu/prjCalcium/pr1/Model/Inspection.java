@@ -8,7 +8,7 @@ import java.util.Date;
 public class Inspection {
     private String trackingNumber;
     private Date inspectionDate;
-    private String inspeType;
+    private String inspectionType;
     private int numCritical;
     private int numNonCritical;
     private String hazardRating;
@@ -17,7 +17,7 @@ public class Inspection {
     public Inspection() {
         this.trackingNumber = "";
         this.inspectionDate = null;
-        this.inspeType = "";
+        this.inspectionType = "";
         this.numCritical = 0;
         this.numNonCritical = 0;
         this.hazardRating = "";
@@ -40,12 +40,12 @@ public class Inspection {
         this.inspectionDate = inspectionDate;
     }
 
-    public String getInspeType() {
-        return inspeType;
+    public String getInspectionType() {
+        return inspectionType;
     }
 
-    public void setInspeType(String inspeType) {
-        this.inspeType = inspeType;
+    public void setInspectionType(String inspectionType) {
+        this.inspectionType = inspectionType;
     }
 
     public int getNumCritical() {

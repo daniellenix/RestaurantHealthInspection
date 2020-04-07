@@ -42,7 +42,7 @@ public class SearchActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.mybutton) {
+        if (id == R.id.myButton) {
             finish();
         }
         return super.onOptionsItemSelected(item);

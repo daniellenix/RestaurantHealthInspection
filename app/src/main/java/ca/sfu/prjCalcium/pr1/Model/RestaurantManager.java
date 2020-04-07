@@ -221,7 +221,7 @@ public class RestaurantManager implements Iterable<Restaurant> {
                 Date d = new SimpleDateFormat("yyyyMMdd", Locale.CANADA).parse(tokens[1]);
 
                 inspection.setInspectionDate(d);
-                inspection.setInspeType(tokens[2]);
+                inspection.setInspectionType(tokens[2]);
                 inspection.setNumCritical(Integer.parseInt(tokens[3]));
                 inspection.setNumNonCritical(Integer.parseInt(tokens[4]));
 
@@ -236,7 +236,7 @@ public class RestaurantManager implements Iterable<Restaurant> {
                     String vioLumpStr = TextUtils.join(",", vioLumpStrArray);
                     vioLumpStr = vioLumpStr.replace("\"", "");
 
-                    List<String> tokens_for_violations = new ArrayList<String>();
+                    List<String> tokens_for_violations = new ArrayList<>();
 
                     if (!vioLumpStr.contains("|")) {
                         tokens_for_violations.add(vioLumpStr);

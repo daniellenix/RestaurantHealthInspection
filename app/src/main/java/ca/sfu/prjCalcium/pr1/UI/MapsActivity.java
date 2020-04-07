@@ -108,7 +108,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private String inspectionUpdateTimeOnServer;
 
     private GoogleMap mMap;
-    private FusedLocationProviderClient mFLPC;
 
     private RestaurantManager rManager = RestaurantManager.getInstance();
     private SearchResultList searchResultList = SearchResultList.getInstance();
@@ -358,7 +357,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     // https://www.youtube.com/watch?v=fPFr0So1LmI&list=PLgCYzUzKIBE-vInwQhGSdnbyJ62nixHCt&index=5
     private void getDeviceLocation() {
-        mFLPC = LocationServices.getFusedLocationProviderClient(this);
+        FusedLocationProviderClient mFLPC = LocationServices.getFusedLocationProviderClient(this);
 
         try {
             if (mLocationPermissionGranted) {
@@ -853,6 +852,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Toast.makeText(context, getString(R.string.download_task_download_error, result), Toast.LENGTH_LONG).show();
             } else {
                 Toast.makeText(context, R.string.toast_file_downloaded, Toast.LENGTH_SHORT).show();
+                newDataDownloaded = true;
 
                 loadManagerFromExternal();
                 // In case user turns off permissions manually.
