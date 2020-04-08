@@ -34,7 +34,7 @@
     <string name="of_critical_violations">"# de violations critiques "</string>
     <string name="hazard_level">"Niveau de danger "</string>
     <string name="show_favourite">"Afficher le favori "</string>
-    <string name="cancel_search">"Annuler la recherche "</string>
+    <string name="cancel_search">"Effacer recherche"</string>
     <string name="submit">Soumettre</string>
     <string name="regulation">: Violation de regulation</string>
     <string name="food">: Violation de nourriture</string>
