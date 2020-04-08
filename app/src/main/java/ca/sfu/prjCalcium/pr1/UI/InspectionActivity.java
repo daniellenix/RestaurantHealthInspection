@@ -69,7 +69,7 @@ public class InspectionActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.mybutton) {
+        if (id == R.id.myButton) {
             finish();
         }
         return super.onOptionsItemSelected(item);
@@ -92,7 +92,7 @@ public class InspectionActivity extends AppCompatActivity {
         hazardLevel.setText(getString(R.string.restaurant_detail_hazard_level, i.getHazardRating()));
 
         TextView inspectionType = findViewById(R.id.inspectionType);
-        inspectionType.setText(getString(R.string.inspection_inspection_type, i.getInspeType()));
+        inspectionType.setText(getString(R.string.inspection_inspection_type, i.getInspectionType()));
 
         TextView numOfCriticalIssues = findViewById(R.id.InspectionCriticalIssues);
         numOfCriticalIssues.setText(getString(R.string.restaurant_detail_num_critical_issue, i.getNumCritical()));

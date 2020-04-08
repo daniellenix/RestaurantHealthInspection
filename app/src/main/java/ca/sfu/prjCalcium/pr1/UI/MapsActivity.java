@@ -59,7 +59,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import ca.sfu.prjCalcium.pr1.Model.CustomInfoWindowAdapter;
 import ca.sfu.prjCalcium.pr1.Model.Inspection;
@@ -96,7 +95,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     // Intent constants
     public static final String INTENT_EXTRA_RESTAURANT_INDEX = "index";
-    public static final String INTENT_EXTRA_SOURCE_ACTIVITY_COND = "sourceActivityCond";
+    public static final String MAPS_INTENT_EXTRA_SOURCE_ACTIVITY_COND = "sourceActivityCond";
 
     // Progress Dialogs
     ProgressDialog mProgressDialog;
@@ -109,10 +108,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private String inspectionUpdateTimeOnServer;
 
     private GoogleMap mMap;
-    private FusedLocationProviderClient mFLPC;
 
     private RestaurantManager rManager = RestaurantManager.getInstance();
-    private SearchResultList listManager = SearchResultList.getInstance();
+    private SearchResultList searchResultList = SearchResultList.getInstance();
 
     private ClusterManager<MyItem> mClusterManager;
 
@@ -120,7 +118,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static String restaurantURL;
 
     private boolean ifLoadCluster = true;
-    private boolean loadSearchList = false;
     private int sourceActivityCond;
     private int r_index;
 
@@ -128,9 +125,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public static final int MAPS_ACTIVITY_SOURCE_ACTIVITY_COND = 10157;
 
-    public static Intent makeIntent(Context c, int sourceActivityCondCode) {
+    public static Intent makeIntent(Context c) {
+        return new Intent(c, MapsActivity.class);
+    }
+
+    public static Intent makeIntentWithSourceActivity(Context c, int sourceActivityCondCode) {
         Intent intent = new Intent(c, MapsActivity.class);
-        intent.putExtra(INTENT_EXTRA_SOURCE_ACTIVITY_COND, sourceActivityCondCode);
+        intent.putExtra(MAPS_INTENT_EXTRA_SOURCE_ACTIVITY_COND, sourceActivityCondCode);
 
         return intent;
     }
@@ -140,7 +141,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Intent intent = new Intent(c, MapsActivity.class);
 
         intent.putExtra(INTENT_EXTRA_RESTAURANT_INDEX, restaurantIndex);
-        intent.putExtra(INTENT_EXTRA_SOURCE_ACTIVITY_COND, sourceActivityCondCode);
+        intent.putExtra(MAPS_INTENT_EXTRA_SOURCE_ACTIVITY_COND, sourceActivityCondCode);
 
         return intent;
     }
@@ -256,15 +257,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void extractDataFromIntent() {
         Intent intent = getIntent();
         r_index = intent.getIntExtra(INTENT_EXTRA_RESTAURANT_INDEX, -1);
-        sourceActivityCond = intent.getIntExtra(INTENT_EXTRA_SOURCE_ACTIVITY_COND, -1);
+        sourceActivityCond = intent.getIntExtra(MAPS_INTENT_EXTRA_SOURCE_ACTIVITY_COND, -1);
 
         if (sourceActivityCond == RestaurantDetailActivity.RESTAURANT_DETAIL_SOURCE_ACTIVITY_COND) {
             // if we come from detail activity, then wen don't need to load the clusters.
             ifLoadCluster = false;
-        }
-        else if (sourceActivityCond == SearchActivity.SEARCH_ACTIVITY_SOURCE_ACTIVITY_COND_SUBMIT){
-            // if we come from search activity, we have to limit our markers
-            loadSearchList = true;
         }
     }
 
@@ -360,7 +357,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     // https://www.youtube.com/watch?v=fPFr0So1LmI&list=PLgCYzUzKIBE-vInwQhGSdnbyJ62nixHCt&index=5
     private void getDeviceLocation() {
-        mFLPC = LocationServices.getFusedLocationProviderClient(this);
+        FusedLocationProviderClient mFLPC = LocationServices.getFusedLocationProviderClient(this);
 
         try {
             if (mLocationPermissionGranted) {
@@ -472,7 +469,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             iManager.sort(new InspectionComparator().reversed());
         }
         rManager.setDataRead(true);
-        Set<String> favedRestaurants = new HashSet<>(RestaurantDetailActivity.getFavedRestaurantFromSharedPref(this));
+        ArrayList<String> favedRestaurants = new ArrayList<>(new HashSet<>(RestaurantDetailActivity.getFavedRestaurantFromSharedPref(this)));
         for (String number : favedRestaurants) {
             Restaurant r = rManager.getRestaurantByTrackingNumber(number);
             if (r != null) {
@@ -530,7 +527,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
             if (!info.toString().equals("")) {
                 new AlertDialog.Builder(this)
-                        .setTitle("These restaurants have new inspections. ")
+                        .setTitle(R.string.restaurant_new_inspections_dialog_title)
                         .setMessage(info)
                         .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                             @Override
@@ -610,17 +607,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void addItems() {
-
-        if (!listManager.isEmpty()) loadSearchList = true;
-        //if users click submit button without inputing anything, should return to the original map
-        if(loadSearchList & (!listManager.isEmpty())){
-            for (Restaurant r : listManager){
+        // if users click submit button without inputting anything, should return to the original map
+        if (searchResultList.isSearched()) {
+            for (Restaurant r : searchResultList) {
                 MyItem i = new MyItem(r);
                 mClusterManager.addItem(i);
             }
-            loadSearchList = false;
-        }
-        else {
+        } else {
             for (Restaurant r : rManager) {
                 MyItem i = new MyItem(r);
                 mClusterManager.addItem(i);
@@ -633,10 +626,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         private final LatLng mPosition;
         private final String mTitle;
         private final String mSnippet;
+        private String restaurantTracking;
 
         public MyItem(Restaurant r) {
             mPosition = new LatLng(r.getLatitude(), r.getLongitude());
             mTitle = r.getRestaurantName();
+            restaurantTracking = r.getTrackingNumber();
 
             if (r.getInspections().isEmpty()) {
                 mSnippet = getString(R.string.info_window_info_no_inspection, r.getAddress());
@@ -659,6 +654,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         public String getSnippet() {
             return mSnippet;
         }
+
+        public String getRestaurantTracking() {
+            return restaurantTracking;
+        }
     }
 
     public class IconRenderer extends DefaultClusterRenderer<MyItem> {
@@ -668,9 +667,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         @Override
         protected void onClusterItemRendered(MyItem clusterItem, Marker marker) {
-            LatLng restaurantLatLng = clusterItem.getPosition();
-            int r_index = rManager.getRestaurantIndexByLatLng(restaurantLatLng);
-            Restaurant r = rManager.getRestaurantAtIndex(r_index);
+            Restaurant r = rManager.getRestaurantByTrackingNumber(clusterItem.getRestaurantTracking());
 
             if (r.getInspections().isEmpty()) {
                 BitmapDrawable bitmapDraw = (BitmapDrawable) getResources().getDrawable(R.drawable.green);
@@ -855,6 +852,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Toast.makeText(context, getString(R.string.download_task_download_error, result), Toast.LENGTH_LONG).show();
             } else {
                 Toast.makeText(context, R.string.toast_file_downloaded, Toast.LENGTH_SHORT).show();
+                newDataDownloaded = true;
 
                 loadManagerFromExternal();
                 // In case user turns off permissions manually.

@@ -30,12 +30,12 @@
     <string name="download_task_download_error">Erreur de téléchargement: %1$s</string>
     <string name="favourite">Préféré</string>
     <string name="new_inspection_alert_dialog_message_entry_line">Restaurant: %1$s, Date d\'inspection: %2$s, Niveau de danger: %3$s.  </string>
-    <string name = "restaurant_name"> Nom du restaurant </string>
-    <string name = "of_critical_violations"> # de violations critiques </string>
-    <string name = "hazard_level"> Niveau de danger </string>
-    <string name = "show_favourite"> Afficher le favori </string>
-    <string name = "cancel_search"> Annuler la recherche </string>
-    <string name = "submit"> Soumettre </string>
+    <string name="restaurant_name">"Nom du restaurant "</string>
+    <string name="of_critical_violations">"# de violations critiques "</string>
+    <string name="hazard_level">"Niveau de danger "</string>
+    <string name="show_favourite">"Afficher le favori "</string>
+    <string name="cancel_search">"Annuler la recherche "</string>
+    <string name="submit">Soumettre</string>
     <string name="regulation">: Violation de regulation</string>
     <string name="food">: Violation de nourriture</string>
     <string name="equipments">: Violation d\'équipement</string>
@@ -45,6 +45,7 @@
     <string name="inspection">Inspection</string>
     <string name="search">Chercher</string>
     <string name="operator">: Violation d\'opérateur</string>
+    <string name="restaurant_new_inspections_dialog_title">Ces restaurants ont des nouvelles inspections</string>
 
 </resources>
 

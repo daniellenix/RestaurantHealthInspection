@@ -60,7 +60,7 @@ public class InspectionManager implements Iterable<Inspection> {
                     Date d = new SimpleDateFormat("yyyyMMdd", Locale.CANADA).parse(tokens[1]);
 
                     sample.setInspectionDate(d);
-                    sample.setInspeType(tokens[2].substring(1, tokens[2].length() - 1));
+                    sample.setInspectionType(tokens[2].substring(1, tokens[2].length() - 1));
                     sample.setNumCritical(Integer.parseInt(tokens[3]));
                     sample.setNumNonCritical(Integer.parseInt(tokens[4]));
                     sample.setHazardRating(tokens[5].substring(1, tokens[5].length() - 1));
@@ -69,7 +69,7 @@ public class InspectionManager implements Iterable<Inspection> {
                         String vioLumpStr = TextUtils.join(",", vioLumpStrArray);
                         vioLumpStr = vioLumpStr.substring(1, vioLumpStr.length() - 1);
 
-                        List<String> tokens_for_violations = new ArrayList<String>();
+                        List<String> tokens_for_violations = new ArrayList<>();
 
                         if (!vioLumpStr.contains("|")) {
                             tokens_for_violations.add(vioLumpStr);

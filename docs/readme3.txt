@@ -1,0 +1,1 @@
+Language supported: English, French

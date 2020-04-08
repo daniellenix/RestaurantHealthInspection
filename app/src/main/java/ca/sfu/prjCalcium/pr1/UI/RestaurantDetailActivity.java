@@ -38,6 +38,10 @@ import ca.sfu.prjCalcium.pr1.R;
 public class RestaurantDetailActivity extends AppCompatActivity {
 
     public static final int RESTAURANT_DETAIL_SOURCE_ACTIVITY_COND = 9012;
+    public static final String SHARED_PREF_FAVOURITE_RESTAURANT = "favourite";
+    public static final String SHARED_PREF_FAVOURITE_RESTAURANT_LIST_OF_RESTAURANTS = "listOfFaved";
+    public static final String SHARED_PREF_FAVOURITE_RESTAURANT_LIST_OF_INSPECTIONS = "listOfInspection";
+
     Restaurant r;
     int r_index;
     private RestaurantManager manager;
@@ -162,28 +166,29 @@ public class RestaurantDetailActivity extends AppCompatActivity {
     }
 
     private void saveFavedToSharedPref(Set<String> favedRestaurantList, Set<String> favedRestaurantLatestInspection) {
-        SharedPreferences preferences = getSharedPreferences("favourite", MODE_PRIVATE);
+        SharedPreferences preferences = getSharedPreferences(SHARED_PREF_FAVOURITE_RESTAURANT, MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
 
         Set<String> newFavedList = new HashSet<>(favedRestaurantList);
         Set<String> newLatestInspection = new HashSet<>(favedRestaurantLatestInspection);
 
-        editor.putStringSet("listOfFaved", newFavedList);
-        editor.putStringSet("listOfInspection", newLatestInspection);
+        editor.putStringSet(SHARED_PREF_FAVOURITE_RESTAURANT_LIST_OF_RESTAURANTS, newFavedList);
+        editor.putStringSet(SHARED_PREF_FAVOURITE_RESTAURANT_LIST_OF_INSPECTIONS, newLatestInspection);
+
 
         editor.apply();
     }
 
     public static Set<String> getFavedRestaurantFromSharedPref(Context context) {
-        SharedPreferences preferences = context.getSharedPreferences("favourite", MODE_PRIVATE);
+        SharedPreferences preferences = context.getSharedPreferences(SHARED_PREF_FAVOURITE_RESTAURANT, MODE_PRIVATE);
 
-        return preferences.getStringSet("listOfFaved", new HashSet<String>());
+        return preferences.getStringSet(SHARED_PREF_FAVOURITE_RESTAURANT_LIST_OF_RESTAURANTS, new HashSet<String>());
     }
 
     public static Set<String> getFavedInspectionFromSharedPref(Context context) {
-        SharedPreferences preferences = context.getSharedPreferences("favourite", MODE_PRIVATE);
+        SharedPreferences preferences = context.getSharedPreferences(SHARED_PREF_FAVOURITE_RESTAURANT, MODE_PRIVATE);
 
-        return preferences.getStringSet("listOfInspection", new HashSet<String>());
+        return preferences.getStringSet(SHARED_PREF_FAVOURITE_RESTAURANT_LIST_OF_INSPECTIONS, new HashSet<String>());
     }
 
     private class MyListAdapter extends ArrayAdapter<Inspection> {

@@ -1,7 +1,6 @@
 package ca.sfu.prjCalcium.pr1.Model;
 
 import android.content.Context;
-import android.content.res.Resources;
 
 import ca.sfu.prjCalcium.pr1.R;
 
