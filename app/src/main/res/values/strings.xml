@@ -34,7 +34,7 @@
     <string name="of_critical_violations"># of Critical Violations</string>
     <string name="hazard_level">Hazard Level</string>
     <string name="show_favourite">Show Favourite</string>
-    <string name="cancel_search">Cancel Search</string>
+    <string name="cancel_search">Clear Search</string>
     <string name="submit">Submit</string>
     <string name="regulation">: Regulation Violation</string>
     <string name="food">: Food Violation</string>
